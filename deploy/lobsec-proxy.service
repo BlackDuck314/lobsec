@@ -1,0 +1,55 @@
+[Unit]
+Description=lobsec-proxy — LLM API Proxy with credential injection
+Documentation=https://github.com/BlackDuck314/lobsec
+After=lobsec.service
+
+[Service]
+Type=simple
+User=lobsec
+Group=lobsec
+
+# Working directory and environment
+WorkingDirectory=/opt/lobsec/proxy
+Environment=HOME=/opt/lobsec
+Environment=NODE_ENV=production
+Environment=LOBSEC_PROXY_PORT=18790
+Environment=LOBSEC_PROXY_HOST=127.0.0.1
+
+# Load credentials from proxy-specific env file (has cloud API keys)
+# Gateway .env does NOT contain cloud API keys — only the proxy has them
+EnvironmentFile=/opt/lobsec/.openclaw/.env.proxy
+
+# Main process
+ExecStart=/usr/bin/node /opt/lobsec/proxy/start.js
+
+# Restart policy
+Restart=always
+RestartSec=5
+
+# Resource limits
+LimitNOFILE=4096
+MemoryMax=256M
+
+# Security hardening (tighter than gateway — no filesystem writes needed)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+# Capability restrictions — no capabilities needed
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lobsec-proxy
+
+[Install]
+WantedBy=multi-user.target

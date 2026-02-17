@@ -1,0 +1,119 @@
+version: "3.8"
+
+# lobsec Docker Compose — production deployment
+# All containers run with security-hardened defaults.
+# Requires: Docker rootless mode, LOBSEC_PROXY_TOKEN env var.
+
+networks:
+  lobsec-internal:
+    driver: bridge
+    internal: true
+  lobsec-sandbox:
+    driver: bridge
+    internal: true
+  lobsec-egress:
+    driver: bridge
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    networks:
+      - lobsec-internal
+      - lobsec-egress
+    ports:
+      - "127.0.0.1:8443:8443"
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp:size=64M
+    user: "1000:1000"
+
+  lobsec-proxy:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.proxy
+    restart: unless-stopped
+    networks:
+      - lobsec-internal
+    environment:
+      - LOBSEC_PROXY_TOKEN
+      - LOBSEC_PKCS11_MODULE=/usr/lib/softhsm/libsofthsm2.so
+      - LOBSEC_HSM_PIN
+    volumes:
+      - ./config:/etc/lobsec/config:ro
+      - tmpfs-creds:/run/lobsec:rw
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=64M
+    user: "1000:1000"
+    depends_on:
+      - caddy
+
+  openclaw-gateway:
+    image: node:22-slim
+    restart: unless-stopped
+    networks:
+      - lobsec-internal
+      - lobsec-sandbox
+    volumes:
+      - ./config:/etc/lobsec/config:ro
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=128M
+    user: "1000:1000"
+    depends_on:
+      - lobsec-proxy
+
+  sandbox-exec:
+    image: node:22-slim
+    restart: unless-stopped
+    networks:
+      - lobsec-sandbox
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=256M
+    user: "1000:1000"
+
+  sandbox-browser:
+    image: node:22-slim
+    restart: unless-stopped
+    networks:
+      - lobsec-sandbox
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=128M
+    user: "1000:1000"
+
+volumes:
+  caddy-data:
+  tmpfs-creds:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=16M,mode=0700

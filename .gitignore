@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tgz
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+# Test coverage
+coverage/
+
+# Turbo
+.turbo/
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+
+# Claude Code
+.claude/
+
+# Local settings
+*.local.json
+
+# Temporary files
+tmp/

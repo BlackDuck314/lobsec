@@ -1,0 +1,14 @@
+[Unit]
+Description=lobsec audit log batch signer
+After=lobsec.service
+
+[Service]
+Type=oneshot
+User=lobsec
+Group=lobsec
+Environment=SOFTHSM2_CONF=/opt/lobsec/boot/softhsm2.conf
+EnvironmentFile=/opt/lobsec/boot/pin.env
+ExecStart=/opt/lobsec/bin/audit-sign-batch.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lobsec-audit

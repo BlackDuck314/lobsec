@@ -1,0 +1,22 @@
+{
+  "id": "lobsec-security",
+  "name": "lobsec Security Hardening",
+  "description": "Tool validation, credential redaction, sovereign routing, and outbound leak prevention.",
+  "version": "0.1.0",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "workspaceRoot": {
+        "type": "string",
+        "description": "Workspace root for path containment checks"
+      },
+      "sovereignMode": {
+        "type": "string",
+        "enum": ["sovereign", "public", "auto"],
+        "default": "sovereign",
+        "description": "Default routing mode for new sessions"
+      }
+    }
+  }
+}

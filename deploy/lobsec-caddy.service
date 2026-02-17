@@ -1,0 +1,46 @@
+[Unit]
+Description=lobsec-caddy — L2 Reverse Proxy Gate
+Documentation=https://github.com/BlackDuck314/lobsec
+After=lobsec.service
+BindsTo=lobsec.service
+
+[Service]
+Type=simple
+User=lobsec
+Group=lobsec
+
+ExecStart=/usr/bin/caddy run --config /opt/lobsec/config/Caddyfile
+ExecReload=/usr/bin/caddy reload --config /opt/lobsec/config/Caddyfile
+
+# Restart policy
+Restart=on-failure
+RestartSec=5
+
+# Resource limits
+LimitNOFILE=4096
+MemoryMax=128M
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/opt/lobsec/logs /opt/lobsec/config
+
+# Capability restrictions
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lobsec-caddy
+
+[Install]
+WantedBy=multi-user.target

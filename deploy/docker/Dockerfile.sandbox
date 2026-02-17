@@ -1,0 +1,22 @@
+# lobsec hardened sandbox image
+# Based on OpenClaw's sandbox but with additional security hardening.
+FROM openclaw-sandbox:bookworm-slim
+
+# Remove unnecessary binaries that could be used for escape
+USER root
+RUN apt-get purge -y --auto-remove \
+    wget curl netcat-openbsd socat nmap \
+    2>/dev/null || true && \
+    rm -f /usr/bin/wget /usr/bin/curl /usr/bin/nc \
+    /usr/bin/ncat /usr/bin/socat /usr/bin/nmap && \
+    # Remove package manager to prevent installing new tools
+    rm -rf /var/lib/apt/lists/* && \
+    # Remove shell history and temp files
+    rm -rf /tmp/* /var/tmp/* /root/.bash_history
+
+# Set default user to non-root
+USER 995:986
+
+# Read-only root filesystem
+LABEL lobsec.hardened="true"
+LABEL lobsec.version="0.1.0"

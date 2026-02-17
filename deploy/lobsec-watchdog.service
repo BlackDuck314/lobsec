@@ -1,0 +1,7 @@
+[Unit]
+Description=lobsec stack watchdog — restart dead services
+Documentation=https://github.com/BlackDuck314/lobsec
+
+[Service]
+Type=oneshot
+ExecStart=/opt/lobsec/bin/watchdog.sh

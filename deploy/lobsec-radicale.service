@@ -1,0 +1,37 @@
+[Unit]
+Description=lobsec-radicale — CalDAV/CardDAV server
+After=network.target
+Wants=lobsec.service
+
+[Service]
+Type=simple
+User=lobsec
+Group=lobsec
+WorkingDirectory=/opt/lobsec
+
+ExecStart=/opt/lobsec/radicale-venv/bin/python3 -m radicale --config /opt/lobsec/config/radicale.conf
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=true
+
+# Write paths — only Radicale data and config (for htpasswd)
+ReadWritePaths=/opt/lobsec/radicale /opt/lobsec/config
+
+# Resource limits
+MemoryMax=128M
+LimitNOFILE=4096
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

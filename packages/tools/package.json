@@ -1,0 +1,19 @@
+{
+  "name": "@lobsec/tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "nodemailer": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^6.4.0"
+  }
+}

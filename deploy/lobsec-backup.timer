@@ -1,0 +1,10 @@
+[Unit]
+Description=lobsec daily backup timer (03:00 UTC)
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

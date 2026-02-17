@@ -1,0 +1,76 @@
+[Unit]
+Description=lobsec — Security-hardened OpenClaw Gateway
+Documentation=https://github.com/BlackDuck314/lobsec
+After=network-online.target
+Wants=network-online.target lobsec-proxy.service
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=lobsec
+Group=lobsec
+
+# Working directory and environment
+WorkingDirectory=/opt/lobsec/openclaw
+Environment=HOME=/opt/lobsec
+Environment=OPENCLAW_DATA=/opt/lobsec/.openclaw
+Environment=SOFTHSM2_CONF=/opt/lobsec/boot/softhsm2.conf
+Environment=NODE_ENV=production
+Environment=NODE_EXTRA_CA_CERTS=/opt/lobsec/config/tls/ca.crt
+
+# HSM PIN loaded from credential file (boot dir = unencrypted bootstrap)
+EnvironmentFile=/opt/lobsec/boot/pin.env
+
+# Pre-start 0: unlock fscrypt-encrypted directories (runs as root)
+ExecStartPre=+/opt/lobsec/bin/fscrypt-unlock.sh
+# Pre-start 1: generate/renew mTLS certificates
+ExecStartPre=/opt/lobsec/bin/generate-mtls-certs.sh
+# Pre-start 2: symlink tmp log dir to persistent location (runs as root)
+# NOTE: Replace 'openclaw-<uid>' with your lobsec user's UID (e.g., openclaw-995)
+ExecStartPre=+/bin/bash -c 'OCUID=$(id -u lobsec); mkdir -p /opt/lobsec/logs/gateway && chown lobsec:lobsec /opt/lobsec/logs/gateway; if [ -d /tmp/openclaw-$OCUID ] && [ ! -L /tmp/openclaw-$OCUID ]; then cp -a /tmp/openclaw-$OCUID/* /opt/lobsec/logs/gateway/ 2>/dev/null || true; rm -rf /tmp/openclaw-$OCUID; fi; [ -L /tmp/openclaw-$OCUID ] || ln -sfn /opt/lobsec/logs/gateway /tmp/openclaw-$OCUID'
+# Pre-start 3: extract credentials from HSM
+ExecStartPre=/opt/lobsec/bin/hsm-extract-credentials.sh
+
+# Main process: OpenClaw gateway
+ExecStart=/usr/bin/node /opt/lobsec/openclaw/openclaw.mjs gateway run --bind loopback
+
+# Post-stop: wipe credentials (fscrypt dirs stay unlocked until reboot)
+ExecStopPost=/opt/lobsec/bin/hsm-wipe-credentials.sh
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Resource limits
+LimitNOFILE=65536
+MemoryMax=2G
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=false
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+# Allow writes to lobsec directories and tmp log dir
+ReadWritePaths=/opt/lobsec/.openclaw /opt/lobsec/logs /opt/lobsec/run /opt/lobsec/hsm /opt/lobsec/boot /opt/lobsec/config
+# NOTE: Adjust path to match your lobsec user's UID (OpenClaw uses /tmp/openclaw-<uid>)
+ReadWritePaths=/tmp/openclaw-995
+
+# Capability restrictions
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lobsec
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=lobsec health check
+After=lobsec.service
+
+[Service]
+Type=oneshot
+User=lobsec
+Group=lobsec
+Environment=SOFTHSM2_CONF=/opt/lobsec/boot/softhsm2.conf
+ExecStart=/opt/lobsec/bin/health-check.sh

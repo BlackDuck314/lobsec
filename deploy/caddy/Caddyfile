@@ -1,0 +1,58 @@
+# lobsec Caddy reverse proxy (L2)
+# Loopback-only — no external access by default.
+# For external access: change bind to 0.0.0.0, set real domain, update nftables.
+{
+	# Disable auto-HTTPS redirect (no port 80 needed)
+	auto_https off
+	# Caddy admin API on loopback only
+	admin localhost:2019
+	# Storage for Caddy state
+	storage file_system /opt/lobsec/config/caddy-data
+}
+
+:18800 {
+	bind 127.0.0.1
+
+	# TLS with lobsec self-signed certs
+	tls /opt/lobsec/config/tls/gateway.crt /opt/lobsec/config/tls/gateway.key
+
+	# Security headers
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		X-XSS-Protection "1; mode=block"
+		Referrer-Policy "no-referrer"
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		-Server
+	}
+
+	# Block config.patch WebSocket endpoint (CRITICAL — prevents runtime config override)
+	handle /config.patch {
+		respond 403 {
+			body "config.patch blocked by lobsec L2"
+		}
+	}
+
+	# Block sensitive API endpoints
+	handle /__openclaw__/config* {
+		respond 403 {
+			body "config endpoint blocked by lobsec L2"
+		}
+	}
+
+	# Reverse proxy to OpenClaw gateway (TLS backend, pinned to lobsec CA)
+	handle {
+		reverse_proxy https://127.0.0.1:18789 {
+			transport http {
+				tls_trusted_ca_certs /opt/lobsec/config/tls/ca.crt
+			}
+		}
+	}
+
+	# Access log
+	log {
+		output file /opt/lobsec/logs/caddy-access.jsonl
+		format json
+		level INFO
+	}
+}

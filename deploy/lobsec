@@ -1,0 +1,30 @@
+/opt/lobsec/logs/gateway/openclaw-*.log {
+    daily
+    rotate 30
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 lobsec lobsec
+}
+
+/opt/lobsec/logs/hsm-access.log {
+    weekly
+    rotate 52
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 lobsec lobsec
+}
+
+/opt/lobsec/.openclaw/logs/config-audit.jsonl {
+    weekly
+    rotate 52
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    create 0640 lobsec lobsec
+}
