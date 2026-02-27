@@ -22,15 +22,7 @@ hsm_log "INFO" "wipe_start" "pid=$$"
 rm -f "$ENV_FILE"
 rm -f /opt/lobsec/.openclaw/.env.proxy
 
-# Restore placeholder values for CF-Access headers in config
-# (the real values were injected at startup from HSM)
-if [ -f "$CONFIG_FILE" ]; then
-    jq '.models.providers.jetson.headers["CF-Access-Client-Id"] = "HSM-INJECTED-AT-STARTUP" |
-        .models.providers.jetson.headers["CF-Access-Client-Secret"] = "HSM-INJECTED-AT-STARTUP"' \
-       "$CONFIG_FILE" > "${CONFIG_FILE}.tmp"
-    mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
-    chmod 600 "$CONFIG_FILE"
-fi
+# CF-Access headers are now in .env.proxy (wiped above), not in openclaw.json
 
 # Wipe Radicale htpasswd (regenerated at startup from HSM)
 rm -f /opt/lobsec/config/radicale-users

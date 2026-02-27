@@ -78,7 +78,7 @@ TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN}"
 # Gateway auth (also used as proxy token for LLM calls)
 OPENCLAW_GATEWAY_TOKEN="${GATEWAY_AUTH_TOKEN}"
 
-# Sovereign Ollama (qwen2.5:32b)
+# Portullama (sovereign Ollama — qwen2.5:32b)
 OLLAMA_API_KEY="${OLLAMA_API_KEY}"
 
 # Perplexity web search (Sonar)
@@ -88,7 +88,7 @@ PERPLEXITY_API_KEY="${PERPLEXITY_API_KEY}"
 TOMORROW_IO_API_KEY="${TOMORROW_IO_API_KEY}"
 
 # Gmail SMTP/IMAP (app password)
-GMAIL_USER=${GMAIL_USER:-user@example.com}
+GMAIL_USER=lobsec.node.bc11@gmail.com
 GMAIL_APP_PASSWORD="${GMAIL_APP_PASSWORD}"
 
 # Radicale CalDAV/CardDAV
@@ -114,23 +114,16 @@ ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY}"
 
 # Sovereign backend keys (proxy passes through for egress auditing)
 OLLAMA_API_KEY="${OLLAMA_API_KEY}"
+
+# Jetson CF-Access credentials (proxy injects into Jetson requests)
+JETSON_CF_CLIENT_ID="${JETSON_CF_CLIENT_ID}"
+JETSON_CF_CLIENT_SECRET="${JETSON_CF_CLIENT_SECRET}"
 ENVEOF
 
 chmod 600 "$PROXY_ENV_FILE"
 
-# Patch openclaw.json with CF-Access headers from HSM
-# OpenClaw doesn't support env var interpolation in headers,
-# so we inject them at startup and wipe on stop.
-if [ -f "$CONFIG_FILE" ] && [ -n "$JETSON_CF_CLIENT_ID" ] && [ -n "$JETSON_CF_CLIENT_SECRET" ]; then
-    jq --arg cfid "$JETSON_CF_CLIENT_ID" \
-       --arg cfsecret "$JETSON_CF_CLIENT_SECRET" \
-       '.models.providers.jetson.headers["CF-Access-Client-Id"] = $cfid |
-        .models.providers.jetson.headers["CF-Access-Client-Secret"] = $cfsecret' \
-       "$CONFIG_FILE" > "${CONFIG_FILE}.tmp"
-    mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
-    chmod 600 "$CONFIG_FILE"
-    echo "CF-Access headers injected into $CONFIG_FILE from HSM"
-fi
+# CF-Access headers for Jetson are now injected by the proxy (via .env.proxy),
+# not patched into openclaw.json. The proxy adds them on forward.
 
 # Generate Radicale htpasswd from HSM password (regenerated each startup)
 if [ -n "$RADICALE_PASSWORD" ]; then

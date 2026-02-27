@@ -142,7 +142,13 @@ export function createProxyServer(config: ProxyServerConfig): ReturnType<typeof 
         const version = llmReq.headers["anthropic-version"];
         if (version) outHeaders["anthropic-version"] = version;
       } else {
-        outHeaders["authorization"] = `Bearer ${route.targetAuth}`;
+        // targetAuth already includes "Bearer " prefix for Bearer providers
+        outHeaders["authorization"] = route.targetAuth!;
+      }
+
+      // Inject extra headers (e.g. CF-Access for Jetson)
+      if (route.extraHeaders) {
+        Object.assign(outHeaders, route.extraHeaders);
       }
 
       const fetchRes = await fetch(route.targetUrl!, {
