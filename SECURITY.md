@@ -12,10 +12,9 @@ upstream OpenClaw should be reported to the
 
 Instead, use one of the following channels:
 
-- **GitHub Security Advisories**: Open a private advisory at
+- **GitHub Security Advisories** (preferred): Open a private advisory at
   [github.com/BlackDuck314/lobsec/security/advisories](https://github.com/BlackDuck314/lobsec/security/advisories)
-- **Email**: Send details to the maintainers listed in the repository. Encrypt
-  with PGP if possible.
+- **Email**: `blackduck314@users.noreply.github.com`
 
 Include as much detail as you can: steps to reproduce, affected versions,
 potential impact, and any suggested fix.

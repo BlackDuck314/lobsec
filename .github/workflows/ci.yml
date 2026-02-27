@@ -60,6 +60,17 @@ jobs:
         run: pnpm test -- --run --coverage --coverage.reporter=text
         continue-on-error: true
 
+  secret-scan:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: TruffleHog secret scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified --fail
+
   audit:
     runs-on: ubuntu-24.04
     steps:

@@ -65,28 +65,30 @@ async function phase1() {
   }
 
   const r = new CredentialRedactor();
+  // All test vectors below are FAKE — crafted to match regex patterns only.
+  // They are NOT real credentials. Prefixed/suffixed with FAKE/TEST/EXAMPLE.
   const tests = [
     {
       name: "Anthropic API key",
-      input: "My key is sk-ant-api03-abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnop-XXXXXX",
+      input: "My key is sk-ant-api03-FAKE0000000000000000000000000000000000000000000000000000000000000000000000000TEST-XXXXXX",
       shouldRedact: true,
       marker: "ANTHROPIC",
     },
     {
       name: "GitHub PAT",
-      input: "Token: ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij",
+      input: "Token: ghp_FAKE000000000000000000000000000000TEST",
       shouldRedact: true,
       marker: "GITHUB",
     },
     {
       name: "OpenAI key",
-      input: "OPENAI_API_KEY=sk-proj-abcdefghijklmnopqrstuvwxyz123456789012345678901234",
+      input: "OPENAI_API_KEY=sk-proj-FAKE00000000000000000000000000000000000000TEST",
       shouldRedact: true,
       marker: "OPENAI",
     },
     {
       name: "AWS access key",
-      input: "aws_access_key_id = AKIAIOSFODNN7EXAMPLE",
+      input: "aws_access_key_id = AKIAFAKE00000EXAMPLE",
       shouldRedact: true,
       marker: "AWS",
     },
@@ -104,7 +106,7 @@ async function phase1() {
     },
     {
       name: "Bearer token",
-      input: "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U",
+      input: "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJGQUtFMDAwMCJ9.FAKE000000000000000000000000000000000000TEST",
       shouldRedact: true,
       marker: "BEARER",
     },
@@ -138,7 +140,7 @@ async function phase1() {
   console.log(`\n  Results: ${pass} passed, ${fail} failed out of ${tests.length}`);
 
   // Also test containsSensitive (used by message_sending hook)
-  const sensitive = r.containsSensitive("Here is your key: sk-ant-api03-fakekey1234567890abcdef");
+  const sensitive = r.containsSensitive("Here is your key: sk-ant-api03-FAKE00000000000000000000TEST");
   const safe = r.containsSensitive("Hello, how are you today?");
   console.log(`  containsSensitive("sk-ant-..."): ${sensitive} (expected: true) ${sensitive ? "PASS" : "FAIL"}`);
   console.log(`  containsSensitive("Hello..."): ${safe} (expected: false) ${!safe ? "PASS" : "FAIL"}`);
@@ -178,9 +180,9 @@ async function phase2(botToken) {
     "bypassing OpenClaw and all lobsec hooks.",
     "",
     "Credentials (should be visible -- proves bypass):",
-    "  Anthropic: sk-ant-api03-TESTbypassKEY1234567890abcdefghij",
-    "  GitHub: ghp_TESTbypass1234567890abcdefghijklmno",
-    "  AWS: AKIAIOSFODNN7EXAMPLE",
+    "  Anthropic: sk-ant-api03-FAKE000000bypass00000000000000TEST",
+    "  GitHub: ghp_FAKE00000bypass000000000000000000TEST",
+    "  AWS: AKIAFAKE00000EXAMPLE",
     "  IP: 192.168.1.100",
     "  Email: bypass-test@example.com",
   ].join("\n");
@@ -227,6 +229,10 @@ async function phase3(botToken, chatId) {
 
   // Try WebSocket connection to gateway
   console.log("  Connecting to OpenClaw gateway WebSocket...");
+  // TLS verification disabled for localhost-only self-signed cert.
+  // This test sidecar ONLY connects to 127.0.0.1 -- never to external hosts.
+  // The CA cert is at /opt/lobsec/config/tls/ca.crt but Node's built-in
+  // WebSocket doesn't support per-connection CA pinning.
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   let ws;
