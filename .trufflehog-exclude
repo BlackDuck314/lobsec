@@ -1,0 +1,4 @@
+# Test fixtures with intentionally fake credential patterns
+test-sidecar.mjs
+packages/plugin/src/credential-redactor.test.ts
+packages/proxy/src/credential-store.test.ts
