@@ -33,6 +33,8 @@ export interface LlmRouteResult {
   model?: string;
   /** Estimated token count (from request body). */
   estimatedTokens?: number;
+  /** Extra headers to inject (e.g. CF-Access for Jetson). */
+  extraHeaders?: Record<string, string>;
 }
 
 export interface LlmAuditEntry {
@@ -52,6 +54,7 @@ interface ProviderConfig {
   credentialLabel: string;
   baseUrl: string;
   authPrefix: string;
+  extraHeaders?: () => Record<string, string>;
 }
 
 const PROVIDERS: ProviderConfig[] = [
@@ -67,7 +70,48 @@ const PROVIDERS: ProviderConfig[] = [
     baseUrl: "https://api.openai.com",
     authPrefix: "Bearer",
   },
+  {
+    name: "ollama",
+    credentialLabel: "ollama-api-key",
+    baseUrl: process.env["OLLAMA_BACKEND_URL"] ?? "http://213.63.129.53:11435",
+    authPrefix: "Bearer",
+  },
+  {
+    name: "jetson",
+    credentialLabel: "ollama-api-key",
+    baseUrl: "https://llm.pulsebridge.me",
+    authPrefix: "Bearer",
+    extraHeaders: () => {
+      const id = process.env["JETSON_CF_CLIENT_ID"];
+      const secret = process.env["JETSON_CF_CLIENT_SECRET"];
+      if (id && secret) {
+        return {
+          "CF-Access-Client-Id": id,
+          "CF-Access-Client-Secret": secret,
+        };
+      }
+      return {};
+    },
+  },
 ];
+
+// Models hosted on the Jetson (used for model-based routing).
+// Configured via JETSON_MODELS env var (comma-separated) or defaults.
+const JETSON_MODELS = new Set(
+  (process.env["JETSON_MODELS"] || "gemma3:1b,llama3.2:3b,qwen2.5-coder:3b")
+    .split(",").map(s => s.trim()).filter(Boolean)
+);
+
+/** Quick model extraction for routing (before full parse). */
+function extractModelFromBody(body: string | undefined): string | undefined {
+  if (!body) return undefined;
+  try {
+    const parsed = JSON.parse(body) as Record<string, unknown>;
+    return typeof parsed.model === "string" ? parsed.model : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 /** Detect provider from the request path or a hint header. */
 export function detectProvider(req: LlmRequest): ProviderConfig | undefined {
@@ -82,6 +126,15 @@ export function detectProvider(req: LlmRequest): ProviderConfig | undefined {
   if (req.path.includes("/v1/chat/completions")) return PROVIDERS.find((p) => p.name === "openai");
   if (req.path.includes("/v1/completions")) return PROVIDERS.find((p) => p.name === "openai");
   if (req.path.includes("/v1/embeddings")) return PROVIDERS.find((p) => p.name === "openai");
+
+  // Ollama API paths — route based on model name
+  if (req.path.startsWith("/api/")) {
+    const model = extractModelFromBody(req.body);
+    if (model && JETSON_MODELS.has(model)) {
+      return PROVIDERS.find((p) => p.name === "jetson");
+    }
+    return PROVIDERS.find((p) => p.name === "ollama");
+  }
 
   return undefined;
 }
@@ -147,11 +200,20 @@ export function validateProxyToken(
   }
   if (!token) return false;
 
-  const tokenBuf = Buffer.from(token);
-  const expectedBuf = Buffer.from(expectedToken);
+  // Accept either the proxy token or known provider API keys
+  // (OpenClaw's Ollama client sends OLLAMA_API_KEY directly, bypassing config apiKey)
+  const acceptedTokens = [expectedToken];
+  const ollamaKey = process.env["OLLAMA_API_KEY"];
+  if (ollamaKey) acceptedTokens.push(ollamaKey);
 
-  if (tokenBuf.length !== expectedBuf.length) return false;
-  return timingSafeEqual(tokenBuf, expectedBuf);
+  const tokenBuf = Buffer.from(token);
+  for (const accepted of acceptedTokens) {
+    const expectedBuf = Buffer.from(accepted);
+    if (tokenBuf.length === expectedBuf.length && timingSafeEqual(tokenBuf, expectedBuf)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // ── Route request ───────────────────────────────────────────────────────────
@@ -193,6 +255,11 @@ export function routeRequest(
   const model = extractModel(req.body);
   const estimatedTokens = estimateTokens(req.body);
 
+  // 6. Collect extra headers (e.g. CF-Access for Jetson)
+  const extraHeaders = typeof provider.extraHeaders === "function"
+    ? provider.extraHeaders()
+    : {};
+
   return {
     allowed: true,
     targetUrl,
@@ -200,5 +267,6 @@ export function routeRequest(
     provider: provider.name,
     model,
     estimatedTokens,
+    extraHeaders,
   };
 }
