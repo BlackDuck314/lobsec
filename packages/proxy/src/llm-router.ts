@@ -81,7 +81,7 @@ const PROVIDERS: ProviderConfig[] = [
     credentialLabel: "ollama-api-key",
     baseUrl: "https://llm.pulsebridge.me",
     authPrefix: "Bearer",
-    extraHeaders: () => {
+    extraHeaders: (): Record<string, string> => {
       const id = process.env["JETSON_CF_CLIENT_ID"];
       const secret = process.env["JETSON_CF_CLIENT_SECRET"];
       if (id && secret) {
@@ -200,20 +200,10 @@ export function validateProxyToken(
   }
   if (!token) return false;
 
-  // Accept either the proxy token or known provider API keys
-  // (OpenClaw's Ollama client sends OLLAMA_API_KEY directly, bypassing config apiKey)
-  const acceptedTokens = [expectedToken];
-  const ollamaKey = process.env["OLLAMA_API_KEY"];
-  if (ollamaKey) acceptedTokens.push(ollamaKey);
-
   const tokenBuf = Buffer.from(token);
-  for (const accepted of acceptedTokens) {
-    const expectedBuf = Buffer.from(accepted);
-    if (tokenBuf.length === expectedBuf.length && timingSafeEqual(tokenBuf, expectedBuf)) {
-      return true;
-    }
-  }
-  return false;
+  const expectedBuf = Buffer.from(expectedToken);
+  if (tokenBuf.length !== expectedBuf.length) return false;
+  return timingSafeEqual(tokenBuf, expectedBuf);
 }
 
 // ── Route request ───────────────────────────────────────────────────────────
