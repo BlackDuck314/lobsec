@@ -1,7 +1,7 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════════════╗
 # ║  lobsec Security Claims Acid Test                               ║
-# ║  Verifies 17 security claims with concrete PASS/FAIL evidence   ║
+# ║  Verifies 18 security claims with concrete PASS/FAIL evidence   ║
 # ║  Usage: sudo bash security-audit.sh [--destructive]             ║
 # ╚═══════════════════════════════════════════════════════════════════╝
 set -uo pipefail
@@ -540,6 +540,32 @@ test_ssrf_protection() {
 }
 
 # ════════════════════════════════════════════════════════════════════
+# Test 18: OLLAMA_API_KEY absent from gateway environment
+# ════════════════════════════════════════════════════════════════════
+test_no_ollama_in_gateway() {
+    local claim="OLLAMA_API_KEY absent from gateway environment"
+
+    if [[ ! -f "$ENV_FILE" ]]; then
+        skip "$claim" ".env not present (service stopped?)"
+        return
+    fi
+
+    local issues=()
+    if grep -q '^OLLAMA_API_KEY=' "$ENV_FILE"; then
+        issues+=("gateway .env contains OLLAMA_API_KEY")
+    fi
+    if [[ -f "$PROXY_ENV_FILE" ]] && ! grep -q '^OLLAMA_API_KEY=' "$PROXY_ENV_FILE"; then
+        issues+=("proxy .env.proxy missing OLLAMA_API_KEY")
+    fi
+
+    if [[ ${#issues[@]} -eq 0 ]]; then
+        pass "$claim"
+    else
+        fail "$claim" "${issues[*]}"
+    fi
+}
+
+# ════════════════════════════════════════════════════════════════════
 # Run all tests
 # ════════════════════════════════════════════════════════════════════
 test_hsm_objects
@@ -559,12 +585,13 @@ test_file_permissions
 test_nonextractable_key
 test_radicale_loopback
 test_ssrf_protection
+test_no_ollama_in_gateway
 
 # ════════════════════════════════════════════════════════════════════
 # Summary
 # ════════════════════════════════════════════════════════════════════
 printf "\n\e[1m══════════════════════════════════════════════════════════════\e[0m\n"
-printf "\e[1m  Summary: \e[32m%d PASS\e[0m  \e[31m%d FAIL\e[0m  \e[33m%d SKIP\e[0m  (of 17)\e[0m\n" "$PASS" "$FAIL" "$SKIP"
+printf "\e[1m  Summary: \e[32m%d PASS\e[0m  \e[31m%d FAIL\e[0m  \e[33m%d SKIP\e[0m  (of 18)\e[0m\n" "$PASS" "$FAIL" "$SKIP"
 printf "\e[1m══════════════════════════════════════════════════════════════\e[0m\n\n"
 
 # Detailed table

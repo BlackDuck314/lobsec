@@ -78,9 +78,6 @@ TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN}"
 # Gateway auth (also used as proxy token for LLM calls)
 OPENCLAW_GATEWAY_TOKEN="${GATEWAY_AUTH_TOKEN}"
 
-# Portullama (sovereign Ollama — qwen2.5:32b)
-OLLAMA_API_KEY="${OLLAMA_API_KEY}"
-
 # Perplexity web search (Sonar)
 PERPLEXITY_API_KEY="${PERPLEXITY_API_KEY}"
 
