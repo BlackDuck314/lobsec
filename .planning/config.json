@@ -1,0 +1,25 @@
+{
+  "project": {
+    "name": "lobsec",
+    "type": "brownfield"
+  },
+  "workflow": {
+    "research": true,
+    "auto_advance": false,
+    "plan_checker": true,
+    "nyquist_validation": false,
+    "branching": false
+  },
+  "agents": {
+    "profile": "quality",
+    "researcher": "sonnet",
+    "planner": "sonnet",
+    "checker": "sonnet",
+    "executor": "sonnet",
+    "roadmapper": "sonnet",
+    "synthesizer": "sonnet"
+  },
+  "docs": {
+    "commit": true
+  }
+}
