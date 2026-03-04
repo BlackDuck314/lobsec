@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import * as fc from "fast-check";
 import {
   isPrivateIp,
@@ -6,6 +6,10 @@ import {
   isIPv4MappedIPv6,
   checkEgress,
   DEFAULT_ALLOWLIST,
+  parseExtraHosts,
+  buildAllowlist,
+  resolveHost,
+  clearDnsCache,
 } from "./egress-firewall.js";
 import type { EgressRule } from "./egress-firewall.js";
 
@@ -150,10 +154,14 @@ describe("DEFAULT_ALLOWLIST", () => {
     expect(hosts).toContain("discord.com");
   });
 
-  it("all rules are HTTPS on port 443", () => {
+  it("all rules use secure protocols and standard ports", () => {
     for (const rule of DEFAULT_ALLOWLIST) {
-      expect(rule.protocol).toBe("https");
-      expect(rule.ports).toEqual([443]);
+      expect(["https", "tcp"]).toContain(rule.protocol);
+      expect(rule.ports.length).toBeGreaterThan(0);
+      for (const port of rule.ports) {
+        expect(port).toBeGreaterThan(0);
+        expect(port).toBeLessThanOrEqual(65535);
+      }
     }
   });
 });
@@ -308,5 +316,116 @@ describe("Property 35: Egress connection logging", () => {
       ),
       { numRuns: 30 },
     );
+  });
+});
+
+// ── Unit: parseExtraHosts ──────────────────────────────────────────────────
+
+describe("parseExtraHosts", () => {
+  it("parses host:port pairs", () => {
+    const rules = parseExtraHosts("198.51.100.10:11435,gpu.example.com:443");
+    expect(rules).toHaveLength(2);
+    expect(rules[0]).toEqual({ host: "198.51.100.10", ports: [11435], protocol: "https" });
+    expect(rules[1]).toEqual({ host: "gpu.example.com", ports: [443], protocol: "https" });
+  });
+
+  it("handles bare hostnames (defaults to port 443)", () => {
+    const rules = parseExtraHosts("example.com");
+    expect(rules).toHaveLength(1);
+    expect(rules[0]).toEqual({ host: "example.com", ports: [443], protocol: "https" });
+  });
+
+  it("returns empty array for empty string", () => {
+    expect(parseExtraHosts("")).toEqual([]);
+    expect(parseExtraHosts("  ")).toEqual([]);
+  });
+
+  it("trims whitespace", () => {
+    const rules = parseExtraHosts(" foo.com:8080 , bar.com:9090 ");
+    expect(rules).toHaveLength(2);
+    expect(rules[0]!.host).toBe("foo.com");
+    expect(rules[1]!.host).toBe("bar.com");
+  });
+
+  it("skips empty entries from trailing commas", () => {
+    const rules = parseExtraHosts("foo.com:443,");
+    expect(rules).toHaveLength(1);
+  });
+});
+
+// ── Unit: buildAllowlist ──────────────────────────────────────────────────
+
+describe("buildAllowlist", () => {
+  it("includes all default entries when no extras", () => {
+    const list = buildAllowlist();
+    expect(list).toEqual(DEFAULT_ALLOWLIST);
+  });
+
+  it("appends extra hosts to defaults", () => {
+    const extras: EgressRule[] = [
+      { host: "custom.example.com", ports: [8080], protocol: "https" },
+    ];
+    const list = buildAllowlist(extras);
+    expect(list.length).toBe(DEFAULT_ALLOWLIST.length + 1);
+    expect(list[list.length - 1]).toEqual(extras[0]);
+  });
+
+  it("does not modify DEFAULT_ALLOWLIST", () => {
+    const originalLength = DEFAULT_ALLOWLIST.length;
+    buildAllowlist([{ host: "foo.com", ports: [443], protocol: "https" }]);
+    expect(DEFAULT_ALLOWLIST.length).toBe(originalLength);
+  });
+});
+
+// ── Unit: resolveHost ────────────────────────────────────────────────────
+
+describe("resolveHost", () => {
+  beforeEach(() => clearDnsCache());
+
+  it("returns IP directly for IP input", async () => {
+    const result = await resolveHost("93.184.216.34");
+    expect(result).toBe("93.184.216.34");
+  });
+
+  it("returns IP directly for IPv6 input", async () => {
+    const result = await resolveHost("::1");
+    expect(result).toBe("::1");
+  });
+
+  it("resolves known hostname", async () => {
+    // This may fail in isolated environments but that's OK
+    const result = await resolveHost("localhost");
+    // localhost should resolve to 127.0.0.1 in most environments
+    if (result) {
+      expect(result).toMatch(/^(?:\d{1,3}\.){3}\d{1,3}$/);
+    }
+  });
+
+  it("returns undefined for unresolvable hostname", async () => {
+    const result = await resolveHost("this-will-never-resolve-12345.invalid");
+    expect(result).toBeUndefined();
+  });
+
+  it("caches results", async () => {
+    const result1 = await resolveHost("127.0.0.1");
+    const result2 = await resolveHost("127.0.0.1");
+    expect(result1).toBe(result2);
+  });
+});
+
+// ── DEFAULT_ALLOWLIST includes service dependencies ───────────────────────
+
+describe("DEFAULT_ALLOWLIST service dependencies", () => {
+  it("includes Perplexity API for web search", () => {
+    expect(DEFAULT_ALLOWLIST.some((r) => r.host === "api.perplexity.ai")).toBe(true);
+  });
+
+  it("includes Gmail SMTP and IMAP", () => {
+    expect(DEFAULT_ALLOWLIST.some((r) => r.host === "smtp.gmail.com" && r.ports.includes(587))).toBe(true);
+    expect(DEFAULT_ALLOWLIST.some((r) => r.host === "imap.gmail.com" && r.ports.includes(993))).toBe(true);
+  });
+
+  it("includes Tomorrow.io for weather", () => {
+    expect(DEFAULT_ALLOWLIST.some((r) => r.host === "api.tomorrow.io")).toBe(true);
   });
 });

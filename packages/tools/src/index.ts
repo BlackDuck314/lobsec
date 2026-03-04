@@ -36,3 +36,11 @@ export {
   type CalendarEvent,
   type Contact,
 } from "./calendar.js";
+
+export {
+  githubAction,
+  type GitHubConfig,
+  type GitHubAction,
+  type GitHubParams,
+  type GitHubResult,
+} from "./github.js";

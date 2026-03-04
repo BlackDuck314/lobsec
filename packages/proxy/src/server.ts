@@ -11,7 +11,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { CredentialStore } from "./credential-store.js";
 import { routeRequest, type LlmRequest, type LlmAuditEntry } from "./llm-router.js";
-import { checkEgress, DEFAULT_ALLOWLIST } from "./egress-firewall.js";
+import { checkEgress, buildAllowlist, parseExtraHosts, resolveHost } from "./egress-firewall.js";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -79,6 +79,10 @@ function toLlmRequest(req: IncomingMessage, body: string): LlmRequest {
 export function createProxyServer(config: ProxyServerConfig): ReturnType<typeof createServer> {
   const { proxyToken, credentials, onAudit, onError } = config;
 
+  // Build allowlist once at startup (includes env-based extra hosts)
+  const extraHosts = parseExtraHosts(process.env["LOBSEC_EGRESS_EXTRA_HOSTS"] ?? "");
+  const allowlist = buildAllowlist(extraHosts);
+
   const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
     // Health check endpoint
     if (req.url === "/__lobsec__/health") {
@@ -112,10 +116,12 @@ export function createProxyServer(config: ProxyServerConfig): ReturnType<typeof 
       return;
     }
 
-    // Egress check: verify target URL is not private/metadata IP
+    // Egress check: resolve DNS and verify target URL is not private/metadata IP
     try {
       const url = new URL(route.targetUrl!);
-      const egressCheck = checkEgress(url.hostname, parseInt(url.port) || 443, undefined, DEFAULT_ALLOWLIST);
+      const port = parseInt(url.port) || (url.protocol === "http:" ? 80 : 443);
+      const resolvedIp = await resolveHost(url.hostname);
+      const egressCheck = checkEgress(url.hostname, port, resolvedIp, allowlist);
       if (!egressCheck.allowed) {
         sendJson(res, 403, { error: `egress blocked: ${egressCheck.reason}` });
         return;
@@ -127,8 +133,6 @@ export function createProxyServer(config: ProxyServerConfig): ReturnType<typeof 
 
     // Forward request to the real backend
     try {
-      const targetUrl = new URL(route.targetUrl!);
-
       // Build outgoing headers: copy safe headers, replace auth
       const outHeaders: Record<string, string> = {
         "Content-Type": "application/json",

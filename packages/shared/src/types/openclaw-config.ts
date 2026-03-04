@@ -48,6 +48,10 @@ export interface HardenedOpenClawConfig {
   logging: { redactSensitive: true; redactPatterns: string[] };
   update: { auto: { enabled: false } };
   plugins: { allow: string[] };
+  memorySearch?: {
+    enabled: boolean;
+    remote: { baseUrl: string; model: string };
+  };
 }
 
 /** The required tools.deny list */

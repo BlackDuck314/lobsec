@@ -108,7 +108,7 @@ export async function readEmails(
       reject(new Error("IMAP timeout after 15s"));
     }, 15_000);
 
-    const socket = connect({ host, port, rejectUnauthorized: true });
+    const socket = connect({ host, port, servername: host, rejectUnauthorized: true });
     let buffer = "";
     let tagNum = 0;
     const messages: EmailMessage[] = [];

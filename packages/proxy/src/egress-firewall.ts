@@ -215,6 +215,85 @@ export function checkEgress(
   return { ...base, allowed: false, reason: "host not in allowlist" };
 }
 
+// ── DNS resolution with TTL cache ─────────────────────────────────────────
+
+import { promises as dns } from "node:dns";
+import { isIP } from "node:net";
+
+interface DnsCacheEntry {
+  ip: string;
+  expiresAt: number;
+}
+
+const dnsCache = new Map<string, DnsCacheEntry>();
+const DNS_TTL_MS = 60_000; // 60 seconds
+
+/**
+ * Resolve a hostname to an IPv4 address.
+ * Returns the IP directly if the input is already an IP.
+ * Caches results for 60 seconds.
+ */
+export async function resolveHost(hostname: string): Promise<string | undefined> {
+  // If already an IP, return as-is
+  if (isIP(hostname)) return hostname;
+
+  // Check cache
+  const cached = dnsCache.get(hostname);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.ip;
+  }
+
+  try {
+    const [address] = await dns.resolve4(hostname);
+    if (address) {
+      dnsCache.set(hostname, { ip: address, expiresAt: Date.now() + DNS_TTL_MS });
+      return address;
+    }
+  } catch {
+    // DNS resolution failed — return undefined
+  }
+  return undefined;
+}
+
+/** Clear the DNS cache (for testing). */
+export function clearDnsCache(): void {
+  dnsCache.clear();
+}
+
+// ── Extra hosts from environment ──────────────────────────────────────────
+
+/**
+ * Parse LOBSEC_EGRESS_EXTRA_HOSTS env var format: "host:port,host:port,..."
+ * Supports "host:port" (HTTPS) or bare "host" (port 443 default).
+ */
+export function parseExtraHosts(envValue: string): EgressRule[] {
+  if (!envValue.trim()) return [];
+  const results: EgressRule[] = [];
+  for (const entry of envValue.split(",")) {
+    const trimmed = entry.trim();
+    if (!trimmed) continue;
+    const colonIdx = trimmed.lastIndexOf(":");
+    if (colonIdx > 0) {
+      const host = trimmed.slice(0, colonIdx);
+      const port = parseInt(trimmed.slice(colonIdx + 1), 10);
+      if (!isNaN(port) && port > 0 && port <= 65535) {
+        results.push({ host, ports: [port], protocol: "https" });
+        continue;
+      }
+    }
+    // Bare hostname — default to 443
+    results.push({ host: trimmed, ports: [443], protocol: "https" });
+  }
+  return results;
+}
+
+/**
+ * Build the full egress allowlist by merging defaults with extra hosts.
+ */
+export function buildAllowlist(extraHosts?: EgressRule[]): EgressRule[] {
+  return [...DEFAULT_ALLOWLIST, ...(extraHosts ?? [])];
+}
+
 // ── Default allowlist ───────────────────────────────────────────────────────
 
 export const DEFAULT_ALLOWLIST: EgressRule[] = [
@@ -223,4 +302,8 @@ export const DEFAULT_ALLOWLIST: EgressRule[] = [
   { host: "api.telegram.org", ports: [443], protocol: "https" },
   { host: "slack.com", ports: [443], protocol: "https" },
   { host: "discord.com", ports: [443], protocol: "https" },
+  { host: "api.perplexity.ai", ports: [443], protocol: "https" },
+  { host: "smtp.gmail.com", ports: [587], protocol: "tcp" },
+  { host: "imap.gmail.com", ports: [993], protocol: "tcp" },
+  { host: "api.tomorrow.io", ports: [443], protocol: "https" },
 ];

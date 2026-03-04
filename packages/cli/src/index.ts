@@ -6,6 +6,7 @@ import { startCommand } from "./commands/start.js";
 import { stopCommand } from "./commands/stop.js";
 import { statusCommand } from "./commands/status.js";
 import { logsCommand } from "./commands/logs.js";
+import { verifyCommand } from "./commands/verify.js";
 
 const program = new Command();
 
@@ -21,5 +22,6 @@ program.addCommand(startCommand());
 program.addCommand(stopCommand());
 program.addCommand(statusCommand());
 program.addCommand(logsCommand());
+program.addCommand(verifyCommand());
 
 program.parse();

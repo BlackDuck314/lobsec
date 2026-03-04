@@ -65,3 +65,9 @@ export type {
   RouterConfig,
   RoutingEvent,
 } from "./sovereign-router.js";
+
+export { buildCommands } from "./bot-commands.js";
+
+export type {
+  CommandDeps,
+} from "./bot-commands.js";

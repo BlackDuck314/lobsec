@@ -14,10 +14,12 @@ import {
   formatEvents,
   formatContacts,
 } from "./calendar.js";
+import { githubAction } from "./github.js";
 
 import type { WeatherConfig } from "./weather.js";
 import type { EmailConfig } from "./email.js";
 import type { RadicaleConfig } from "./calendar.js";
+import type { GitHubConfig, GitHubAction } from "./github.js";
 
 // ── OpenClaw type stubs (matches pi-agent-core AgentTool shape) ─────────────
 
@@ -78,6 +80,13 @@ function getRadicaleConfig(): RadicaleConfig {
     url: getEnv("RADICALE_URL"),
     user: getEnv("RADICALE_USER"),
     password: getEnv("RADICALE_PASSWORD"),
+  };
+}
+
+function getGitHubConfig(): GitHubConfig {
+  return {
+    pat: getEnv("GITHUB_PAT"),
+    user: getEnv("GITHUB_USER"),
   };
 }
 
@@ -247,6 +256,37 @@ export default {
       },
     });
 
-    log.info("[lobsec-tools] registered 7 tools: weather, email_send, email_read, calendar_list, calendar_add, contacts_list, contacts_add");
+    // GitHub
+    api.registerTool({
+      name: "github",
+      label: "GitHub",
+      description: "Interact with GitHub repositories, issues, and pull requests. Actions: list_repos, list_issues, create_issue, list_prs, view_pr, search. Requires 'repo' param (owner/repo format) for most actions.",
+      parameters: Type.Object({
+        action: Type.String({ description: "Action: list_repos, list_issues, create_issue, list_prs, view_pr, search" }),
+        repo: Type.Optional(Type.String({ description: "Repository in owner/repo format (e.g. owner/repo-name)" })),
+        title: Type.Optional(Type.String({ description: "Issue title (for create_issue)" })),
+        body: Type.Optional(Type.String({ description: "Issue body (for create_issue)" })),
+        state: Type.Optional(Type.String({ description: "Filter: open, closed, or all (default: open)" })),
+        pr_number: Type.Optional(Type.Number({ description: "PR number (for view_pr)" })),
+        query: Type.Optional(Type.String({ description: "Search query (for search)" })),
+      }),
+      execute: async (_id, params) => {
+        const result = await githubAction(
+          {
+            action: params.action as GitHubAction,
+            repo: params.repo as string | undefined,
+            title: params.title as string | undefined,
+            body: params.body as string | undefined,
+            state: params.state as string | undefined,
+            pr_number: params.pr_number as number | undefined,
+            query: params.query as string | undefined,
+          },
+          getGitHubConfig(),
+        );
+        return textResult(result.summary);
+      },
+    });
+
+    log.info("[lobsec-tools] registered 8 tools: weather, email_send, email_read, calendar_list, calendar_add, contacts_list, contacts_add, github");
   },
 };

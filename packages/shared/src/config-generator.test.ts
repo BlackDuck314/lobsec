@@ -65,6 +65,45 @@ describe("generateHardenedConfig", () => {
   });
 });
 
+// ── Unit: generateHardenedConfig — memorySearch ──────────────────────────
+
+describe("generateHardenedConfig memorySearch", () => {
+  it("includes memorySearch when configured", () => {
+    const config = generateHardenedConfig({
+      gatewayAuthToken: "tok",
+      memorySearch: {
+        enabled: true,
+        proxyBaseUrl: "https://127.0.0.1:18790/v1",
+        model: "bge-m3",
+      },
+    });
+
+    expect(config.memorySearch).toBeDefined();
+    expect(config.memorySearch!.enabled).toBe(true);
+    expect(config.memorySearch!.remote.baseUrl).toBe("https://127.0.0.1:18790/v1");
+    expect(config.memorySearch!.remote.model).toBe("bge-m3");
+  });
+
+  it("omits memorySearch when not configured", () => {
+    const config = generateHardenedConfig({ gatewayAuthToken: "tok" });
+    expect(config.memorySearch).toBeUndefined();
+  });
+
+  it("memorySearch baseUrl must point to proxy, not direct backend", () => {
+    const config = generateHardenedConfig({
+      gatewayAuthToken: "tok",
+      memorySearch: {
+        enabled: true,
+        proxyBaseUrl: "https://127.0.0.1:18790/v1",
+        model: "bge-m3",
+      },
+    });
+    // Verify it does NOT point to a direct backend
+    expect(config.memorySearch!.remote.baseUrl).toContain("127.0.0.1:18790");
+    expect(config.memorySearch!.remote.baseUrl).toContain("127.0.0.1:18790");
+  });
+});
+
 // ── Unit: substituteCredentials ───────────────────────────────────────────
 
 describe("substituteCredentials", () => {

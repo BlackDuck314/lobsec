@@ -68,7 +68,8 @@ generate_cert "proxy" "lobsec-proxy" "IP:127.0.0.1,DNS:localhost"
 
 # ── Set permissions ──────────────────────────────────────────────────────────
 
-chmod 600 "$CERT_DIR"/*.key
+chmod 600 "$CERT_DIR"/ca.key "$CERT_DIR"/gateway.key
+chmod 640 "$CERT_DIR"/proxy.key   # group-readable for lobsec-proxy user
 chmod 644 "$CERT_DIR"/*.crt
 chown -R lobsec:lobsec "$CERT_DIR"
 

@@ -73,11 +73,33 @@ describe("Credential pattern redaction", () => {
     expect(result.redacted).not.toContain("pplx-");
   });
 
-  it("redacts Gmail app password pattern", () => {
+  it("redacts Gmail app password pattern with context", () => {
     const r = makeRedactor();
     const result = r.redact("Password: enjl ftyn kdzz lzqe");
     expect(result.redacted).toContain("[GMAIL-APP-PASSWORD-REDACTED]");
     expect(result.redacted).not.toContain("enjl ftyn kdzz lzqe");
+  });
+
+  it("redacts Gmail app password in env var format", () => {
+    const r = makeRedactor();
+    const result = r.redact('GMAIL_APP_PASSWORD="enjl ftyn kdzz lzqe"');
+    expect(result.redacted).toContain("[GMAIL-APP-PASSWORD-REDACTED]");
+  });
+
+  it("does NOT false-positive on normal English four-letter words", () => {
+    const r = makeRedactor();
+    // These are four groups of 4-letter lowercase words — old pattern matched them
+    const falsePositives = [
+      "sent your test mail",
+      "this will send from",
+      "want some more help",
+      "have been done with",
+    ];
+    for (const text of falsePositives) {
+      const result = r.redact(text);
+      expect(result.redacted).toBe(text);
+      expect(result.redactionCount).toBe(0);
+    }
   });
 
   it("redacts Tomorrow.io API key in context", () => {

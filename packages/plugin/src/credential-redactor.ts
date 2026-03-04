@@ -93,7 +93,7 @@ export const CREDENTIAL_PATTERNS: RedactionPattern[] = [
   },
   {
     name: "gmail-app-password",
-    pattern: /[a-z]{4}\s[a-z]{4}\s[a-z]{4}\s[a-z]{4}/g,
+    pattern: /(?:password|GMAIL_APP_PASSWORD|app[_\s-]?pass(?:word)?|smtp[_\s-]?pass(?:word)?)\s*[=:"']+\s*[a-z]{4}\s[a-z]{4}\s[a-z]{4}\s[a-z]{4}/gi,
     replacement: "[GMAIL-APP-PASSWORD-REDACTED]",
     category: "credential",
   },
