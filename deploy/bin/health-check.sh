@@ -121,6 +121,25 @@ else
     log_check "audit-signing" "WARN" "no signing state file"
 fi
 
+# 9. Security verifier (lobsec verify)
+LOBSEC_BIN=/opt/lobsec/openclaw/node_modules/.bin/lobsec
+if [ -x "$LOBSEC_BIN" ] || command -v lobsec >/dev/null 2>&1; then
+    VERIFY_JSON=$(lobsec verify --json --dir /opt/lobsec 2>/dev/null || echo '{"overall":"error"}')
+    VERIFY_STATUS=$(echo "$VERIFY_JSON" | grep -o '"overall":"[^"]*"' | cut -d'"' -f4)
+    if [ "$VERIFY_STATUS" = "pass" ]; then
+        log_check "security-verify" "OK" "all layers pass"
+    elif [ "$VERIFY_STATUS" = "warn" ]; then
+        log_check "security-verify" "WARN" "warnings detected"
+    else
+        log_check "security-verify" "FAIL" "verification failed or unavailable"
+    fi
+    # Append full verify result to health log
+    ts=$(date -Iseconds)
+    printf '{"ts":"%s","component":"security-verify","result":%s}\n' "$ts" "$VERIFY_JSON" >> "$LOG" 2>/dev/null
+else
+    log_check "security-verify" "WARN" "lobsec CLI not found"
+fi
+
 # Summary
 ts=$(date -Iseconds)
 printf '{"ts":"%s","component":"health-summary","status":"%s","failures":%d}\n' \

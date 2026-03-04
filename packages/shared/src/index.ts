@@ -211,6 +211,20 @@ export type {
   MonitorEvent,
 } from "./monitor.js";
 
+export {
+  verifyAll,
+  LAYER_NAMES,
+} from "./security-verifier.js";
+
+export type {
+  CheckStatus,
+  CheckResult,
+  LayerReport,
+  VerificationSummary,
+  VerificationReport,
+  VerifyOptions,
+} from "./security-verifier.js";
+
 export { BackupManager, BACKUP_COMPONENTS } from "./backup.js";
 
 export type {

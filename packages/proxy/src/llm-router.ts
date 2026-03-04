@@ -125,7 +125,8 @@ export function detectProvider(req: LlmRequest): ProviderConfig | undefined {
   if (req.path.includes("/v1/messages")) return PROVIDERS.find((p) => p.name === "anthropic");
   if (req.path.includes("/v1/chat/completions")) return PROVIDERS.find((p) => p.name === "openai");
   if (req.path.includes("/v1/completions")) return PROVIDERS.find((p) => p.name === "openai");
-  if (req.path.includes("/v1/embeddings")) return PROVIDERS.find((p) => p.name === "openai");
+  // Route /v1/embeddings to Ollama (used by memory search) unless X-LLM-Provider overrides
+  if (req.path.includes("/v1/embeddings")) return PROVIDERS.find((p) => p.name === "ollama");
 
   // Ollama API paths — route based on model name
   if (req.path.startsWith("/api/")) {

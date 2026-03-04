@@ -22,6 +22,12 @@ export interface ConfigGeneratorOptions {
   redactPatterns?: string[];
   /** Allowed plugins. */
   allowedPlugins?: string[];
+  /** Memory search config: baseUrl must point to the proxy, not directly to backends. */
+  memorySearch?: {
+    enabled: boolean;
+    proxyBaseUrl: string;
+    model: string;
+  };
 }
 
 export interface ConfigValidationError {
@@ -91,6 +97,15 @@ export function generateHardenedConfig(
     },
     update: { auto: { enabled: false } },
     plugins: { allow: opts.allowedPlugins ?? [] },
+    ...(opts.memorySearch ? {
+      memorySearch: {
+        enabled: opts.memorySearch.enabled,
+        remote: {
+          baseUrl: opts.memorySearch.proxyBaseUrl,
+          model: opts.memorySearch.model,
+        },
+      },
+    } : {}),
   };
 }
 

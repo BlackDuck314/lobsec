@@ -52,8 +52,16 @@ describe("detectProvider", () => {
     expect(detectProvider(makeReq({ path: "/unknown" }))).toBeUndefined();
   });
 
-  it("detects OpenAI from /v1/embeddings", () => {
+  it("routes /v1/embeddings to Ollama for memory search", () => {
     const provider = detectProvider(makeReq({ path: "/v1/embeddings" }));
+    expect(provider?.name).toBe("ollama");
+  });
+
+  it("routes /v1/embeddings to specified provider via header override", () => {
+    const provider = detectProvider(makeReq({
+      path: "/v1/embeddings",
+      headers: { "x-llm-provider": "openai" },
+    }));
     expect(provider?.name).toBe("openai");
   });
 });
