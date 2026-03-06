@@ -15,6 +15,7 @@ import {
   formatContacts,
 } from "./calendar.js";
 import { githubAction } from "./github.js";
+import { runExamyTest } from "./examy.js";
 
 import type { WeatherConfig } from "./weather.js";
 import type { EmailConfig } from "./email.js";
@@ -260,15 +261,20 @@ export default {
     api.registerTool({
       name: "github",
       label: "GitHub",
-      description: "Interact with GitHub repositories, issues, and pull requests. Actions: list_repos, list_issues, create_issue, list_prs, view_pr, search. Requires 'repo' param (owner/repo format) for most actions.",
+      description: "Interact with GitHub repositories, issues, and pull requests. Actions: list_repos, list_issues, create_issue, list_prs, view_pr, search, search_issues, close_issue, create_label. Requires 'repo' param (owner/repo format) for most actions.",
       parameters: Type.Object({
-        action: Type.String({ description: "Action: list_repos, list_issues, create_issue, list_prs, view_pr, search" }),
+        action: Type.String({ description: "Action: list_repos, list_issues, create_issue, list_prs, view_pr, search, search_issues, close_issue, create_label" }),
         repo: Type.Optional(Type.String({ description: "Repository in owner/repo format (e.g. owner/repo-name)" })),
         title: Type.Optional(Type.String({ description: "Issue title (for create_issue)" })),
         body: Type.Optional(Type.String({ description: "Issue body (for create_issue)" })),
         state: Type.Optional(Type.String({ description: "Filter: open, closed, or all (default: open)" })),
         pr_number: Type.Optional(Type.Number({ description: "PR number (for view_pr)" })),
-        query: Type.Optional(Type.String({ description: "Search query (for search)" })),
+        query: Type.Optional(Type.String({ description: "Search query (for search, search_issues)" })),
+        labels: Type.Optional(Type.String({ description: "Comma-separated label names (for create_issue)" })),
+        issue_number: Type.Optional(Type.Number({ description: "Issue number (for close_issue)" })),
+        comment: Type.Optional(Type.String({ description: "Comment text (for close_issue)" })),
+        name: Type.Optional(Type.String({ description: "Label name (for create_label)" })),
+        color: Type.Optional(Type.String({ description: "Label color hex without # (for create_label)" })),
       }),
       execute: async (_id, params) => {
         const result = await githubAction(
@@ -280,6 +286,12 @@ export default {
             state: params.state as string | undefined,
             pr_number: params.pr_number as number | undefined,
             query: params.query as string | undefined,
+            labels: params.labels ? (params.labels as string).split(",").map(s => s.trim()) : undefined,
+            issue_number: params.issue_number as number | undefined,
+            comment: params.comment as string | undefined,
+            name: params.name as string | undefined,
+            color: params.color as string | undefined,
+            description: params.description as string | undefined,
           },
           getGitHubConfig(),
         );
@@ -287,6 +299,64 @@ export default {
       },
     });
 
-    log.info("[lobsec-tools] registered 8 tools: weather, email_send, email_read, calendar_list, calendar_add, contacts_list, contacts_add, github");
+    // Examy QA test
+    api.registerTool({
+      name: 'examy_test',
+      label: 'Examy Test',
+      description: 'Run automated QA test of dev.examy.app with LLM-driven student personas (Grades 4, 8, 11). Includes visual regression check against baseline screenshots. Set update_baselines to "true" to refresh baselines after intentional design changes. Test runs asynchronously — returns immediately with result file path.',
+      parameters: Type.Object({
+        persona: Type.Optional(Type.String({
+          description: 'Specific persona to test: "grade4", "grade8", "grade11". Omit to run all three.',
+        })),
+        update_baselines: Type.Optional(Type.String({
+          description: 'Set to "true" to update visual regression baselines with current screenshots instead of comparing. Use after intentional design changes.',
+        })),
+      }),
+      execute: async (_id, params) => {
+        const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
+        const resultPath = `/opt/lobsec/logs/examy/result-${timestamp}.json`;
+        const updateBaselines = params.update_baselines === "true";
+
+        // Write initial status file
+        const { writeFile } = await import('node:fs/promises');
+        await writeFile(resultPath, JSON.stringify({
+          status: 'started',
+          resultPath,
+          startTime: new Date().toISOString(),
+          personas: params.persona
+            ? [params.persona as string]
+            : ['grade4', 'grade8', 'grade11'],
+          updateBaselines: updateBaselines,
+        }));
+
+        // Start test in background (fire-and-forget — do NOT await)
+        runExamyTest(
+          params.persona as string | undefined,
+          resultPath,
+          updateBaselines,
+        ).catch(async (err) => {
+          const { writeFile: wf } = await import('node:fs/promises');
+          await wf(resultPath, JSON.stringify({
+            status: 'error',
+            resultPath,
+            error: (err as Error).message,
+            stack: (err as Error).stack,
+            endTime: new Date().toISOString(),
+          }));
+        });
+
+        // Return immediately with result file path
+        const personaInfo = params.persona
+          ? `Testing persona: ${params.persona as string}`
+          : 'Testing all 3 personas (grade4, grade8, grade11)';
+        return textResult(
+          `Examy test started. ${personaInfo}\n\n` +
+          `Results will be written to:\n${resultPath}\n\n` +
+          `Poll this file for completion (look for status: "complete" or "error").`
+        );
+      },
+    });
+
+    log.info("[lobsec-tools] registered 9 tools: weather, email_send, email_read, calendar_list, calendar_add, contacts_list, contacts_add, github, examy_test");
   },
 };

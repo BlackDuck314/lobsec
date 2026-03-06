@@ -1,0 +1,19 @@
+[Unit]
+Description=Examy screenshot and result retention cleanup
+
+[Service]
+Type=oneshot
+User=lobsec
+Group=lobsec
+ExecStart=/opt/lobsec/bin/cleanup-examy-retention.sh
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lobsec-examy-cleanup
+
+# Minimal security (only needs read/write to logs dir)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/lobsec/logs

@@ -109,6 +109,20 @@ export const CREDENTIAL_PATTERNS: RedactionPattern[] = [
     replacement: "[API-KEY-REDACTED]",
     category: "credential",
   },
+  // Examy password: built from environment variable at load time (never hardcoded)
+  ...(process.env.EXAMY_PASSWORD
+    ? [
+        {
+          name: "examy-password" as const,
+          pattern: new RegExp(
+            process.env.EXAMY_PASSWORD.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+            "g",
+          ),
+          replacement: "[EXAMY-PASSWORD-REDACTED]",
+          category: "credential" as const,
+        },
+      ]
+    : []),
 ];
 
 /** PII patterns to redact. Order matters: IPs before phones to avoid false matches. */

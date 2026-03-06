@@ -1,0 +1,59 @@
+[Unit]
+Description=Examy QA test runner
+After=lobsec.service
+
+[Service]
+Type=oneshot
+User=lobsec
+Group=lobsec
+WorkingDirectory=/opt/lobsec
+
+# Environment setup (matches lobsec.service pattern)
+Environment=HOME=/opt/lobsec
+Environment=OPENCLAW_DATA=/opt/lobsec/.openclaw
+Environment=SOFTHSM2_CONF=/opt/lobsec/boot/softhsm2.conf
+Environment=NODE_TLS_REJECT_UNAUTHORIZED=0
+Environment=TMPDIR=/opt/lobsec/logs/examy
+EnvironmentFile=/opt/lobsec/boot/pin.env
+
+# Pre-start: extract HSM credentials to .env files
+ExecStartPre=/opt/lobsec/bin/hsm-extract-credentials.sh
+
+# Main: run wrapper script
+ExecStart=/opt/lobsec/bin/run-examy-test.sh
+
+# Timeout enforcement (10 minutes per user decision)
+TimeoutStartSec=600
+
+# Restart policy: retry once on failure (2 attempts total = 1 retry)
+Restart=on-failure
+RestartSec=10
+StartLimitBurst=2
+StartLimitIntervalSec=3600
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lobsec-examy-test
+
+# Security hardening (matches lobsec.service)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=false
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+# Writable paths (logs for results/screenshots, .openclaw for env, hsm for extraction, boot for pin.env, config for personas)
+ReadWritePaths=/opt/lobsec/logs /opt/lobsec/.openclaw /opt/lobsec/hsm /opt/lobsec/boot /opt/lobsec/config
+
+# No capabilities needed
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

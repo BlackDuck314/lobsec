@@ -1,0 +1,10 @@
+[Unit]
+Description=Examy screenshot/result retention cleanup (weekly)
+
+[Timer]
+OnCalendar=Sun 04:00:00
+AccuracySec=1h
+Persistent=false
+
+[Install]
+WantedBy=timers.target

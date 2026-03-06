@@ -64,6 +64,9 @@ PERPLEXITY_API_KEY=$(extract_data_object "perplexity-api-key")
 TOMORROW_IO_API_KEY=$(extract_data_object "tomorrow-io-api-key")
 GMAIL_APP_PASSWORD=$(extract_data_object "gmail-app-password")
 RADICALE_PASSWORD=$(extract_data_object "radicale-password")
+EXAMY_USERNAME=$(extract_data_object "examy-username")
+EXAMY_PASSWORD=$(extract_data_object "examy-password")
+GITHUB_PAT=$(extract_data_object "github-pat")
 
 # Write gateway .env — NO cloud API keys (proxy holds those)
 umask 077
@@ -85,13 +88,23 @@ PERPLEXITY_API_KEY="${PERPLEXITY_API_KEY}"
 TOMORROW_IO_API_KEY="${TOMORROW_IO_API_KEY}"
 
 # Gmail SMTP/IMAP (app password)
-GMAIL_USER=lobsec.node.bc11@gmail.com
+# Gmail user — set LOBSEC_GMAIL_USER in deployment environment
+GMAIL_USER="${LOBSEC_GMAIL_USER:?Set LOBSEC_GMAIL_USER in deployment environment}"
 GMAIL_APP_PASSWORD="${GMAIL_APP_PASSWORD}"
 
 # Radicale CalDAV/CardDAV
 RADICALE_USER=lobsec
 RADICALE_PASSWORD="${RADICALE_PASSWORD}"
 RADICALE_URL=http://127.0.0.1:5232
+
+# Examy QA automation credentials
+EXAMY_USERNAME="${EXAMY_USERNAME}"
+EXAMY_PASSWORD="${EXAMY_PASSWORD}"
+
+# GitHub API (for issue management)
+GITHUB_PAT="${GITHUB_PAT}"
+# GitHub user — set LOBSEC_GITHUB_USER in deployment environment
+GITHUB_USER="${LOBSEC_GITHUB_USER:?Set LOBSEC_GITHUB_USER in deployment environment}"
 ENVEOF
 
 chmod 600 "$ENV_FILE"
