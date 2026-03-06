@@ -13,9 +13,9 @@
     "clean": "pnpm -r clean"
   },
   "devDependencies": {
-    "@types/node": "^25.3.2",
+    "@types/node": "^25.3.5",
     "fast-check": "^4.5.3",
-    "oxlint": "^1.50.0",
+    "oxlint": "^1.51.0",
     "typescript": "^5.7.0",
     "vitest": "^4.0.18"
   },
