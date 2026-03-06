@@ -44,3 +44,12 @@ export {
   type GitHubParams,
   type GitHubResult,
 } from "./github.js";
+
+export {
+  runExamyTest,
+  loadPersonas,
+  type PersonaConfig,
+  type TestConfig,
+  type TestResult,
+  type PersonaResult,
+} from "./examy.js";

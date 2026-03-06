@@ -11,9 +11,14 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "nodemailer": "^8.0.1"
+    "@anthropic-ai/sdk": "^0.78.0",
+    "nodemailer": "^8.0.1",
+    "pixelmatch": "^7.1.0",
+    "playwright": "^1.58.2",
+    "pngjs": "^7.0.0"
   },
   "devDependencies": {
-    "@types/nodemailer": "^6.4.0"
+    "@types/nodemailer": "^6.4.0",
+    "@types/pngjs": "^6.0.5"
   }
 }

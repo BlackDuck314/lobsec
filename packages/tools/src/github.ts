@@ -44,7 +44,10 @@ export type GitHubAction =
   | "create_issue"
   | "list_prs"
   | "view_pr"
-  | "search";
+  | "search"
+  | "search_issues"
+  | "close_issue"
+  | "create_label";
 
 export interface GitHubParams {
   action: GitHubAction;
@@ -53,7 +56,13 @@ export interface GitHubParams {
   body?: string;        // for create_issue
   state?: string;       // open/closed/all (default: open)
   pr_number?: number;   // for view_pr
-  query?: string;       // for search
+  query?: string;       // for search, search_issues
+  labels?: string[];    // for create_issue (optional label names)
+  comment?: string;     // for close_issue
+  name?: string;        // for create_label
+  color?: string;       // for create_label (hex without #)
+  description?: string; // for create_label
+  issue_number?: number; // for close_issue
 }
 
 export interface GitHubResult {
@@ -114,10 +123,11 @@ async function createIssue(
   title: string,
   body: string,
   config: GitHubConfig,
+  labels?: string[],
 ): Promise<GitHubIssue> {
   return (await ghFetch(`/repos/${repo}/issues`, config, {
     method: "POST",
-    body: JSON.stringify({ title, body }),
+    body: JSON.stringify({ title, body, ...(labels ? { labels } : {}) }),
   })) as GitHubIssue;
 }
 
@@ -150,6 +160,93 @@ async function searchCode(
   )) as { total_count: number; items: Array<{ name: string; path: string; repository: { full_name: string }; html_url: string }> };
 }
 
+async function searchIssues(
+  query: string,
+  config: GitHubConfig,
+): Promise<{ total_count: number; items: GitHubIssue[] }> {
+  return (await ghFetch(
+    `/search/issues?q=${encodeURIComponent(query)}&per_page=30`,
+    config,
+  )) as { total_count: number; items: GitHubIssue[] };
+}
+
+async function closeIssue(
+  repo: string,
+  issue_number: number,
+  config: GitHubConfig,
+  comment?: string,
+): Promise<GitHubIssue> {
+  // Add comment if provided
+  if (comment) {
+    await ghFetch(`/repos/${repo}/issues/${issue_number}/comments`, config, {
+      method: "POST",
+      body: JSON.stringify({ body: comment }),
+    });
+  }
+
+  // Close the issue
+  return (await ghFetch(`/repos/${repo}/issues/${issue_number}`, config, {
+    method: "PATCH",
+    body: JSON.stringify({ state: "closed" }),
+  })) as GitHubIssue;
+}
+
+async function ensureLabel(
+  repo: string,
+  name: string,
+  config: GitHubConfig,
+  color?: string,
+  description?: string,
+): Promise<{ name: string; color: string; created: boolean }> {
+  // Default colors for known labels
+  const defaultColors: Record<string, string> = {
+    "lobsec-qa": "0e8a16",       // green
+    "js-error": "d73a4a",         // red
+    "network-error": "f9d0c4",    // salmon
+    "visual-regression": "5319e7", // purple
+  };
+
+  const finalColor = color ?? defaultColors[name] ?? "ededed"; // gray default
+  const finalDescription = description ?? "";
+
+  try {
+    // Check if label exists
+    await ghFetch(`/repos/${repo}/labels/${encodeURIComponent(name)}`, config);
+    // Label exists, return silently
+    return { name, color: finalColor, created: false };
+  } catch (err) {
+    // Label doesn't exist (404), create it
+    const label = (await ghFetch(`/repos/${repo}/labels`, config, {
+      method: "POST",
+      body: JSON.stringify({ name, color: finalColor, description: finalDescription }),
+    })) as { name: string; color: string };
+    return { ...label, created: true };
+  }
+}
+
+// ── Formatters (for githubAction return values) ──
+
+function formatSearchIssues(results: { total_count: number; items: GitHubIssue[] }): string {
+  if (results.total_count === 0) return "No issues found.";
+  const lines = results.items.map((i) => {
+    const labels = i.labels.length > 0 ? ` [${i.labels.map((l) => l.name).join(", ")}]` : "";
+    return `#${i.number} ${i.title} (${i.state})${labels} — ${i.html_url}`;
+  });
+  return `Issues (${results.total_count} total, showing ${results.items.length}):\n${lines.join("\n")}`;
+}
+
+function formatCloseIssue(issue: GitHubIssue, comment?: string): string {
+  const commentNote = comment ? " with comment" : "";
+  return `Closed issue #${issue.number}${commentNote}: ${issue.title}\n${issue.html_url}`;
+}
+
+function formatCreateLabel(label: { name: string; color: string; created: boolean }): string {
+  if (label.created) {
+    return `Created label "${label.name}" (color: #${label.color})`;
+  }
+  return `Label "${label.name}" already exists`;
+}
+
 export async function githubAction(
   params: GitHubParams,
   config: GitHubConfig,
@@ -177,7 +274,7 @@ export async function githubAction(
     case "create_issue": {
       if (!repo) throw new Error("repo is required for create_issue");
       if (!params.title) throw new Error("title is required for create_issue");
-      const issue = await createIssue(repo, params.title, params.body ?? "", config);
+      const issue = await createIssue(repo, params.title, params.body ?? "", config, params.labels);
       return {
         action,
         data: issue,
@@ -212,8 +309,37 @@ export async function githubAction(
         summary: formatSearch(results),
       };
     }
+    case "search_issues": {
+      if (!params.query) throw new Error("query is required for search_issues");
+      const results = await searchIssues(params.query, config);
+      return {
+        action,
+        data: results,
+        summary: formatSearchIssues(results),
+      };
+    }
+    case "close_issue": {
+      if (!repo) throw new Error("repo is required for close_issue");
+      if (!params.issue_number) throw new Error("issue_number is required for close_issue");
+      const issue = await closeIssue(repo, params.issue_number, config, params.comment);
+      return {
+        action,
+        data: issue,
+        summary: formatCloseIssue(issue, params.comment),
+      };
+    }
+    case "create_label": {
+      if (!repo) throw new Error("repo is required for create_label");
+      if (!params.name) throw new Error("name is required for create_label");
+      const label = await ensureLabel(repo, params.name, config, params.color, params.description);
+      return {
+        action,
+        data: label,
+        summary: formatCreateLabel(label),
+      };
+    }
     default:
-      throw new Error(`Unknown action: ${action}. Use: list_repos, list_issues, create_issue, list_prs, view_pr, search`);
+      throw new Error(`Unknown action: ${action}. Use: list_repos, list_issues, create_issue, list_prs, view_pr, search, search_issues, close_issue, create_label`);
   }
 }
 

@@ -2,7 +2,7 @@
 
 **9-layer security architecture for OpenClaw. Your agent never holds real credentials.**
 
-[![Tests](https://img.shields.io/badge/tests-706%20passing-green)]()
+[![Tests](https://img.shields.io/badge/tests-765%20passing-green)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -16,12 +16,13 @@ lobsec **wraps** OpenClaw. It never forks it. It does not add AI capabilities. I
 
 OpenClaw handles messaging, tool execution, and multi-channel coordination. lobsec handles credential isolation, inference routing, egress filtering, tool validation, and making sure a compromised agent cannot exfiltrate your API keys or reach your internal network.
 
-Four components, zero source modifications:
+Five components, zero source modifications:
 
 | Component | Role |
 |-----------|------|
 | `@lobsec/plugin` | OpenClaw plugin -- hooks into the message pipeline for tool gating, credential redaction, sovereign routing |
 | `@lobsec/proxy` | LLM proxy -- credential isolation, sovereign-first inference routing, egress filtering |
+| `@lobsec/tools` | Plugin tools -- weather, email, calendar, contacts, GitHub issues, QA automation |
 | `@lobsec/shared` | Shared primitives -- HSM client, audit logging, encryption, monitoring, resilience patterns |
 | `@lobsec/cli` | CLI orchestrator -- lifecycle management, startup/shutdown, health checks |
 
@@ -142,7 +143,7 @@ The tradeoff: lobsec cannot fix vulnerabilities inside OpenClaw's core. It can o
 
 ## Production Status
 
-Engineering honesty. What works, what doesn't, and what's still pending. Verified against the live deployment on 2026-02-27.
+Engineering honesty. What works, what doesn't, and what's still pending. Verified against the live deployment on 2026-03-06.
 
 ### Verified Working in Production
 
@@ -160,7 +161,9 @@ These features have been tested end-to-end with real traffic, not just unit test
 | nftables egress filtering | 10 rules active. Default-deny with logging for lobsec UID. |
 | TLS between gateway and proxy | P-256/ECDSA certificates. Gateway trusts lobsec CA via `NODE_EXTRA_CA_CERTS`. |
 | Telegram bot integration | End-to-end: user message → sovereign LLM → redacted response → Telegram delivery. |
-| Tool integrations | 7 tools registered: weather, email_send, email_read, calendar_list, calendar_add, contacts_list, contacts_add. |
+| Tool integrations | 9 tools registered: weather, email_send, email_read, calendar_list, calendar_add, contacts_list, contacts_add, github, examy_test. |
+| Web search | Perplexity Sonar web search working via native OpenClaw tools. |
+| Automated QA | Playwright-based browser testing with LLM-driven student personas, visual regression, GitHub issue lifecycle, daily scheduling. |
 
 ### Known Limitations and Pending Work
 
@@ -175,8 +178,7 @@ Each item is tracked as a GitHub issue. These are real gaps, not roadmap marketi
 7. **LUKS full-disk encryption deferred.** fscrypt covers sensitive directories. Boot directory with HSM PIN remains on unencrypted filesystem. ([#8](https://github.com/BlackDuck314/lobsec/issues/8))
 8. **OLLAMA_API_KEY still in gateway env.** No longer needed since proxy wiring. Defense-in-depth: should be removed. ([#9](https://github.com/BlackDuck314/lobsec/issues/9))
 9. **`message_sending` hook never fires.** Registered but OpenClaw doesn't call it. Outbound credential scanning relies on persistence hooks and proxy isolation instead. ([#6](https://github.com/BlackDuck314/lobsec/issues/6))
-10. **Perplexity web search returns 401.** API key stored correctly but getting Cloudflare challenge. ([#7](https://github.com/BlackDuck314/lobsec/issues/7))
-11. **End-to-end integration tests limited.** 706 unit tests pass. Production integration coverage is manual and incomplete. ([#2](https://github.com/BlackDuck314/lobsec/issues/2))
+10. **End-to-end integration tests limited.** 765 unit tests pass. Production integration coverage is manual and incomplete. ([#2](https://github.com/BlackDuck314/lobsec/issues/2))
 12. **SoftHSM2 in production.** No hardware HSM yet. Keys protected by filesystem permissions + fscrypt, not tamper-resistant hardware.
 13. **No automatic PII classification.** Sovereign/public routing is user-declared. No NER or automatic content classification.
 14. **No multi-user support.** Single operator assumed. No per-user credential scoping or multi-tenant audit separation.
@@ -193,12 +195,13 @@ Each item is tracked as a GitHub issue. These are real gaps, not roadmap marketi
 | Local inference | Ollama (sovereign GPU) | Working (via proxy) | Remote GPU, qwen2.5:32b. Routed through lobsec-proxy with credential injection. |
 | Local inference | Ollama (Jetson) | Working (direct) | Jetson Orin, gemma3:1b, llama3.2:3b, qwen2.5-coder:3b. Not yet routed through proxy ([#10](https://github.com/BlackDuck314/lobsec/issues/10)). |
 | Cloud fallback | Anthropic Claude | Working (via proxy) | Full model family via `@lobsec/proxy` credential injection. |
-| HSM | SoftHSM2 | Working | PKCS#11 interface. 12 data objects + 2 key pairs in production. |
+| HSM | SoftHSM2 | Working | PKCS#11 interface. 15 data objects + 2 key pairs in production. |
 | Weather | Tomorrow.io | Working | Via lobsec-tools plugin, API key in HSM. |
 | Email | Gmail SMTP/IMAP | Working | Send and read via lobsec-tools plugin, app password in HSM. |
 | Calendar | Radicale CalDAV | Working | Local CalDAV server on loopback, htpasswd auth. |
 | Contacts | Radicale CardDAV | Working | Local CardDAV address book. |
-| Web search | Perplexity | Broken | 401 Cloudflare challenge ([#7](https://github.com/BlackDuck314/lobsec/issues/7)). |
+| Web search | Perplexity Sonar | Working | Via native OpenClaw tools.web.search, API key in HSM. |
+| QA automation | Playwright + Claude | Working | Daily automated testing with LLM-driven student personas, visual regression, GitHub issue lifecycle. |
 
 ---
 
@@ -255,6 +258,7 @@ packages/
   cli/                 # CLI orchestrator: init, start, stop, status, health
   plugin/              # OpenClaw plugin: tool validation, redaction, routing hooks
   proxy/               # LLM proxy: routing, credential injection, egress filtering
+  tools/               # Plugin tools: weather, email, calendar, contacts, github, QA
 
 docs/
   DESIGN.md            # Master security design document
