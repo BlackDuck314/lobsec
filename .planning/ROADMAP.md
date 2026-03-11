@@ -35,7 +35,8 @@
 
 </details>
 
-### v1.3 UAE Real Estate Intelligence System
+<details>
+<summary>v1.3 UAE Real Estate Intelligence System — Phases 6-12 (planned)</summary>
 
 28 data sources, data science pipeline, 8 intelligence products, delivered as an OpenClaw plugin with Telegram interface. Granger-validated leading indicators with the expat lifecycle funnel as unique differentiator.
 
@@ -101,6 +102,8 @@
   3. Telegram responses include data freshness warnings when sources are >2x overdue; collection health dashboard shows all sources with last update, row count, staleness, next scheduled run
   4. nftables egress rules whitelist all 28 source domains; credential redactor extended with new API key patterns; all collection runs audit-logged (source, timestamp, row count, success/failure)
   5. End-to-end integration verified: scheduled collection populates data, pipeline computes products, Telegram query returns formatted intelligence with freshness metadata
+
+</details>
 
 ## Progress
 
