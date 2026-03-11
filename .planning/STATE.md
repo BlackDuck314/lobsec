@@ -111,6 +111,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Phase 6 complete — ready for Phase 7
+Stopped at: Phase 6 complete, Phase 7 discuss-phase not yet started (context exhausted)
 Resume file: .planning/STATE.md
-Next: /gsd:discuss-phase 7 or /gsd:plan-phase 7
+Next: /gsd:discuss-phase 7 (needs fresh context window)
+Note: Phase 7 dir needs manual creation — `mkdir -p .planning/phases/07-mvp-collection`
+Note: gsd-tools `init phase-op 7` returns phase_found=false due to <details> block — bypass manually
