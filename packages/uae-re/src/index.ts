@@ -27,3 +27,27 @@ export type {
 export { IntelligenceCache } from "./cache/manager.js";
 export { DEFAULT_CACHE_CONFIG } from "./cache/types.js";
 export type { CacheEntry, CacheConfig } from "./cache/types.js";
+
+// Collector framework
+export { SourceCollector } from "./collectors/base.js";
+export { CollectorRegistry } from "./collectors/registry.js";
+export type {
+  CollectorMetadata,
+  CollectionResult,
+  CollectorStatus,
+  CollectorInfo,
+  RegistryRunResult,
+  CollectionFrequency,
+} from "./collectors/types.js";
+
+// Analytics bridge
+export {
+  runPython,
+  checkPythonAvailable,
+  checkDependencies,
+} from "./analytics/bridge.js";
+export type {
+  PythonResult,
+  PythonScriptName,
+  BridgeConfig,
+} from "./analytics/types.js";
