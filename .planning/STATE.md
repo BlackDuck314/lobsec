@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: UAE Real Estate Intelligence System
 status: in_progress
-last_updated: "2026-03-11T17:35:00.000Z"
+last_updated: "2026-03-11T22:00:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 1
@@ -15,9 +15,9 @@ progress:
 
 ## Current Position
 
-Phase: 7 of 12 -- Ready to start Phase 7 (MVP Data Collection)
+Phase: 7 of 12 -- Phase 7 context gathered, ready for planning
 Plan: None yet -- plans to be created during Phase 7 planning
-Status: Phase 6 complete (10/10 requirements, 5/5 criteria). Foundation infrastructure deployed and verified.
+Status: Phase 7 context captured. DARI deferred, PropertyFinder added, normalization pipeline design locked.
 Last activity: 2026-03-11 — Phase 6 verified and marked complete. All infrastructure operational.
 
 ## Resume Instructions
@@ -111,8 +111,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Phase 6 complete, Phase 7 discuss-phase not yet started (context exhausted)
-Resume file: .planning/STATE.md
-Next: /gsd:discuss-phase 7 (needs fresh context window)
-Note: Phase 7 dir needs manual creation — `mkdir -p .planning/phases/07-mvp-collection`
+Stopped at: Phase 7 context gathered
+Resume file: .planning/phases/07-mvp-collection/07-CONTEXT.md
+Next: /gsd:plan-phase 7 (needs fresh context window)
 Note: gsd-tools `init phase-op 7` returns phase_found=false due to <details> block — bypass manually
+Note: DARI (COLL-04) deferred indefinitely. PropertyFinder added as 6th collector alongside Bayut.
