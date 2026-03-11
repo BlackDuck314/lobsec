@@ -181,12 +181,16 @@ export default {
   register(api: PluginApi) {
     const log = api.logger;
 
-    // Initialize database
-    const dataDir = getEnv("UAE_RE_DATA_DIR", "/opt/lobsec/data");
-    const db = initDatabase(dataDir);
+    try {
+      // Initialize database
+      const dataDir = getEnv("UAE_RE_DATA_DIR", "/opt/lobsec/data");
+      log.info(`[lobsec-uae-re] initializing database at ${dataDir}`);
+      const db = initDatabase(dataDir);
+      log.info(`[lobsec-uae-re] database initialized successfully`);
 
-    // Seed area names table on startup
-    initAreaTable(db);
+      // Seed area names table on startup
+      initAreaTable(db);
+      log.info(`[lobsec-uae-re] area names table seeded`);
 
     // Create registry and cache
     const registry = new CollectorRegistry();
@@ -271,8 +275,17 @@ export default {
       },
     });
 
-    log.info(
-      "[lobsec-uae-re] registered 7 collectors + 1 tool"
-    );
+      log.info(
+        "[lobsec-uae-re] registered 7 collectors + 1 tool"
+      );
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      const stack = error instanceof Error ? error.stack : "";
+      log.error(`[lobsec-uae-re] failed to initialize: ${msg}`);
+      if (stack) {
+        log.error(`[lobsec-uae-re] stack: ${stack}`);
+      }
+      throw error;
+    }
   },
 };

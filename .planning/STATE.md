@@ -16,9 +16,9 @@ progress:
 ## Current Position
 
 Phase: 7 of 12 -- MVP Data Collection (Tier A + DEWA)
-Plan: 3 of 4 -- Plan 03 (ADREC + Bayut + PropertyFinder) complete
-Status: Wave 2 browser automation collectors complete. ADREC Abu Dhabi (transactions/leases/indices), Bayut and PropertyFinder listing collectors with anti-bot measures ready.
-Last activity: 2026-03-11 — Plan 07-03 executed. 2 requirements completed (COLL-04, COLL-05). Ready for Plan 04.
+Plan: 4 of 4 -- Plan 04 BLOCKED at deployment
+Status: DEWA collector built, all 7 collectors coded and wired. BLOCKED by SQLite WAL mode failure during OpenClaw plugin loading. Code complete, deployment environment issue.
+Last activity: 2026-03-11 — Plan 07-04 Task 1 complete, Task 2 blocked by better-sqlite3 WAL pragma failure in plugin context. Requires user investigation of OpenClaw plugin loader filesystem permissions.
 
 ## Resume Instructions
 
@@ -120,13 +120,21 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 
 ## Blockers
 
-(None)
+**CRITICAL: UAE RE Plugin Load Failure (Plan 07-04 Task 2)**
+- better-sqlite3 WAL pragma fails during OpenClaw plugin registration
+- Error: "SqliteError: unable to open database file" at `db.pragma("journal_mode = WAL")`
+- Database opens successfully, but WAL mode setup fails
+- Same code works when executed directly as lobsec user
+- Issue specific to OpenClaw plugin loading context
+- Blocking: Cannot verify 7 collectors, cannot test end-to-end collection, cannot proceed to Task 3 checkpoint
+- Investigation needed: OpenClaw plugin loader filesystem permissions/context
 
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Plan 07-03 complete (ADREC + Bayut + PropertyFinder collectors)
-Resume file: .planning/phases/07-mvp-collection/07-04-PLAN.md
-Next: Execute Plan 07-04 (DEWA consumption + geographic enrichment, wave 3)
-Note: gsd-tools `init phase-op 7` returns phase_found=false due to <details> block — bypass manually
-Note: Wave 2 complete (Plans 02-03). Ready for wave 3 (Plan 04).
+Stopped at: Plan 07-04 Task 2 — Deployment blocked by SQLite WAL mode failure
+Resume file: .planning/phases/07-mvp-collection/07-04-SUMMARY.md
+Next: Resolve OpenClaw plugin loader + better-sqlite3 WAL compatibility issue
+Requires: User investigation of plugin loading context, filesystem permissions, or WAL mode workaround
+Code status: Complete and ready (all 7 collectors, normalization, CLI integration)
+Deployment status: Files deployed, service won't load plugin due to runtime error
