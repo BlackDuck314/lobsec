@@ -17,8 +17,8 @@ progress:
 
 Phase: 6 of 12 -- Ready to start Phase 6 (Foundation & Infrastructure)
 Plan: None yet -- plans to be created during Phase 6 execution
-Status: Phase 6 planning in progress — directory created, roadmap dashes fixed for GSD tool parsing
-Last activity: 2026-03-11 — Phase 6 plan-phase started, paused at context window limit
+Status: Phase 6 planning BLOCKED — `gsd-tools roadmap get-phase 6` returns `found: false` despite Phase 6 existing in ROADMAP.md
+Last activity: 2026-03-11 — Blocked on roadmap parsing. Phase dir exists at `.planning/phases/06-foundation-infrastructure/`
 
 ## Resume Instructions
 
@@ -27,7 +27,10 @@ Last activity: 2026-03-11 — Phase 6 plan-phase started, paused at context wind
 3. Research completed and synthesized in `.planning/research/SUMMARY.md`
 4. Full playbook at `.planning/uae-re-playbook.md`
 5. Requirements at `.planning/REQUIREMENTS.md` with full traceability table
-6. **START HERE**: Run `/gsd:plan-phase 6` — directory exists at `.planning/phases/06-foundation-infrastructure/`, roadmap dashes fixed (was `--`, now `—`)
+6. **BLOCKER**: `gsd-tools roadmap get-phase 6` returns `found: false`. The v1.3 phases are under `### v1.3 UAE Real Estate...` heading (not `<details>` block). GSD tool may only parse phases inside `<details>` blocks or expect a specific format. Fix: either restructure ROADMAP.md to match GSD expected format, or bypass the tool and manually construct the planner prompt with phase info from ROADMAP.md lines 42-49.
+7. Phase 6 dir: `.planning/phases/06-foundation-infrastructure/` (exists, empty)
+8. Phase 6 reqs: INFRA-01..07, SEC-01, SEC-02, SCHED-01 (10 requirements)
+9. Phase 6 goal: Database, package structure, collector framework, Python analytics environment
 7. Build order: Foundation -> MVP Collection -> Tier B -> Tier C -> Statistical Analysis -> Intelligence Products -> Plugin Tools & Hardening
 8. Key risk: Do NOT build all 28 collectors before validating pipeline. Phase 7 (MVP) + Phase 10 (analysis) should validate end-to-end before expanding Tier B/C.
 
