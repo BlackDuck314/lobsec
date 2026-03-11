@@ -56,12 +56,18 @@
 
 - [ ] Phase 7: MVP Data Collection (Tier A + DEWA) — Core transaction data sources and normalization pipeline
   Requirements: COLL-01, COLL-02, COLL-03, COLL-04, COLL-05, COLL-15, NORM-01, NORM-02, NORM-03, NORM-04, NORM-05
+  **Plans:** 4 plans
+  Plans:
+  - [ ] 07-01-PLAN.md — Normalization pipeline foundation (area mapping, orchestrator, gap detection, volume validation, pandera)
+  - [ ] 07-02-PLAN.md — CSV collectors (DLD sales, Ejari rentals, building permits) with Python normalization
+  - [ ] 07-03-PLAN.md — Browser automation collectors (ADREC Abu Dhabi, Bayut, PropertyFinder) with Python normalization
+  - [ ] 07-04-PLAN.md — DEWA collector, registry wiring, deployment, integration checkpoint
   Success criteria:
-  1. DLD sales transactions and Ejari rental contracts collected from Dubai Pulse CSV, parsed with correct field mapping (trans_group_en, actual_worth, meter_sale_price, etc.)
-  2. Dubai building permits collected monthly, classified residential vs commercial; DARI Abu Dhabi scraped via Playwright with UAE Pass auth
-  3. Bayut property listings collected via Apify with listing count, asking price, days on market, price reductions per area
+  1. DLD sales transactions and Ejari rental contracts collected from Dubai Pulse CSV, parsed with correct field mapping
+  2. Dubai building permits collected monthly, classified residential vs commercial; ADREC Abu Dhabi collected via Playwright CSV export from public dashboard
+  3. Bayut property listings collected via Playwright with listing count, asking price, days on market, price reductions per area; PropertyFinder added as second source
   4. DEWA connections/closures scraped from press releases with new connections and disconnections per area
-  5. All 6 sources normalized to monthly frequency via pandas resample('ME').mean() with forward-fill limited to 1 period; both measurement_date and available_date stored; gap detection, schema validation, and volume validation operational
+  5. All sources normalized to monthly frequency via pandas resample('ME').mean() with forward-fill limited to 1 period; both measurement_date and available_date stored; gap detection, schema validation, and volume validation operational
 
 - [ ] Phase 8: Tier B Collection (Population & Employment Signals) — 8 demographic and employment data sources with scheduling
   Requirements: COLL-06, COLL-07, COLL-08, COLL-09, COLL-10, COLL-11, COLL-12, COLL-13, SCHED-02, SCHED-03, SCHED-04, SCHED-07
@@ -120,7 +126,7 @@
 | 4. Reporting & GitHub | v1.2 | 3/3 | Complete | 2026-03-05 |
 | 5. Scheduling & Hardening | v1.2 | 2/2 | Complete | 2026-03-05 |
 | 6. Foundation & Infrastructure | 3/3 | Complete | 2026-03-11 |
-| 7. MVP Data Collection | v1.3 | 0/? | Pending | - |
+| 7. MVP Data Collection | v1.3 | 0/4 | Planned | - |
 | 8. Tier B Collection | v1.3 | 0/? | Pending | - |
 | 9. Tier C Collection | v1.3 | 0/? | Pending | - |
 | 10. Statistical Analysis | v1.3 | 0/? | Pending | - |
