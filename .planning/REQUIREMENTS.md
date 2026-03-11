@@ -1,56 +1,189 @@
-# Requirements: lobsec
+# Requirements: UAE Real Estate Intelligence System
 
-**Defined:** 2026-03-04
-**Core Value:** No credential or sensitive data ever reaches an LLM provider
+**Defined:** 2026-03-11
+**Core Value:** Predict UAE real estate market movements through Granger-validated leading indicators derived from 28 heterogeneous data sources, with the expat lifecycle funnel as the unique differentiator no competitor offers.
 
-## v1.1 Requirements
+## v1.3 Requirements
 
-### Skills Cleanup
+Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence products, delivered as an OpenClaw plugin with Telegram interface.
 
-- [ ] **SKILL-01**: Remove all non-functional skills from sandbox (47 of 51)
-- [ ] **SKILL-02**: Keep only coding-agent, summarize, session-logs, skill-creator
-- [ ] **SKILL-03**: Sync AGENTS.md between workspace and sandbox
+### Infrastructure
 
-### GitHub Integration
+- [ ] **INFRA-01**: SQLite database (`uae-re.db`) with WAL mode, indexed on `(source, measurement_date)`, stored under fscrypt-encrypted `/opt/lobsec/data/`
+- [ ] **INFRA-02**: Python 3.13 venv at `/opt/lobsec/analytics-venv/` with pandas, statsmodels, scipy, numpy, pdfplumber, vaderSentiment, praw, pytrends
+- [ ] **INFRA-03**: Collector base class (`SourceCollector`) with abstract `collect()` method, schema validation, and error propagation
+- [ ] **INFRA-04**: Collector Registry with frequency-based scheduling, dependency resolution, and controlled concurrency (max 3 concurrent)
+- [ ] **INFRA-05**: Python subprocess bridge (`runPython()`) with JSON I/O via stdin/stdout, timeout enforcement, and error handling
+- [ ] **INFRA-06**: Intelligence cache layer with TTL-based expiry (1hr default), params hash as key, stored in SQLite `intelligence_cache` table
+- [ ] **INFRA-07**: `@lobsec/uae-re` package structure deployed as OpenClaw plugin at `/opt/lobsec/plugins/lobsec-uae-re/`
 
-- [ ] **GH-01**: Store GitHub PAT securely in HSM (label: github-pat)
-- [ ] **GH-02**: Install gh CLI on the host system
-- [ ] **GH-03**: Create github plugin tool (issues, PRs, repos via REST API)
-- [ ] **GH-04**: Configure gh CLI auth for lobsec user
-- [ ] **GH-05**: Add GitHub tool to TOOLS.md with usage instructions
+### Data Collection — Tier A (Core Transaction Data)
 
-### Tool Verification
+- [ ] **COLL-01**: DLD sales transactions — weekly CSV download from Dubai Pulse, fields: trans_group_en, actual_worth, meter_sale_price, prop_type_en, area_name_en, rooms_en, trans_date
+- [ ] **COLL-02**: Ejari rental contracts — filtered from same DLD CSV (trans_group_en=Rent), derived: renewal_rate, avg_rent_per_sqft, rent_YoY_change
+- [ ] **COLL-03**: Dubai building permits — monthly CSV from Dubai Pulse, classify residential vs commercial, track permit withdrawal/expiry
+- [ ] **COLL-04**: DARI Abu Dhabi — headless browser scrape with UAE Pass authentication (Playwright), extract transaction summaries
+- [ ] **COLL-05**: Property listings — Bayut via Apify scraper, extract: listing count, asking price, days on market (DOM), price reductions per area
 
-- [ ] **VERIFY-01**: All 8 plugin tools register on startup (7 existing + github)
-- [ ] **VERIFY-02**: Each tool works when called via Telegram
+### Data Collection — Tier B (Population & Employment Signals)
+
+- [ ] **COLL-06**: MOHRE work permits — monthly press release scrape, extract new permits issued by sector/nationality
+- [ ] **COLL-07**: DXB airport passengers — monthly stats from dubaiairports.ae, extract arrival/departure volumes
+- [ ] **COLL-08**: GDRFA visa transactions — quarterly report PDF extraction, visa issuances and cancellations by type
+- [ ] **COLL-09**: KHDA school enrollment — annual census, enrollment by curriculum, withdrawal rate tracking
+- [ ] **COLL-10**: RTA vehicle registrations — monthly from Dubai Pulse, new registrations vs deregistrations
+- [ ] **COLL-11**: Job postings aggregation — LinkedIn/Bayt/Indeed via Apify, segmented by seniority and sector
+- [ ] **COLL-12**: Salary surveys — annual PDFs (Cooper Fitch, Hays, Robert Half), extract median salaries by role/seniority
+- [ ] **COLL-13**: Remittance outflows — quarterly CBUAE report, total personal remittances
+
+### Data Collection — Tier C (Alternative Economic Signals)
+
+- [ ] **COLL-14**: Google Trends — pytrends API, 6 keyword groups (buy/rent/expat/distress/luxury/exit)
+- [ ] **COLL-15**: DEWA connections/closures — press release scrape, new connections and disconnections per area
+- [ ] **COLL-16**: RTA metro ridership — monthly from RTA open data, station-level ridership
+- [ ] **COLL-17**: CBUAE mortgage rates — quarterly PDF extraction, EIBOR + mortgage outstanding
+- [ ] **COLL-18**: DTCM tourism stats — monthly from dubaitourism.ae, hotel occupancy, visitor numbers
+- [ ] **COLL-19**: InsideAirbnb/STR data — quarterly bulk download + Apify weekly, occupancy and ADR
+- [ ] **COLL-20**: Jebel Ali port cargo — monthly from DP World press releases, construction material volumes
+- [ ] **COLL-21**: F&B closures — Zomato API + Google Maps permanently_closed tracking
+- [ ] **COLL-22**: Dubai customs household imports — quarterly CBUAE foreign trade stats, furniture/household goods
+- [ ] **COLL-23**: DED business licenses — monthly from Dubai Pulse, new vs cancelled licenses by sector
+- [ ] **COLL-24**: Social sentiment — Reddit (r/dubai, r/dubairealestate) via PRAW + VADER compound score
+- [ ] **COLL-25**: FCSA demographics — annual population estimates, age/nationality breakdown
+- [ ] **COLL-26**: Google Maps foot traffic — weekly Popular Times for 50 key locations (malls, metro stations)
+- [ ] **COLL-27**: Moving company inquiries — quarterly standardized quote requests, booking lead days
+- [ ] **COLL-28**: Commercial office reports — quarterly JLL/CBRE/Savills PDFs, Grade A vacancy, absorption rates
+
+### Data Normalization & Pipeline
+
+- [ ] **NORM-01**: Monthly normalization — all 28 sources resampled to monthly frequency via pandas `resample('ME').mean()` with forward-fill limited to 1 period
+- [ ] **NORM-02**: Publication date tracking — store both `measurement_date` and `available_date` for every data point to prevent look-ahead bias
+- [ ] **NORM-03**: Gap detection — track last successful collection per source, flag STALE when gap exceeds 2x expected frequency
+- [ ] **NORM-04**: Schema validation — validate expected columns, data types, and value ranges on every collection run; fail loudly on mismatch
+- [ ] **NORM-05**: Data volume validation — compare current collection row count to rolling 30-day average; alert if <50%
+
+### Statistical Analysis
+
+- [ ] **STAT-01**: Stationarity testing — ADF test on all normalized series, hard gate before any Granger analysis; log results to `stationarity_results` table
+- [ ] **STAT-02**: KPSS cross-check — run KPSS alongside ADF for confirmation; flag disagreements for manual review
+- [ ] **STAT-03**: Granger causality testing — test all Tier A+B signals against DLD price/volume with Bonferroni correction (p < 0.05/N)
+- [ ] **STAT-04**: Cross-correlation lag detection — find optimal lag (1-12 months) for each validated signal via `scipy.stats.pearsonr` loop
+- [ ] **STAT-05**: Composite index construction — z-score normalize validated signals, apply Granger-derived weights, scale to [-1, +1]
+- [ ] **STAT-06**: Anomaly detection — EWMA-based outlier flagging (rolling mean +/- 2 std dev) for DEWA closures, visa cancellations, listing volume
+- [ ] **STAT-07**: Affordability model — salary-to-rent ratio by income bracket and area, using median salaries from COLL-12
+- [ ] **STAT-08**: Expat pipeline flow model — 10-stage lifecycle funnel (awareness → job search → visa → housing → settlement → ... → exit), z-score aggregation per stage
+
+### Intelligence Products
+
+- [ ] **PROD-01**: Area Buy/Sell Signal Score — 9-component composite, scale -1 to +1, monthly update per area/property type
+- [ ] **PROD-02**: Distress Detection System — 17-signal score (8 market + 9 lifecycle), alert threshold >=0.6
+- [ ] **PROD-03**: Rental Intelligence Dashboard — 10 metrics: gross yield, rental momentum, vacancy proxy, renewal rate, listing absorption, pipeline pressure, affordability ratio, STR premium, rent-to-income, DOM trend
+- [ ] **PROD-04**: Supply Pipeline Tracker — building permits, DEWA new connections, Jebel Ali cargo, customs household imports, 12-24mo forward curve
+- [ ] **PROD-05**: Expat Population Flow Dashboard — 10-stage funnel visualization, awareness-to-exit with stage-level metrics
+- [ ] **PROD-06**: Macro Health Dashboard — 6 signal groups (employment, housing, spending, mobility, sentiment, population), traffic light output (green/amber/red)
+- [ ] **PROD-07**: Off-Plan vs Ready Arbitrage Tracker — premium spread by area, developer incentive monitoring, DLD procedure_name_en filtering
+- [ ] **PROD-08**: Salary-Rent Pressure Map — 5 income brackets, area segment mapping, migration prediction (flight risk by bracket)
+
+### Plugin Tools & Telegram Interface
+
+- [ ] **TOOL-01**: `uae_area_signal(area, property_type)` — returns buy/sell score with component breakdown
+- [ ] **TOOL-02**: `uae_distress(area?)` — returns distress signals for area or top-N distressed areas
+- [ ] **TOOL-03**: `uae_rental_intel(area, bedrooms)` — returns yields, affordability, momentum, DOM
+- [ ] **TOOL-04**: `uae_supply_pipeline(area?)` — returns permit count, DEWA, cargo, delivery timeline
+- [ ] **TOOL-05**: `uae_expat_flow()` — returns 10-stage funnel with current stage metrics
+- [ ] **TOOL-06**: `uae_macro_health()` — returns traffic light dashboard with signal group details
+- [ ] **TOOL-07**: `uae_arbitrage(area, property_type)` — returns off-plan vs ready premium spread
+- [ ] **TOOL-08**: `uae_salary_rent(income_bracket)` — returns pressure map with affordable areas
+- [ ] **TOOL-09**: `uae_raw_data(source, start_date, end_date)` — returns raw CSV data for any source
+- [ ] **TOOL-10**: `uae_collection_status()` — returns last run times, row counts, and staleness flags
+- [ ] **TOOL-11**: `uae_trigger_collection(source?)` — manually trigger collection for one or all sources
+- [ ] **TOOL-12**: `uae_granger_test(signal, target)` — run Granger causality test on demand
+- [ ] **TOOL-13**: `uae_correlation(signal, target, max_lag)` — run cross-correlation analysis on demand
+
+### Scheduling & Orchestration
+
+- [ ] **SCHED-01**: Single collector orchestrator service (`lobsec-uae-collector.service`) with controlled concurrency and priority queue
+- [ ] **SCHED-02**: Weekly timer (Mon 06:00 GST) — DLD, Ejari, listings
+- [ ] **SCHED-03**: Monthly timer (1st 06:00 GST) — permits, DARI, MOHRE, DXB, RTA, DEWA, metro, DED, DTCM
+- [ ] **SCHED-04**: Quarterly timer (15th Jan/Apr/Jul/Oct 09:00 GST) — GDRFA, CBUAE, customs, port cargo, Airbnb, moving companies, commercial reports
+- [ ] **SCHED-05**: Daily timer (23:00 GST) — Google Trends, social sentiment, foot traffic
+- [ ] **SCHED-06**: Pipeline timer (25th 06:00 GST) — recompute all intelligence products after monthly data lands
+- [ ] **SCHED-07**: Timeout enforcement — max 5min for CSV/API, 20min for browser automation, kill and alert on exceed
+
+### Security Integration
+
+- [ ] **SEC-01**: HSM credential storage — all new API keys (Google Maps, Reddit, Apify, Zomato, UAE Pass) in SoftHSM2
+- [ ] **SEC-02**: fscrypt encryption on `/opt/lobsec/data/` (5th encrypted directory)
+- [ ] **SEC-03**: nftables egress rules — whitelist domains for all 28 sources (Dubai Pulse, DARI, MOHRE, Apify, Google, Reddit, etc.)
+- [ ] **SEC-04**: Credential redaction — extend existing redactor with new API key patterns
+- [ ] **SEC-05**: Audit logging — all collection runs logged (source, timestamp, row count, success/failure) via existing audit infrastructure
+- [ ] **SEC-06**: SQL injection prevention — parameterized queries for all user-supplied area names; validate against area allowlist
+- [ ] **SEC-07**: PII protection — log only metadata (row count, status), never raw visa/employment data
+
+### Data Quality & Validation
+
+- [ ] **QUAL-01**: Out-of-sample validation — split data into training/test sets, validate Granger results on held-out data
+- [ ] **QUAL-02**: Staleness surfacing — Telegram responses include data freshness warnings when sources are >2x overdue
+- [ ] **QUAL-03**: Conditional forward-fill — fill gaps up to 1 period only; leave NULL for extended outages instead of propagating stale data
+- [ ] **QUAL-04**: Area name normalization — fuzzy matching for Telegram queries, support abbreviations (JVC, JBR, DIFC), show "Did you mean?" for ambiguous input
+- [ ] **QUAL-05**: Collection health dashboard — `uae_collection_status()` shows all sources with last update, row count, staleness flag, next scheduled run
+
+## v1.4 Requirements (Deferred)
+
+### Enhanced Analytics
+- **ENH-01**: ARIMA/LSTM price forecasting models
+- **ENH-02**: Monte Carlo simulation for correlation validation
+- **ENH-03**: Time-series cross-validation (walk-forward) for signal robustness
+- **ENH-04**: Custom Granger weight optimization (grid search)
+
+### Visualization
+- **VIZ-01**: Interactive web dashboard (React + Recharts)
+- **VIZ-02**: Neighbourhood heatmaps with geocoded area data
+- **VIZ-03**: Historical trend charts with drill-down
+
+### Automation
+- **AUTO-01**: Weekly email digest (top 3 buy signals, top 3 distress alerts)
+- **AUTO-02**: Distress threshold alerts via Telegram (score >= 0.6)
+- **AUTO-03**: GitHub issue auto-creation for persistent collection failures
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| gh CLI inside Docker sandbox | Plugin tools run in gateway process, not sandbox |
-| Rewrite existing plugin tools | They work, just need skill conflicts removed |
-| New integrations beyond GitHub | Separate milestone |
+| Real-time streaming data | Sources update daily/weekly/monthly — real-time is waste |
+| Property-level price predictions | Overfitting risk, Zillow Zestimate problem |
+| AI chatbot for property search | Commodity feature, Bayut/PropertyFinder already do this |
+| Social media auto-posting | Regulatory risk (unlicensed investment advice) |
+| Blockchain property registry | DLD is the authority, parallel registries add confusion |
+| Native mobile app | Telegram + PWA covers mobile use cases |
+| User-generated reviews | Moderation burden, legal liability, not core competency |
+| Mortgage calculator | Commodity feature, every bank has one |
+| Property management CRM | Different user base (B2B), scope creep |
+| Crypto payments | Regulatory uncertainty, niche demand |
+| Multi-market expansion (Sharjah, Ajman) | Need PMF in Dubai first |
+| REST API for third-party integrations | Premature, no partners yet |
 
 ## Traceability
 
+(Populated during roadmap creation)
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SKILL-01 | Phase 1 | Pending |
-| SKILL-02 | Phase 1 | Pending |
-| SKILL-03 | Phase 1 | Pending |
-| GH-01 | Phase 1 | Pending |
-| GH-02 | Phase 1 | Pending |
-| GH-03 | Phase 2 | Pending |
-| GH-04 | Phase 2 | Pending |
-| GH-05 | Phase 2 | Pending |
-| VERIFY-01 | Phase 2 | Pending |
-| VERIFY-02 | Phase 2 | Pending |
+| INFRA-01 through INFRA-07 | TBD | Pending |
+| COLL-01 through COLL-28 | TBD | Pending |
+| NORM-01 through NORM-05 | TBD | Pending |
+| STAT-01 through STAT-08 | TBD | Pending |
+| PROD-01 through PROD-08 | TBD | Pending |
+| TOOL-01 through TOOL-13 | TBD | Pending |
+| SCHED-01 through SCHED-07 | TBD | Pending |
+| SEC-01 through SEC-07 | TBD | Pending |
+| QUAL-01 through QUAL-05 | TBD | Pending |
 
 **Coverage:**
-- v1.1 requirements: 10 total
-- Mapped to phases: 10
-- Unmapped: 0
+- v1.3 requirements: 81 total
+- Mapped to phases: 0
+- Unmapped: 81
 
 ---
-*Requirements defined: 2026-03-04*
+*Requirements defined: 2026-03-11*
+*Last updated: 2026-03-11 after research synthesis*
