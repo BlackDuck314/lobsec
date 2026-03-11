@@ -17,8 +17,8 @@ progress:
 
 Phase: 6 of 12 -- Ready to start Phase 6 (Foundation & Infrastructure)
 Plan: None yet -- plans to be created during Phase 6 execution
-Status: Roadmap complete (7 phases, 88 requirements mapped). Ready for Phase 6 planning.
-Last activity: 2026-03-11 -- v1.3 roadmap created (Phases 6-12)
+Status: Phase 6 planning in progress — directory created, roadmap dashes fixed for GSD tool parsing
+Last activity: 2026-03-11 — Phase 6 plan-phase started, paused at context window limit
 
 ## Resume Instructions
 
@@ -27,7 +27,7 @@ Last activity: 2026-03-11 -- v1.3 roadmap created (Phases 6-12)
 3. Research completed and synthesized in `.planning/research/SUMMARY.md`
 4. Full playbook at `.planning/uae-re-playbook.md`
 5. Requirements at `.planning/REQUIREMENTS.md` with full traceability table
-6. **START HERE**: Begin Phase 6 (Foundation & Infrastructure) -- create plans for INFRA-01 through INFRA-07, SEC-01, SEC-02, SCHED-01
+6. **START HERE**: Run `/gsd:plan-phase 6` — directory exists at `.planning/phases/06-foundation-infrastructure/`, roadmap dashes fixed (was `--`, now `—`)
 7. Build order: Foundation -> MVP Collection -> Tier B -> Tier C -> Statistical Analysis -> Intelligence Products -> Plugin Tools & Hardening
 8. Key risk: Do NOT build all 28 collectors before validating pipeline. Phase 7 (MVP) + Phase 10 (analysis) should validate end-to-end before expanding Tier B/C.
 
