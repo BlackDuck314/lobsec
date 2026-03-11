@@ -70,6 +70,19 @@ export type { AreaLookupResult } from "./areas/mapping.js";
 export { SEED_AREAS } from "./areas/seed-areas.js";
 export type { AreaSeed } from "./areas/seed-areas.js";
 
+// Normalization pipeline
+export { normalizeCollectionResult } from "./normalization/orchestrator.js";
+export { detectGaps } from "./normalization/gap-detection.js";
+export { validateVolume } from "./normalization/volume-validation.js";
+export {
+  SOURCE_MODULE_MAP,
+  type NormalizationInput,
+  type NormalizationResult,
+  type GapWarning,
+  type VolumeWarning,
+  type NormalizedRecord,
+} from "./normalization/types.js";
+
 // ── OpenClaw Plugin Entry Point ─────────────────────────────────────────────
 
 import { initDatabase } from "./db/connection.js";
