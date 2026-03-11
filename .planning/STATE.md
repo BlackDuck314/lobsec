@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: UAE Real Estate Intelligence System
 status: in_progress
-last_updated: "2026-03-11T17:08:00.000Z"
+last_updated: "2026-03-11T17:05:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 0
-  total_plans: 1
-  completed_plans: 1
+  total_plans: 2
+  completed_plans: 2
 ---
 
 # Project State
@@ -16,9 +16,9 @@ progress:
 ## Current Position
 
 Phase: 6 of 12 -- Phase 6 (Foundation & Infrastructure) in progress
-Plan: 01 of N -- Plan 01 complete (database + Python analytics)
-Status: Database layer and Python analytics environment established
-Last activity: 2026-03-11 — 06-01 complete: SQLite WAL database, intelligence cache, Python bridge modules
+Plan: 02 of N -- Plan 02 complete (collector framework + Python bridge)
+Status: Collector framework and Python subprocess bridge operational
+Last activity: 2026-03-11 — 06-02 complete: SourceCollector base class, CollectorRegistry with max-3 concurrency, runPython() bridge
 
 ## Resume Instructions
 
@@ -97,6 +97,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | Dual stationarity testing | ADF + KPSS must both agree; conflicting results = "inconclusive" to avoid false claims |
 | Forward-fill limit=1 | Monthly normalization handles single-month gaps without extrapolating beyond reasonable range |
 | Deterministic cache keys | SHA-256 hash of JSON-serialized params with sorted keys ensures consistent hashing |
+| Circuit breaker: 3/30s/1 | 3 failures to open, 30s reset timeout, 1 success to close — reasonable tolerance for transient failures |
+| Stale after 2 failures | Distinguishes persistent issues (stale) from one-off failures (failed) |
+| Semaphore concurrency | Wait queue with immediate release (not polling) — more efficient, avoids race conditions |
+| Empty collection = error | rowCount=0 throws validation error — unusual and likely indicates upstream issues |
+| SIGTERM then SIGKILL | Graceful termination with 5s fallback — gives Python scripts chance to clean up |
 
 ## Blockers
 
@@ -105,6 +110,6 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Phase 6 Plan 01 complete
-Resume file: .planning/phases/06-foundation-infrastructure/06-01-SUMMARY.md
-Next: Phase 6 Plan 02 (Collector Framework) or continue with remaining Phase 6 plans
+Stopped at: Phase 6 Plan 02 complete
+Resume file: .planning/phases/06-foundation-infrastructure/06-02-SUMMARY.md
+Next: Phase 6 Plan 03 (Deployment & Integration) or continue with remaining Phase 6 plans
