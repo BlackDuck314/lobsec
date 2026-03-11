@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: UAE Real Estate Intelligence System
 status: in_progress
-last_updated: "2026-03-11T22:00:00.000Z"
+last_updated: "2026-03-11T19:51:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
 ---
 
 # Project State
@@ -16,9 +16,9 @@ progress:
 ## Current Position
 
 Phase: 7 of 12 -- MVP Data Collection (Tier A + DEWA)
-Plan: 2 of 4 -- Plan 02 (DLD + Ejari + Building Permits) complete
-Status: Wave 2 CSV collectors complete (Plan 02 of 02-03). 3 Dubai Pulse collectors with pandera validation ready.
-Last activity: 2026-03-11 — Plan 07-02 executed. 3 requirements completed (COLL-01..03). Ready for Plan 03 or 04.
+Plan: 3 of 4 -- Plan 03 (ADREC + Bayut + PropertyFinder) complete
+Status: Wave 2 browser automation collectors complete. ADREC Abu Dhabi (transactions/leases/indices), Bayut and PropertyFinder listing collectors with anti-bot measures ready.
+Last activity: 2026-03-11 — Plan 07-03 executed. 2 requirements completed (COLL-04, COLL-05). Ready for Plan 04.
 
 ## Resume Instructions
 
@@ -47,7 +47,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | Phase | Name | Requirements | Status |
 |-------|------|-------------|--------|
 | 6 | Foundation & Infrastructure | 10 (INFRA-01..07, SEC-01..02, SCHED-01) | ✅ Complete |
-| 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | In Progress (2/4 plans) |
+| 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | In Progress (3/4 plans) |
 | 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | Pending |
 | 9 | Tier C Collection | 15 (COLL-14, COLL-16..28, SCHED-05) | Pending |
 | 10 | Statistical Analysis Pipeline | 11 (STAT-01..08, SCHED-06, SEC-06..07) | Pending |
@@ -112,6 +112,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | YoY/MoM null handling | Delta metrics return null until sufficient history exists (12+ months for YoY, 2+ months for MoM). Prevents false zeros in database. |
 | Building permits multi-field classification | Keyword matching across permit_type, building_type, usage, project_type fields. Robust against dataset variations. |
 | Renewal rate approximation | Estimated by volume overlap between months (min/previous) since DLD CSV doesn't distinguish new vs renewal. |
+| ADREC replaces DARI/UAE Pass | Per user decision, DARI/UAE Pass permanently abandoned. ADREC public dashboards provide Abu Dhabi transaction data without authentication. COLL-04 fulfilled by ADREC. |
+| Playwright click-to-download | ADREC uses waitForEvent('download') + saveAs() pattern (not HTTP GET). Per research: always use saveAs() immediately, never rely on download.path(). |
+| Anti-bot measures for listing scrapers | Random 1-3s delays between areas, realistic user agent, graceful 403/CAPTCHA handling (skip, no retry). Do NOT retry immediately on block — makes it worse. |
+| Price reduction single-scrape metric | Detected from portal badges during scraping (not historical comparison). Bayut/PropertyFinder show "Reduced" badge on listings. If badge absent, count=0 and log warning. |
+| Bayut/PropertyFinder independent registration | Both collectors registered independently per user decision. Can fail without affecting each other. Enables cross-validation via identical output format. |
 
 ## Blockers
 
@@ -120,8 +125,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Plan 07-02 complete (DLD + Ejari + Building Permits collectors)
-Resume file: .planning/phases/07-mvp-collection/07-03-PLAN.md
-Next: Execute Plan 07-03 (ADREC + Bayut + PropertyFinder collectors, wave 2) OR Plan 07-04 (DEWA + orchestrator, wave 3)
+Stopped at: Plan 07-03 complete (ADREC + Bayut + PropertyFinder collectors)
+Resume file: .planning/phases/07-mvp-collection/07-04-PLAN.md
+Next: Execute Plan 07-04 (DEWA consumption + geographic enrichment, wave 3)
 Note: gsd-tools `init phase-op 7` returns phase_found=false due to <details> block — bypass manually
-Note: Wave 2 in progress. Plans 02 complete, Plan 03 can continue independently.
+Note: Wave 2 complete (Plans 02-03). Ready for wave 3 (Plan 04).
