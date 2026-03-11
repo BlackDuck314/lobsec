@@ -42,11 +42,11 @@
 
 - [ ] Phase 6: Foundation & Infrastructure — Database, package structure, collector framework, Python analytics environment
   Requirements: INFRA-01, INFRA-02, INFRA-03, INFRA-04, INFRA-05, INFRA-06, INFRA-07, SEC-01, SEC-02, SCHED-01
-  **Plans:** 3 plans
+  **Plans:** 3 plans (2 complete, 1 at checkpoint)
   Plans:
-  - [ ] 06-01-PLAN.md — Package scaffolding, SQLite database, Python environment, intelligence cache
-  - [ ] 06-02-PLAN.md — Collector framework (SourceCollector, CollectorRegistry) and Python subprocess bridge
-  - [ ] 06-03-PLAN.md — Plugin wiring, deployment (fscrypt, venv, systemd), production verification
+  - [x] 06-01-PLAN.md — Package scaffolding, SQLite database, Python environment, intelligence cache ✅
+  - [x] 06-02-PLAN.md — Collector framework (SourceCollector, CollectorRegistry) and Python subprocess bridge ✅
+  - [⚠️] 06-03-PLAN.md — Plugin wiring, deployment (fscrypt, venv, systemd), production verification ⚠️ CHECKPOINT
   Success criteria:
   1. SQLite database created at /opt/lobsec/data/uae-re.db with WAL mode, raw_sources/normalized_monthly/intelligence_cache/collection_log tables, indexed on (source, measurement_date)
   2. Python 3.13 venv installed at /opt/lobsec/analytics-venv/ with pandas, statsmodels, scipy, numpy, pdfplumber, vaderSentiment, praw, pytrends all importable
