@@ -7,18 +7,18 @@ last_updated: "2026-03-11T22:00:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 7
+  completed_plans: 4
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: 7 of 12 -- Phase 7 context gathered, ready for planning
-Plan: None yet -- plans to be created during Phase 7 planning
-Status: Phase 7 context captured. DARI deferred, PropertyFinder added, normalization pipeline design locked.
-Last activity: 2026-03-11 — Phase 6 verified and marked complete. All infrastructure operational.
+Phase: 7 of 12 -- MVP Data Collection (Tier A + DEWA)
+Plan: 1 of 4 -- Plan 01 (Normalization Pipeline Foundation) complete
+Status: Wave 1 foundation complete. Area mapping + normalization orchestrator ready. Wave 2 (Plans 02-03, parallel) can proceed.
+Last activity: 2026-03-11 — Plan 07-01 executed. 5 requirements completed (NORM-01..05). Ready for Plan 02.
 
 ## Resume Instructions
 
@@ -47,7 +47,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | Phase | Name | Requirements | Status |
 |-------|------|-------------|--------|
 | 6 | Foundation & Infrastructure | 10 (INFRA-01..07, SEC-01..02, SCHED-01) | ✅ Complete |
-| 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | Pending |
+| 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | In Progress (1/4 plans) |
 | 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | Pending |
 | 9 | Tier C Collection | 15 (COLL-14, COLL-16..28, SCHED-05) | Pending |
 | 10 | Statistical Analysis Pipeline | 11 (STAT-01..08, SCHED-06, SEC-06..07) | Pending |
@@ -103,6 +103,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | Semaphore concurrency | Wait queue with immediate release (not polling) — more efficient, avoids race conditions |
 | Empty collection = error | rowCount=0 throws validation error — unusual and likely indicates upstream issues |
 | SIGTERM then SIGKILL | Graceful termination with 5s fallback — gives Python scripts chance to clean up |
+| Area lookup: exact match only | Case-insensitive exact match against canonical names, aliases, and source variants. No fuzzy matching until QUAL-04. Keeps normalization deterministic and fast. |
+| Normalization upsert semantics | DELETE existing records for measurement_date range, then INSERT normalized records. Allows re-running without duplicates and supports late-arriving corrections. |
+| Gap detection threshold: 2x frequency | Daily=2d, weekly=14d, monthly=60d, quarterly=180d. Tolerates occasional delays while catching persistent staleness. |
+| Volume validation baseline: N=4 | Requires 4 successful collections before alerting. Warns when current <50% of rolling average. Balances sensitivity with false positive reduction. |
+| schemas package created in wave 1 | Created in Plan 01 so Plans 02-03 (parallel) can add schema files without merge conflicts on __init__.py. |
 
 ## Blockers
 
@@ -111,8 +116,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Phase 7 planned (4 plans, 3 waves, verified)
-Resume file: .planning/phases/07-mvp-collection/
-Next: /gsd:execute-phase 7 (needs fresh context window)
+Stopped at: Plan 07-01 complete (normalization pipeline foundation)
+Resume file: .planning/phases/07-mvp-collection/07-02-PLAN.md
+Next: Execute Plan 07-02 (DLD Sales + Ejari Rentals collectors, wave 2)
 Note: gsd-tools `init phase-op 7` returns phase_found=false due to <details> block — bypass manually
-Note: DARI (COLL-04) deferred indefinitely. PropertyFinder added as 6th collector alongside Bayut.
+Note: Wave 1 foundation complete. Plans 02-03 (wave 2) can run in parallel.
