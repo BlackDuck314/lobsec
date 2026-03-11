@@ -40,7 +40,7 @@
 
 28 data sources, data science pipeline, 8 intelligence products, delivered as an OpenClaw plugin with Telegram interface. Granger-validated leading indicators with the expat lifecycle funnel as unique differentiator.
 
-- [ ] Phase 6: Foundation & Infrastructure — Database, package structure, collector framework, Python analytics environment
+- [x] Phase 6: Foundation & Infrastructure — Database, package structure, collector framework, Python analytics environment (completed 2026-03-11)
   Requirements: INFRA-01, INFRA-02, INFRA-03, INFRA-04, INFRA-05, INFRA-06, INFRA-07, SEC-01, SEC-02, SCHED-01
   **Plans:** 3 plans (2 complete, 1 at checkpoint)
   Plans:
@@ -119,7 +119,7 @@
 | 3. Security Integration | v1.2 | 2/2 | Complete | 2026-03-05 |
 | 4. Reporting & GitHub | v1.2 | 3/3 | Complete | 2026-03-05 |
 | 5. Scheduling & Hardening | v1.2 | 2/2 | Complete | 2026-03-05 |
-| 6. Foundation & Infrastructure | 2/3 | In Progress|  | - |
+| 6. Foundation & Infrastructure | 3/3 | Complete | 2026-03-11 |
 | 7. MVP Data Collection | v1.3 | 0/? | Pending | - |
 | 8. Tier B Collection | v1.3 | 0/? | Pending | - |
 | 9. Tier C Collection | v1.3 | 0/? | Pending | - |

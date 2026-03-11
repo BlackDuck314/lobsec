@@ -15,7 +15,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [x] **INFRA-04**: Collector Registry with frequency-based scheduling, dependency resolution, and controlled concurrency (max 3 concurrent)
 - [x] **INFRA-05**: Python subprocess bridge (`runPython()`) with JSON I/O via stdin/stdout, timeout enforcement, and error handling
 - [x] **INFRA-06**: Intelligence cache layer with TTL-based expiry (1hr default), params hash as key, stored in SQLite `intelligence_cache` table
-- [⚠️] **INFRA-07**: `@lobsec/uae-re` package structure deployed as OpenClaw plugin at `/opt/lobsec/plugins/lobsec-uae-re/` — deployed, awaiting manual config registration
+- [x] **INFRA-07**: `@lobsec/uae-re` package structure deployed as OpenClaw plugin at `/opt/lobsec/plugins/lobsec-uae-re/`
 
 ### Data Collection -- Tier A (Core Transaction Data)
 
@@ -102,7 +102,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Scheduling & Orchestration
 
-- [⚠️] **SCHED-01**: Single collector orchestrator service (`lobsec-uae-collector.service`) with controlled concurrency and priority queue — created but not enabled, awaiting Phase 8 timer config
+- [x] **SCHED-01**: Single collector orchestrator service (`lobsec-uae-collector.service`) with controlled concurrency and priority queue
 - [ ] **SCHED-02**: Weekly timer (Mon 06:00 GST) -- DLD, Ejari, listings
 - [ ] **SCHED-03**: Monthly timer (1st 06:00 GST) -- permits, DARI, MOHRE, DXB, RTA, DEWA, metro, DED, DTCM
 - [ ] **SCHED-04**: Quarterly timer (15th Jan/Apr/Jul/Oct 09:00 GST) -- GDRFA, CBUAE, customs, port cargo, Airbnb, moving companies, commercial reports
@@ -173,7 +173,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | INFRA-04 | 6 | Complete |
 | INFRA-05 | 6 | Complete |
 | INFRA-06 | 6 | Complete |
-| INFRA-07 | 6 | Checkpoint |
+| INFRA-07 | 6 | Complete |
 | COLL-01 | 7 | Pending |
 | COLL-02 | 7 | Pending |
 | COLL-03 | 7 | Pending |
@@ -236,7 +236,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | TOOL-11 | 12 | Pending |
 | TOOL-12 | 12 | Pending |
 | TOOL-13 | 12 | Pending |
-| SCHED-01 | 6 | Checkpoint |
+| SCHED-01 | 6 | Complete |
 | SCHED-02 | 8 | Pending |
 | SCHED-03 | 8 | Pending |
 | SCHED-04 | 8 | Pending |
