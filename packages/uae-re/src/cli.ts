@@ -11,6 +11,17 @@ import { initDatabase, closeDatabase } from "./db/connection.js";
 import { CollectorRegistry } from "./collectors/registry.js";
 import { checkPythonAvailable, checkDependencies } from "./analytics/bridge.js";
 import type { CollectionFrequency } from "./collectors/types.js";
+import { normalizeCollectionResult } from "./normalization/orchestrator.js";
+import { initAreaTable } from "./areas/mapping.js";
+
+// Import all 7 collectors
+import { DLDSalesCollector } from "./collectors/dld-sales.js";
+import { EjariRentalsCollector } from "./collectors/ejari-rentals.js";
+import { BuildingPermitsCollector } from "./collectors/building-permits.js";
+import { ADRECAbuDhabiCollector } from "./collectors/adrec-abu-dhabi.js";
+import { BayutListingsCollector } from "./collectors/bayut-listings.js";
+import { PropertyFinderListingsCollector } from "./collectors/propertyfinder-listings.js";
+import { DEWAConnectionsCollector } from "./collectors/dewa-connections.js";
 
 // Parse command line args
 const args = process.argv.slice(2);
@@ -44,10 +55,21 @@ Environment:
  */
 async function runAll(): Promise<void> {
   const db = initDatabase(dataDir);
+
+  // Seed area names table
+  initAreaTable(db);
+
   const registry = new CollectorRegistry();
 
-  // No collectors registered yet — Phase 7+ adds them
-  // This will run successfully with 0 collectors
+  // Register all 7 collectors
+  registry.register(new DLDSalesCollector(db));
+  registry.register(new EjariRentalsCollector(db));
+  registry.register(new BuildingPermitsCollector(db));
+  registry.register(new ADRECAbuDhabiCollector(db));
+  registry.register(new BayutListingsCollector(db));
+  registry.register(new PropertyFinderListingsCollector(db));
+  registry.register(new DEWAConnectionsCollector(db));
+
   const result = await registry.runAll();
 
   console.log(
@@ -64,10 +86,49 @@ async function runAll(): Promise<void> {
     }
   }
 
+  // Auto-trigger normalization for successful collections
+  let normalizationErrors = 0;
+  for (const [source, collectionResult] of result.results.entries()) {
+    if (collectionResult.success) {
+      try {
+        // Get collector metadata for frequency
+        const collector = Array.from(registry.getAll()).find(
+          (c) => c.metadata.source === source
+        );
+        if (!collector) {
+          console.error(`Skipping normalization for ${source}: collector not found`);
+          continue;
+        }
+
+        const normResult = await normalizeCollectionResult(
+          db,
+          source,
+          collectionResult,
+          collector.metadata.frequency
+        );
+        console.error(
+          `Normalized ${source}: ${normResult.recordCount} records, range ${normResult.measurementDateRange.start} to ${normResult.measurementDateRange.end}`
+        );
+
+        if (normResult.gapWarnings.length > 0) {
+          console.error(`  Gap warnings: ${JSON.stringify(normResult.gapWarnings)}`);
+        }
+
+        if (normResult.volumeWarning) {
+          console.error(`  Volume warning: ${JSON.stringify(normResult.volumeWarning)}`);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`Normalization failed for ${source}: ${msg}`);
+        normalizationErrors++;
+      }
+    }
+  }
+
   closeDatabase(db);
 
-  // Exit with failure if any collector failed
-  if (result.failureCount > 0) {
+  // Exit with failure if any collector or normalization failed
+  if (result.failureCount > 0 || normalizationErrors > 0) {
     process.exit(1);
   }
 }
@@ -84,7 +145,20 @@ async function runFrequency(freq: string): Promise<void> {
   }
 
   const db = initDatabase(dataDir);
+
+  // Seed area names table
+  initAreaTable(db);
+
   const registry = new CollectorRegistry();
+
+  // Register all 7 collectors
+  registry.register(new DLDSalesCollector(db));
+  registry.register(new EjariRentalsCollector(db));
+  registry.register(new BuildingPermitsCollector(db));
+  registry.register(new ADRECAbuDhabiCollector(db));
+  registry.register(new BayutListingsCollector(db));
+  registry.register(new PropertyFinderListingsCollector(db));
+  registry.register(new DEWAConnectionsCollector(db));
 
   const result = await registry.runByFrequency(freq as CollectionFrequency);
 
@@ -102,9 +176,47 @@ async function runFrequency(freq: string): Promise<void> {
     }
   }
 
+  // Auto-trigger normalization for successful collections
+  let normalizationErrors = 0;
+  for (const [source, collectionResult] of result.results.entries()) {
+    if (collectionResult.success) {
+      try {
+        const collector = Array.from(registry.getAll()).find(
+          (c) => c.metadata.source === source
+        );
+        if (!collector) {
+          console.error(`Skipping normalization for ${source}: collector not found`);
+          continue;
+        }
+
+        const normResult = await normalizeCollectionResult(
+          db,
+          source,
+          collectionResult,
+          collector.metadata.frequency
+        );
+        console.error(
+          `Normalized ${source}: ${normResult.recordCount} records, range ${normResult.measurementDateRange.start} to ${normResult.measurementDateRange.end}`
+        );
+
+        if (normResult.gapWarnings.length > 0) {
+          console.error(`  Gap warnings: ${JSON.stringify(normResult.gapWarnings)}`);
+        }
+
+        if (normResult.volumeWarning) {
+          console.error(`  Volume warning: ${JSON.stringify(normResult.volumeWarning)}`);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`Normalization failed for ${source}: ${msg}`);
+        normalizationErrors++;
+      }
+    }
+  }
+
   closeDatabase(db);
 
-  if (result.failureCount > 0) {
+  if (result.failureCount > 0 || normalizationErrors > 0) {
     process.exit(1);
   }
 }
@@ -114,7 +226,20 @@ async function runFrequency(freq: string): Promise<void> {
  */
 async function runOne(source: string): Promise<void> {
   const db = initDatabase(dataDir);
+
+  // Seed area names table
+  initAreaTable(db);
+
   const registry = new CollectorRegistry();
+
+  // Register all 7 collectors
+  registry.register(new DLDSalesCollector(db));
+  registry.register(new EjariRentalsCollector(db));
+  registry.register(new BuildingPermitsCollector(db));
+  registry.register(new ADRECAbuDhabiCollector(db));
+  registry.register(new BayutListingsCollector(db));
+  registry.register(new PropertyFinderListingsCollector(db));
+  registry.register(new DEWAConnectionsCollector(db));
 
   try {
     const result = await registry.runOne(source);
@@ -123,6 +248,38 @@ async function runOne(source: string): Promise<void> {
       console.log(
         `${source}: success (${result.rowCount} rows, ${result.duration}ms)`
       );
+
+      // Auto-trigger normalization
+      try {
+        const collector = Array.from(registry.getAll()).find(
+          (c) => c.metadata.source === source
+        );
+        if (!collector) {
+          console.error(`Skipping normalization for ${source}: collector not found`);
+        } else {
+          const normResult = await normalizeCollectionResult(
+            db,
+            source,
+            result,
+            collector.metadata.frequency
+          );
+          console.error(
+            `Normalized ${source}: ${normResult.recordCount} records, range ${normResult.measurementDateRange.start} to ${normResult.measurementDateRange.end}`
+          );
+
+          if (normResult.gapWarnings.length > 0) {
+            console.error(`  Gap warnings: ${JSON.stringify(normResult.gapWarnings)}`);
+          }
+
+          if (normResult.volumeWarning) {
+            console.error(`  Volume warning: ${JSON.stringify(normResult.volumeWarning)}`);
+          }
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`Normalization failed for ${source}: ${msg}`);
+        process.exit(1);
+      }
     } else {
       console.error(`${source}: failed — ${result.error}`);
       process.exit(1);

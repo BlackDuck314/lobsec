@@ -89,6 +89,16 @@ import { initDatabase } from "./db/connection.js";
 import { CollectorRegistry } from "./collectors/registry.js";
 import { IntelligenceCache } from "./cache/manager.js";
 import { getLatestCollection } from "./db/queries.js";
+import { initAreaTable } from "./areas/mapping.js";
+
+// Import all 7 collectors
+import { DLDSalesCollector } from "./collectors/dld-sales.js";
+import { EjariRentalsCollector } from "./collectors/ejari-rentals.js";
+import { BuildingPermitsCollector } from "./collectors/building-permits.js";
+import { ADRECAbuDhabiCollector } from "./collectors/adrec-abu-dhabi.js";
+import { BayutListingsCollector } from "./collectors/bayut-listings.js";
+import { PropertyFinderListingsCollector } from "./collectors/propertyfinder-listings.js";
+import { DEWAConnectionsCollector } from "./collectors/dewa-connections.js";
 
 // OpenClaw type stubs (matches pi-agent-core AgentTool shape)
 interface AgentToolResult {
@@ -175,9 +185,21 @@ export default {
     const dataDir = getEnv("UAE_RE_DATA_DIR", "/opt/lobsec/data");
     const db = initDatabase(dataDir);
 
-    // Create registry and cache (no collectors registered yet — Phase 7+ adds them)
+    // Seed area names table on startup
+    initAreaTable(db);
+
+    // Create registry and cache
     const registry = new CollectorRegistry();
     const cache = new IntelligenceCache(db);
+
+    // Register all 7 collectors
+    registry.register(new DLDSalesCollector(db));
+    registry.register(new EjariRentalsCollector(db));
+    registry.register(new BuildingPermitsCollector(db));
+    registry.register(new ADRECAbuDhabiCollector(db));
+    registry.register(new BayutListingsCollector(db));
+    registry.register(new PropertyFinderListingsCollector(db));
+    registry.register(new DEWAConnectionsCollector(db));
 
     // Register uae_collection_status tool
     api.registerTool({
@@ -192,7 +214,7 @@ export default {
 
           if (collectors.length === 0) {
             return textResult(
-              "No collectors registered yet. Collectors will be added in Phase 7+."
+              "No collectors registered. This should not happen."
             );
           }
 
@@ -250,7 +272,7 @@ export default {
     });
 
     log.info(
-      "[lobsec-uae-re] registered 1 tool: uae_collection_status"
+      "[lobsec-uae-re] registered 7 collectors + 1 tool"
     );
   },
 };
