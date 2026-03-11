@@ -11,9 +11,9 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 - [ ] **INFRA-01**: SQLite database (`uae-re.db`) with WAL mode, indexed on `(source, measurement_date)`, stored under fscrypt-encrypted `/opt/lobsec/data/`
 - [ ] **INFRA-02**: Python 3.13 venv at `/opt/lobsec/analytics-venv/` with pandas, statsmodels, scipy, numpy, pdfplumber, vaderSentiment, praw, pytrends
-- [ ] **INFRA-03**: Collector base class (`SourceCollector`) with abstract `collect()` method, schema validation, and error propagation
-- [ ] **INFRA-04**: Collector Registry with frequency-based scheduling, dependency resolution, and controlled concurrency (max 3 concurrent)
-- [ ] **INFRA-05**: Python subprocess bridge (`runPython()`) with JSON I/O via stdin/stdout, timeout enforcement, and error handling
+- [x] **INFRA-03**: Collector base class (`SourceCollector`) with abstract `collect()` method, schema validation, and error propagation
+- [x] **INFRA-04**: Collector Registry with frequency-based scheduling, dependency resolution, and controlled concurrency (max 3 concurrent)
+- [x] **INFRA-05**: Python subprocess bridge (`runPython()`) with JSON I/O via stdin/stdout, timeout enforcement, and error handling
 - [ ] **INFRA-06**: Intelligence cache layer with TTL-based expiry (1hr default), params hash as key, stored in SQLite `intelligence_cache` table
 - [ ] **INFRA-07**: `@lobsec/uae-re` package structure deployed as OpenClaw plugin at `/opt/lobsec/plugins/lobsec-uae-re/`
 
@@ -169,9 +169,9 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 |-------------|-------|--------|
 | INFRA-01 | 6 | Pending |
 | INFRA-02 | 6 | Pending |
-| INFRA-03 | 6 | Pending |
-| INFRA-04 | 6 | Pending |
-| INFRA-05 | 6 | Pending |
+| INFRA-03 | 6 | Complete |
+| INFRA-04 | 6 | Complete |
+| INFRA-05 | 6 | Complete |
 | INFRA-06 | 6 | Pending |
 | INFRA-07 | 6 | Pending |
 | COLL-01 | 7 | Pending |
