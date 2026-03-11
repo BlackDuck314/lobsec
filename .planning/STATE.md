@@ -111,8 +111,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Phase 7 context gathered
-Resume file: .planning/phases/07-mvp-collection/07-CONTEXT.md
-Next: /gsd:plan-phase 7 (needs fresh context window)
+Stopped at: Phase 7 planned (4 plans, 3 waves, verified)
+Resume file: .planning/phases/07-mvp-collection/
+Next: /gsd:execute-phase 7 (needs fresh context window)
 Note: gsd-tools `init phase-op 7` returns phase_found=false due to <details> block — bypass manually
 Note: DARI (COLL-04) deferred indefinitely. PropertyFinder added as 6th collector alongside Bayut.
