@@ -19,9 +19,9 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Data Collection -- Tier A (Core Transaction Data)
 
-- [ ] **COLL-01**: DLD sales transactions -- weekly CSV download from Dubai Pulse, fields: trans_group_en, actual_worth, meter_sale_price, prop_type_en, area_name_en, rooms_en, trans_date
-- [ ] **COLL-02**: Ejari rental contracts -- filtered from same DLD CSV (trans_group_en=Rent), derived: renewal_rate, avg_rent_per_sqft, rent_YoY_change
-- [ ] **COLL-03**: Dubai building permits -- monthly CSV from Dubai Pulse, classify residential vs commercial, track permit withdrawal/expiry
+- [x] **COLL-01**: DLD sales transactions -- weekly CSV download from Dubai Pulse, fields: trans_group_en, actual_worth, meter_sale_price, prop_type_en, area_name_en, rooms_en, trans_date ✅ 2026-03-11
+- [x] **COLL-02**: Ejari rental contracts -- filtered from same DLD CSV (trans_group_en=Rent), derived: renewal_rate, avg_rent_per_sqft, rent_YoY_change ✅ 2026-03-11
+- [x] **COLL-03**: Dubai building permits -- monthly CSV from Dubai Pulse, classify residential vs commercial, track permit withdrawal/expiry ✅ 2026-03-11
 - [ ] **COLL-04**: DARI Abu Dhabi -- headless browser scrape with UAE Pass authentication (Playwright), extract transaction summaries
 - [ ] **COLL-05**: Property listings -- Bayut via Apify scraper, extract: listing count, asking price, days on market (DOM), price reductions per area
 
@@ -174,9 +174,9 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | INFRA-05 | 6 | Complete |
 | INFRA-06 | 6 | Complete |
 | INFRA-07 | 6 | Complete |
-| COLL-01 | 7 | Pending |
-| COLL-02 | 7 | Pending |
-| COLL-03 | 7 | Pending |
+| COLL-01 | 7 | ✅ Complete (07-02) |
+| COLL-02 | 7 | ✅ Complete (07-02) |
+| COLL-03 | 7 | ✅ Complete (07-02) |
 | COLL-04 | 7 | Pending |
 | COLL-05 | 7 | Pending |
 | COLL-06 | 8 | Pending |

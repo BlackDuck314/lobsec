@@ -58,8 +58,8 @@
   Requirements: COLL-01, COLL-02, COLL-03, COLL-04, COLL-05, COLL-15, NORM-01, NORM-02, NORM-03, NORM-04, NORM-05
   **Plans:** 4 plans
   Plans:
-  - [ ] 07-01-PLAN.md — Normalization pipeline foundation (area mapping, orchestrator, gap detection, volume validation, pandera)
-  - [ ] 07-02-PLAN.md — CSV collectors (DLD sales, Ejari rentals, building permits) with Python normalization
+  - [x] 07-01-PLAN.md — Normalization pipeline foundation (area mapping, orchestrator, gap detection, volume validation, pandera) ✅ 2026-03-11
+  - [x] 07-02-PLAN.md — CSV collectors (DLD sales, Ejari rentals, building permits) with Python normalization ✅ 2026-03-11
   - [ ] 07-03-PLAN.md — Browser automation collectors (ADREC Abu Dhabi, Bayut, PropertyFinder) with Python normalization
   - [ ] 07-04-PLAN.md — DEWA collector, registry wiring, deployment, integration checkpoint
   Success criteria:
