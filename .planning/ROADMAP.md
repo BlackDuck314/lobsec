@@ -61,7 +61,7 @@
   - [x] 07-01-PLAN.md — Normalization pipeline foundation (area mapping, orchestrator, gap detection, volume validation, pandera) ✅ 2026-03-11
   - [x] 07-02-PLAN.md — CSV collectors (DLD sales, Ejari rentals, building permits) with Python normalization ✅ 2026-03-11
   - [x] 07-03-PLAN.md — Browser automation collectors (ADREC Abu Dhabi, Bayut, PropertyFinder) with Python normalization ✅ 2026-03-11
-  - [ ] 07-04-PLAN.md — DEWA collector, registry wiring, deployment, integration checkpoint
+  - [⏸] 07-04-PLAN.md — DEWA collector coded; deployment BLOCKED by SQLite WAL pragma failure ⏸ 2026-03-11
   Success criteria:
   1. DLD sales transactions and Ejari rental contracts collected from Dubai Pulse CSV, parsed with correct field mapping
   2. Dubai building permits collected monthly, classified residential vs commercial; ADREC Abu Dhabi collected via Playwright CSV export from public dashboard

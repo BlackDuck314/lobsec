@@ -9,16 +9,35 @@ import { initSchema } from "./schema.js";
  */
 export function initDatabase(dataDir: string): Database.Database {
   const dbPath = `${dataDir}/uae-re.db`;
-  const db = new Database(dbPath);
+  console.error(`[uae-re] opening database at: ${dbPath}`);
+
+  // Try opening with explicit options
+  const db = new Database(dbPath, {
+    readonly: false,
+    fileMustExist: false,
+    timeout: 5000,
+    verbose: (...args: unknown[]) => console.error(`[sqlite]`, ...args)
+  });
+  console.error(`[uae-re] database opened successfully`);
 
   // Set performance pragmas
-  db.pragma("journal_mode = WAL");
+  console.error(`[uae-re] setting WAL mode`);
+  try {
+    const result = db.pragma("journal_mode = WAL", { simple: true });
+    console.error(`[uae-re] WAL mode result: ${result}`);
+  } catch (err) {
+    console.error(`[uae-re] WAL pragma failed:`, err);
+    throw err;
+  }
+  console.error(`[uae-re] WAL mode set`);
   db.pragma("synchronous = NORMAL");
   db.pragma("cache_size = -64000"); // 64MB cache
   db.pragma("temp_store = MEMORY");
+  console.error(`[uae-re] all pragmas set`);
 
   // Initialize schema
   initSchema(db);
+  console.error(`[uae-re] schema initialized`);
 
   return db;
 }
