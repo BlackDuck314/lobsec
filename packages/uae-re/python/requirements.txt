@@ -7,3 +7,5 @@ vaderSentiment==3.3.2
 praw==7.8.1
 pytrends==4.9.2
 pytest==8.3.0
+pandera==0.20.4
+beautifulsoup4==4.12.3

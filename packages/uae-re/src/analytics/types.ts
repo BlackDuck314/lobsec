@@ -29,7 +29,14 @@ export type PythonScriptName =
   | "normalize"
   | "stationarity"
   | "granger"
-  | "correlation";
+  | "correlation"
+  | "normalize_dld"
+  | "normalize_ejari"
+  | "normalize_permits"
+  | "normalize_adrec"
+  | "normalize_bayut"
+  | "normalize_propertyfinder"
+  | "normalize_dewa";
 
 /**
  * Configuration for the Python subprocess bridge.
