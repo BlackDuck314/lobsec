@@ -9,13 +9,13 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Infrastructure
 
-- [ ] **INFRA-01**: SQLite database (`uae-re.db`) with WAL mode, indexed on `(source, measurement_date)`, stored under fscrypt-encrypted `/opt/lobsec/data/`
-- [ ] **INFRA-02**: Python 3.13 venv at `/opt/lobsec/analytics-venv/` with pandas, statsmodels, scipy, numpy, pdfplumber, vaderSentiment, praw, pytrends
+- [x] **INFRA-01**: SQLite database (`uae-re.db`) with WAL mode, indexed on `(source, measurement_date)`, stored under fscrypt-encrypted `/opt/lobsec/data/`
+- [x] **INFRA-02**: Python 3.13 venv at `/opt/lobsec/analytics-venv/` with pandas, statsmodels, scipy, numpy, pdfplumber, vaderSentiment, praw, pytrends
 - [x] **INFRA-03**: Collector base class (`SourceCollector`) with abstract `collect()` method, schema validation, and error propagation
 - [x] **INFRA-04**: Collector Registry with frequency-based scheduling, dependency resolution, and controlled concurrency (max 3 concurrent)
 - [x] **INFRA-05**: Python subprocess bridge (`runPython()`) with JSON I/O via stdin/stdout, timeout enforcement, and error handling
-- [ ] **INFRA-06**: Intelligence cache layer with TTL-based expiry (1hr default), params hash as key, stored in SQLite `intelligence_cache` table
-- [ ] **INFRA-07**: `@lobsec/uae-re` package structure deployed as OpenClaw plugin at `/opt/lobsec/plugins/lobsec-uae-re/`
+- [x] **INFRA-06**: Intelligence cache layer with TTL-based expiry (1hr default), params hash as key, stored in SQLite `intelligence_cache` table
+- [⚠️] **INFRA-07**: `@lobsec/uae-re` package structure deployed as OpenClaw plugin at `/opt/lobsec/plugins/lobsec-uae-re/` — deployed, awaiting manual config registration
 
 ### Data Collection -- Tier A (Core Transaction Data)
 
@@ -102,7 +102,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Scheduling & Orchestration
 
-- [ ] **SCHED-01**: Single collector orchestrator service (`lobsec-uae-collector.service`) with controlled concurrency and priority queue
+- [⚠️] **SCHED-01**: Single collector orchestrator service (`lobsec-uae-collector.service`) with controlled concurrency and priority queue — created but not enabled, awaiting Phase 8 timer config
 - [ ] **SCHED-02**: Weekly timer (Mon 06:00 GST) -- DLD, Ejari, listings
 - [ ] **SCHED-03**: Monthly timer (1st 06:00 GST) -- permits, DARI, MOHRE, DXB, RTA, DEWA, metro, DED, DTCM
 - [ ] **SCHED-04**: Quarterly timer (15th Jan/Apr/Jul/Oct 09:00 GST) -- GDRFA, CBUAE, customs, port cargo, Airbnb, moving companies, commercial reports
@@ -112,8 +112,8 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Security Integration
 
-- [ ] **SEC-01**: HSM credential storage -- all new API keys (Google Maps, Reddit, Apify, Zomato, UAE Pass) in SoftHSM2
-- [ ] **SEC-02**: fscrypt encryption on `/opt/lobsec/data/` (5th encrypted directory)
+- [x] **SEC-01**: HSM credential storage -- all new API keys (Google Maps, Reddit, Apify, Zomato, UAE Pass) in SoftHSM2 — pattern verified, keys added in Phase 7+
+- [x] **SEC-02**: fscrypt encryption on `/opt/lobsec/data/` (5th encrypted directory)
 - [ ] **SEC-03**: nftables egress rules -- whitelist domains for all 28 sources (Dubai Pulse, DARI, MOHRE, Apify, Google, Reddit, etc.)
 - [ ] **SEC-04**: Credential redaction -- extend existing redactor with new API key patterns
 - [ ] **SEC-05**: Audit logging -- all collection runs logged (source, timestamp, row count, success/failure) via existing audit infrastructure
@@ -167,13 +167,13 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | 6 | Pending |
-| INFRA-02 | 6 | Pending |
+| INFRA-01 | 6 | Complete |
+| INFRA-02 | 6 | Complete |
 | INFRA-03 | 6 | Complete |
 | INFRA-04 | 6 | Complete |
 | INFRA-05 | 6 | Complete |
-| INFRA-06 | 6 | Pending |
-| INFRA-07 | 6 | Pending |
+| INFRA-06 | 6 | Complete |
+| INFRA-07 | 6 | Checkpoint |
 | COLL-01 | 7 | Pending |
 | COLL-02 | 7 | Pending |
 | COLL-03 | 7 | Pending |
@@ -236,15 +236,15 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | TOOL-11 | 12 | Pending |
 | TOOL-12 | 12 | Pending |
 | TOOL-13 | 12 | Pending |
-| SCHED-01 | 6 | Pending |
+| SCHED-01 | 6 | Checkpoint |
 | SCHED-02 | 8 | Pending |
 | SCHED-03 | 8 | Pending |
 | SCHED-04 | 8 | Pending |
 | SCHED-05 | 9 | Pending |
 | SCHED-06 | 10 | Pending |
 | SCHED-07 | 8 | Pending |
-| SEC-01 | 6 | Pending |
-| SEC-02 | 6 | Pending |
+| SEC-01 | 6 | Complete |
+| SEC-02 | 6 | Complete |
 | SEC-03 | 12 | Pending |
 | SEC-04 | 12 | Pending |
 | SEC-05 | 12 | Pending |
