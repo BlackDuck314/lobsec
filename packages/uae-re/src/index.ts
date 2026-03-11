@@ -16,11 +16,17 @@ export {
   queryNormalized,
   insertCollectionLog,
   getLatestCollection,
+  insertArea,
+  getCanonicalName,
+  getAllAreas,
+  addAreaAlias,
+  deleteNormalizedRange,
 } from "./db/queries.js";
 export type {
   MonthlyDataPoint,
   RawSourceEntry,
   CollectionLogEntry,
+  AreaEntry,
 } from "./db/queries.js";
 
 // Cache layer
@@ -51,6 +57,18 @@ export type {
   PythonScriptName,
   BridgeConfig,
 } from "./analytics/types.js";
+
+// Area mapping
+export {
+  initAreaTable,
+  getCanonicalArea,
+  getAreaAliases,
+  addDiscoveredArea,
+  getAllAreas as getAllAreasFromMapping,
+} from "./areas/mapping.js";
+export type { AreaLookupResult } from "./areas/mapping.js";
+export { SEED_AREAS } from "./areas/seed-areas.js";
+export type { AreaSeed } from "./areas/seed-areas.js";
 
 // ── OpenClaw Plugin Entry Point ─────────────────────────────────────────────
 
