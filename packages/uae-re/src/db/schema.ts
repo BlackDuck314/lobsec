@@ -3,16 +3,33 @@ import type Database from "better-sqlite3";
 /**
  * Initialize database schema with all tables and indices.
  *
- * Creates 4 tables:
+ * Creates 5 tables:
  * - raw_sources: Metadata for collected raw data files
  * - normalized_monthly: Monthly-normalized time-series data
  * - intelligence_cache: TTL-based cache for intelligence products
  * - collection_log: Audit log for collection runs
+ * - area_names: Canonical area name mapping for normalization
  *
  * @param db - Database instance
  */
 export function initSchema(db: Database.Database): void {
-  // Table 1: Raw source metadata
+  // Table 1: Area name mapping
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS area_names (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      canonical_name TEXT NOT NULL UNIQUE,
+      emirate TEXT NOT NULL CHECK(emirate IN ('dubai', 'abu_dhabi')),
+      aliases TEXT,
+      source_variants TEXT
+    )
+  `);
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_area_canonical
+      ON area_names(canonical_name)
+  `);
+
+  // Table 2: Raw source metadata
   db.exec(`
     CREATE TABLE IF NOT EXISTS raw_sources (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,7 +42,7 @@ export function initSchema(db: Database.Database): void {
     )
   `);
 
-  // Table 2: Normalized monthly data
+  // Table 3: Normalized monthly data
   db.exec(`
     CREATE TABLE IF NOT EXISTS normalized_monthly (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,7 +55,7 @@ export function initSchema(db: Database.Database): void {
     )
   `);
 
-  // Table 3: Intelligence cache
+  // Table 4: Intelligence cache
   db.exec(`
     CREATE TABLE IF NOT EXISTS intelligence_cache (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,7 +68,7 @@ export function initSchema(db: Database.Database): void {
     )
   `);
 
-  // Table 4: Collection log
+  // Table 5: Collection log
   db.exec(`
     CREATE TABLE IF NOT EXISTS collection_log (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

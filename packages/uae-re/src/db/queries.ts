@@ -180,3 +180,183 @@ export function getLatestCollection(
     timestamp: row.timestamp,
   };
 }
+
+/**
+ * Area name entry.
+ */
+export interface AreaEntry {
+  canonicalName: string;
+  emirate: "dubai" | "abu_dhabi";
+  aliases?: string[];
+  sourceVariants?: string[];
+}
+
+/**
+ * Insert area name mapping entry.
+ */
+export function insertArea(
+  db: Database.Database,
+  entry: AreaEntry
+): void {
+  const stmt = db.prepare(`
+    INSERT OR IGNORE INTO area_names (canonical_name, emirate, aliases, source_variants)
+    VALUES (?, ?, ?, ?)
+  `);
+
+  stmt.run(
+    entry.canonicalName,
+    entry.emirate,
+    entry.aliases ? JSON.stringify(entry.aliases) : null,
+    entry.sourceVariants ? JSON.stringify(entry.sourceVariants) : null
+  );
+}
+
+/**
+ * Get canonical area name by searching canonical names, aliases, and source variants.
+ */
+export function getCanonicalName(
+  db: Database.Database,
+  rawName: string
+): string | null {
+  const normalized = rawName.trim().toUpperCase();
+
+  // Check canonical name
+  const directStmt = db.prepare(`
+    SELECT canonical_name
+    FROM area_names
+    WHERE UPPER(canonical_name) = ?
+  `);
+
+  const directMatch = directStmt.get(normalized) as
+    | { canonical_name: string }
+    | undefined;
+
+  if (directMatch) {
+    return directMatch.canonical_name;
+  }
+
+  // Check aliases
+  const aliasStmt = db.prepare(`
+    SELECT canonical_name, aliases
+    FROM area_names
+    WHERE aliases IS NOT NULL
+  `);
+
+  const aliasRows = aliasStmt.all() as Array<{
+    canonical_name: string;
+    aliases: string;
+  }>;
+
+  for (const row of aliasRows) {
+    const aliases: string[] = JSON.parse(row.aliases);
+    if (aliases.some((alias) => alias.toUpperCase() === normalized)) {
+      return row.canonical_name;
+    }
+  }
+
+  // Check source variants
+  const variantStmt = db.prepare(`
+    SELECT canonical_name, source_variants
+    FROM area_names
+    WHERE source_variants IS NOT NULL
+  `);
+
+  const variantRows = variantStmt.all() as Array<{
+    canonical_name: string;
+    source_variants: string;
+  }>;
+
+  for (const row of variantRows) {
+    const variants: string[] = JSON.parse(row.source_variants);
+    if (variants.some((variant) => variant.toUpperCase() === normalized)) {
+      return row.canonical_name;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Get all areas, optionally filtered by emirate.
+ */
+export function getAllAreas(
+  db: Database.Database,
+  emirate?: "dubai" | "abu_dhabi"
+): Array<{ canonicalName: string; emirate: string }> {
+  let stmt: Database.Statement;
+
+  if (emirate) {
+    stmt = db.prepare(`
+      SELECT canonical_name, emirate
+      FROM area_names
+      WHERE emirate = ?
+      ORDER BY canonical_name ASC
+    `);
+  } else {
+    stmt = db.prepare(`
+      SELECT canonical_name, emirate
+      FROM area_names
+      ORDER BY canonical_name ASC
+    `);
+  }
+
+  const rows = (
+    emirate ? stmt.all(emirate) : stmt.all()
+  ) as Array<{ canonical_name: string; emirate: string }>;
+
+  return rows.map((row) => ({
+    canonicalName: row.canonical_name,
+    emirate: row.emirate,
+  }));
+}
+
+/**
+ * Add alias to existing area.
+ */
+export function addAreaAlias(
+  db: Database.Database,
+  canonicalName: string,
+  alias: string
+): void {
+  const stmt = db.prepare(`
+    SELECT aliases
+    FROM area_names
+    WHERE canonical_name = ?
+  `);
+
+  const row = stmt.get(canonicalName) as { aliases: string | null } | undefined;
+
+  if (!row) {
+    throw new Error(`Area not found: ${canonicalName}`);
+  }
+
+  const aliases: string[] = row.aliases ? JSON.parse(row.aliases) : [];
+  if (!aliases.includes(alias)) {
+    aliases.push(alias);
+  }
+
+  const updateStmt = db.prepare(`
+    UPDATE area_names
+    SET aliases = ?
+    WHERE canonical_name = ?
+  `);
+
+  updateStmt.run(JSON.stringify(aliases), canonicalName);
+}
+
+/**
+ * Delete normalized data within a date range (for upsert).
+ */
+export function deleteNormalizedRange(
+  db: Database.Database,
+  source: string,
+  startDate: string,
+  endDate: string
+): void {
+  const stmt = db.prepare(`
+    DELETE FROM normalized_monthly
+    WHERE source = ? AND measurement_date >= ? AND measurement_date <= ?
+  `);
+
+  stmt.run(source, startDate, endDate);
+}
