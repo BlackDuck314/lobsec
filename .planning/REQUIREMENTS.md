@@ -56,11 +56,11 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Data Normalization & Pipeline
 
-- [ ] **NORM-01**: Monthly normalization -- all 28 sources resampled to monthly frequency via pandas `resample('ME').mean()` with forward-fill limited to 1 period
-- [ ] **NORM-02**: Publication date tracking -- store both `measurement_date` and `available_date` for every data point to prevent look-ahead bias
-- [ ] **NORM-03**: Gap detection -- track last successful collection per source, flag STALE when gap exceeds 2x expected frequency
-- [ ] **NORM-04**: Schema validation -- validate expected columns, data types, and value ranges on every collection run; fail loudly on mismatch
-- [ ] **NORM-05**: Data volume validation -- compare current collection row count to rolling 30-day average; alert if <50%
+- [x] **NORM-01**: Monthly normalization -- all 28 sources resampled to monthly frequency via pandas `resample('ME').mean()` with forward-fill limited to 1 period
+- [x] **NORM-02**: Publication date tracking -- store both `measurement_date` and `available_date` for every data point to prevent look-ahead bias
+- [x] **NORM-03**: Gap detection -- track last successful collection per source, flag STALE when gap exceeds 2x expected frequency
+- [x] **NORM-04**: Schema validation -- validate expected columns, data types, and value ranges on every collection run; fail loudly on mismatch
+- [x] **NORM-05**: Data volume validation -- compare current collection row count to rolling 30-day average; alert if <50%
 
 ### Statistical Analysis
 
@@ -202,11 +202,11 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | COLL-26 | 9 | Pending |
 | COLL-27 | 9 | Pending |
 | COLL-28 | 9 | Pending |
-| NORM-01 | 7 | Pending |
-| NORM-02 | 7 | Pending |
-| NORM-03 | 7 | Pending |
-| NORM-04 | 7 | Pending |
-| NORM-05 | 7 | Pending |
+| NORM-01 | 7 | Complete (07-01) |
+| NORM-02 | 7 | Complete (07-01) |
+| NORM-03 | 7 | Complete (07-01) |
+| NORM-04 | 7 | Complete (07-01) |
+| NORM-05 | 7 | Complete (07-01) |
 | STAT-01 | 10 | Pending |
 | STAT-02 | 10 | Pending |
 | STAT-03 | 10 | Pending |

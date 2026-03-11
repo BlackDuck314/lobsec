@@ -125,8 +125,8 @@
 | 3. Security Integration | v1.2 | 2/2 | Complete | 2026-03-05 |
 | 4. Reporting & GitHub | v1.2 | 3/3 | Complete | 2026-03-05 |
 | 5. Scheduling & Hardening | v1.2 | 2/2 | Complete | 2026-03-05 |
-| 6. Foundation & Infrastructure | 3/3 | Complete | 2026-03-11 |
-| 7. MVP Data Collection | v1.3 | 0/4 | Planned | - |
+| 6. Foundation & Infrastructure | v1.3 | 3/3 | Complete | 2026-03-11 |
+| 7. MVP Data Collection | v1.3 | 1/4 | In Progress | - |
 | 8. Tier B Collection | v1.3 | 0/? | Pending | - |
 | 9. Tier C Collection | v1.3 | 0/? | Pending | - |
 | 10. Statistical Analysis | v1.3 | 0/? | Pending | - |
@@ -134,4 +134,4 @@
 | 12. Plugin Tools & Hardening | v1.3 | 0/? | Pending | - |
 
 ---
-*Roadmap updated: 2026-03-11 after v1.3 roadmap creation*
+*Roadmap updated: 2026-03-11 after Plan 07-01 completion*
