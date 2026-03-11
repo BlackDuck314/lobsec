@@ -1,52 +1,102 @@
+---
+gsd_state_version: 1.0
+milestone: v1.3
+milestone_name: UAE Real Estate Intelligence System
+status: roadmap_complete
+last_updated: "2026-03-11T00:00:00.000Z"
+progress:
+  total_phases: 7
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+---
+
 # Project State
 
 ## Current Position
 
-Phase: v1.1 Tool Reliability — CREDENTIAL REDACTOR FIXED
-Last activity: 2026-03-04
+Phase: 6 of 12 -- Ready to start Phase 6 (Foundation & Infrastructure)
+Plan: None yet -- plans to be created during Phase 6 execution
+Status: Roadmap complete (7 phases, 88 requirements mapped). Ready for Phase 6 planning.
+Last activity: 2026-03-11 -- v1.3 roadmap created (Phases 6-12)
 
-## User Direction
+## Resume Instructions
 
-**"Stop trying to change how OpenClaw works."** lobsec = transparent security layer only.
+1. v1.2 completed and archived (MILESTONES.md, milestones/ dir, git tag v1.2)
+2. v1.3 "UAE Real Estate Intelligence System" roadmap COMPLETE -- 7 phases (6-12), 88 requirements
+3. Research completed and synthesized in `.planning/research/SUMMARY.md`
+4. Full playbook at `.planning/uae-re-playbook.md`
+5. Requirements at `.planning/REQUIREMENTS.md` with full traceability table
+6. **START HERE**: Begin Phase 6 (Foundation & Infrastructure) -- create plans for INFRA-01 through INFRA-07, SEC-01, SEC-02, SCHED-01
+7. Build order: Foundation -> MVP Collection -> Tier B -> Tier C -> Statistical Analysis -> Intelligence Products -> Plugin Tools & Hardening
+8. Key risk: Do NOT build all 28 collectors before validating pipeline. Phase 7 (MVP) + Phase 10 (analysis) should validate end-to-end before expanding Tier B/C.
 
-## Fixes Applied This Session
+## Project Reference
 
-### Credential Redactor False Positives (ROOT CAUSE of "SMTP password" complaints)
+See: .planning/PROJECT.md (updated 2026-03-10)
 
-**Problem 1: `gmail-app-password` regex too broad**
-- Old pattern: `/[a-z]{4}\s[a-z]{4}\s[a-z]{4}\s[a-z]{4}/g` — matched ANY four groups of 4-letter lowercase words
-- "sent your test mail", "this will send from" — all matched as "Gmail app passwords"
-- Fix: Now requires context: `/(?:password|GMAIL_APP_PASSWORD|app[_\s-]?pass(?:word)?|smtp[_\s-]?pass(?:word)?)\s*[=:"']+\s*[a-z]{4}\s[a-z]{4}\s[a-z]{4}\s[a-z]{4}/gi`
+**Core value:** No credential or sensitive data ever reaches an LLM provider
+**Current focus:** v1.3 UAE Real Estate Intelligence System -- Phase 6 (Foundation & Infrastructure)
 
-**Problem 2: All hooks used ALL_PATTERNS (credentials + PII)**
-- `message_sending`, `tool_result_persist`, `before_message_write` all redacted email addresses
-- Bot response "I sent email from <user>@gmail.com" → became "[EMAIL-REDACTED]"
-- This broke the bot's own context — it "forgot" which email address to use
-- Fix: Changed to `new CredentialRedactor(CREDENTIAL_PATTERNS)` — only redacts actual secrets (API keys, tokens, passwords), NOT email addresses/IPs/phones
+## v1.3 Phase Summary
 
-### HEARTBEAT.md Restored
-- Was overwritten by bot with research_scout project notes
-- Restored from sandbox template copy
+| Phase | Name | Requirements | Status |
+|-------|------|-------------|--------|
+| 6 | Foundation & Infrastructure | 10 (INFRA-01..07, SEC-01..02, SCHED-01) | Pending |
+| 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | Pending |
+| 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | Pending |
+| 9 | Tier C Collection | 15 (COLL-14, COLL-16..28, SCHED-05) | Pending |
+| 10 | Statistical Analysis Pipeline | 11 (STAT-01..08, SCHED-06, SEC-06..07) | Pending |
+| 11 | Intelligence Products | 10 (PROD-01..08, QUAL-01, QUAL-03) | Pending |
+| 12 | Plugin Tools & Hardening | 19 (TOOL-01..13, QUAL-02,04,05, SEC-03..05) | Pending |
 
-## Verification
+**Total: 88 requirements across 7 phases**
 
-- 767 tests pass (35 test files), including 3 new false-positive prevention tests
-- Both plugins load: 9 security hooks + 8 tools
-- No `BLOCKED outbound credential leak` entries after restart
-- Proxy routes Anthropic API correctly
-- Telegram bot connected
+## Architecture Decisions
 
-## Current Config
+- SQLite (better-sqlite3) for time-series storage with WAL mode
+- Dual-language: TypeScript for orchestration/collection, Python 3.13 for data science
+- Python subprocess bridge with JSON I/O via stdin/stdout
+- Single collector orchestrator (not 28 separate timers) to avoid SQLite write contention
+- Both scheduled collection (systemd timers) AND on-demand Telegram queries
+- All 28 sources in one milestone; Tier A validated first before expanding
+- Accounts/auth not available yet -- build system, add credentials later
 
-- sandbox.mode: "off"
-- skills: enabled (no override)
-- workspaceAccess: "rw"
-- tools.sandbox.tools.allow: includes group:plugins
-- Both plugins: 9 security hooks + 8 tools
-- Services: active, Telegram connected
+## Accumulated Context
 
-## Remaining
+### Production Environment
+- Server: Ubuntu 25.04 (VMware), <HOSTNAME> (<HOST_IP>)
+- OpenClaw v2026.2.24, Node.js 22, sandbox mode off, skills enabled
+- Both plugins active: 9 security hooks + 9 tools (including examy_test)
+- Default model: Claude Haiku 4.5 via proxy
+- Services: lobsec, lobsec-proxy, lobsec-radicale, lobsec-examy-test.timer, lobsec-examy-cleanup.timer
+- Telegram: @lobsec_bot connected
+- Daily Examy QA: 3am UTC automated, weekly cleanup Sunday 4am UTC
 
-- Test email_send via Telegram to confirm end-to-end
-- Consider restoring sandbox.mode to "all" (OpenClaw native) now that core issues are fixed
-- CLI `gateway-chat.sh` has connection issues (WebSocket closes before embedded agent completes) — Telegram channel works fine
+### Known Issues (carried)
+- Jetson not routed through proxy (needs CF-Access header injection)
+- nftables egress not fully enforced (needs separate lobsec-proxy user)
+- mTLS certs generated but not enforced
+- Hardened sandbox image built but not activated
+- Examy login stuck at "Loading..." (app-level issue)
+
+## Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| Hybrid TypeScript+Python | TypeScript for orchestration, Python for pandas/statsmodels/scipy data science |
+| SQLite over PostgreSQL | Single-server, embedded, WAL mode handles collection concurrency |
+| Single orchestrator service | Avoids 28 separate timers and SQLite write contention |
+| Phase 7 MVP before full expansion | Validate pipeline end-to-end with 6 sources before building remaining 22 |
+| Bonferroni correction for Granger | Multiple testing correction prevents spurious correlations |
+| fscrypt on /opt/lobsec/data/ | 5th encrypted directory, consistent with existing security architecture |
+
+## Blockers
+
+(None)
+
+## Session Continuity
+
+Last session: 2026-03-11
+Stopped at: v1.3 roadmap created (7 phases, 88 requirements)
+Resume file: None (start Phase 6 planning)
