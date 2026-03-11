@@ -6,25 +6,29 @@
 <domain>
 ## Phase Boundary
 
-Build 5 concrete data collectors (DLD sales, Ejari rentals, building permits, Bayut listings, PropertyFinder listings, DEWA connections) and the normalization pipeline that transforms raw collected data into monthly time-series in the `normalized_monthly` SQLite table. Includes gap detection, schema validation, volume validation, and area name mapping.
+Build 7 concrete data collectors (DLD sales, Ejari rentals, building permits, ADREC Abu Dhabi transactions/leases/indices, Bayut listings, PropertyFinder listings, DEWA connections) and the normalization pipeline that transforms raw collected data into monthly time-series in the `normalized_monthly` SQLite table. Includes gap detection, schema validation, volume validation, and area name mapping.
 
-DARI Abu Dhabi (COLL-04) is **deferred** — UAE Pass auth complexity is not worth the MVP risk. Phase 7 ships with 5 sources (+1 PropertyFinder addition), not 6.
+DARI via UAE Pass is replaced by **ADREC public dashboards** (https://adrec.gov.ae/en/property_and_index/adrec-dashboard) — free CSV exports via browser click, no authentication required.
 
-Requirements: COLL-01, COLL-02, COLL-03, COLL-05, COLL-15, NORM-01, NORM-02, NORM-03, NORM-04, NORM-05
-Deferred: COLL-04 (DARI)
+Requirements: COLL-01, COLL-02, COLL-03, COLL-04 (ADREC variant), COLL-05, COLL-15, NORM-01, NORM-02, NORM-03, NORM-04, NORM-05
 
 </domain>
 
 <decisions>
 ## Implementation Decisions
 
-### DARI Deferral
-- COLL-04 (DARI Abu Dhabi) is deferred entirely — UAE Pass auth via Playwright is the single highest-complexity item in Phase 7
-- Parked indefinitely (not just moved to Phase 9) — user doesn't have UAE Pass account confirmed
-- Phase 7 validates the pipeline end-to-end with simpler sources first
+### ADREC Abu Dhabi (replacing DARI UAE Pass)
+- COLL-04 is **not deferred** — uses ADREC public dashboards instead of UAE Pass-authenticated DARI portal
+- Source: https://adrec.gov.ae/en/property_and_index/adrec-dashboard
+- **All dashboard sections** to be collected: Transactions, Residential Leases, Price Indices, Recent Sales (107K+ rows)
+- Export mechanism: Browser JS-triggered CSV download — requires **Playwright click-to-download** (not a direct HTTP URL)
+- Dashboard has filters (Asset Type, District, Project, Layout, currency, period) — collector should export with broadest filters to get all data
+- Fields available: Asset Type, Property Type, Sale Type (Off-plan/Ready), District, Community, Project, Layout (bedrooms), Registration Date, Sold Area (sqm), Plot Area (sqm), Rate (AED/sqm), Price (AED), Share, Sequence (Primary/Secondary)
+- This gives Abu Dhabi coverage comparable to DLD for Dubai — transaction-level data with district granularity
 
 ### Source Access Strategy
 - **Dubai Pulse** (DLD, Ejari, permits): Researcher to determine exact access method (direct CSV download vs API registration). Don't lock approach now
+- **ADREC** (Abu Dhabi): Playwright click-to-download from public dashboard. No auth required
 - **Bayut**: Direct Playwright scraping — no Apify cloud dependency. Free but potentially fragile
 - **PropertyFinder**: Added as second listings source — scrape simultaneously with Bayut for cross-validation
 - **DEWA**: Press release scraping — fragile by nature, researcher to evaluate feasibility
@@ -49,18 +53,19 @@ Deferred: COLL-04 (DARI)
 - **DLD sales** (COLL-01): Aggregated by (area, property_type). Extended metrics: transaction volume (count), median price (AED), median price per sqft, total value (AED), 25th/75th percentile price, YoY change, MoM change
 - **Ejari rentals** (COLL-02): Same (area, property_type) granularity as DLD sales with rental-specific derived metrics: renewal_rate, avg_rent_per_sqft, rent_YoY_change
 - **Building permits** (COLL-03): Classified residential vs commercial, track permit withdrawal/expiry
+- **ADREC Abu Dhabi** (COLL-04): Transaction-level data with (district, property_type, sale_type) granularity. Extended metrics matching DLD: volume, median price, rate/sqm, off-plan vs ready split, primary vs secondary. Also collect residential lease data and price indices
 - **Bayut/PropertyFinder listings** (COLL-05): Core metrics per area: active listing count, median asking price, median DOM, price reduction count
 - **DEWA** (COLL-15): Per-area breakdown required — researcher must validate whether DEWA publishes area-level data. If not available, revisit granularity decision
 
 ### Area Name Mapping
 - Build a canonical area name mapping table in Phase 7 (not deferred to Phase 12)
-- **Static seed list**: Ship with a curated list of ~100 Dubai areas with canonical names and known aliases (JVC, JBR, DIFC, etc.)
+- **Static seed list**: Ship with a curated list of ~100 Dubai areas + ~50 Abu Dhabi districts with canonical names and known aliases (JVC, JBR, DIFC, Al Reem Island, Yas Island, Saadiyat, etc.)
 - Normalization uses the mapping to standardize area names across all sources
 - Extend the list as new areas appear in collected data
 - QUAL-04 (Phase 12) adds fuzzy matching for Telegram queries — Phase 7 builds the underlying mapping data
 
 ### Claude's Discretion
-- Exact Playwright scraping patterns for Bayut, PropertyFinder, and DEWA
+- Exact Playwright scraping patterns for ADREC, Bayut, PropertyFinder, and DEWA
 - Raw file format per source (CSV, JSON, or HTML snapshots)
 - Python normalization module internal structure
 - Area seed list compilation (which ~100 areas to include)
@@ -72,10 +77,11 @@ Deferred: COLL-04 (DARI)
 <specifics>
 ## Specific Ideas
 
-- Reuse existing Playwright from Examy QA (already installed at system level) for Bayut/PropertyFinder/DEWA scraping
+- Reuse existing Playwright from Examy QA (already installed at system level) for ADREC/Bayut/PropertyFinder/DEWA scraping
 - The playbook at `.planning/uae-re-playbook.md` has detailed source URLs, field mappings, and collection strategies for all 28 sources — use Phase 7 sources as primary reference
 - DLD and Ejari come from the same Dubai Pulse CSV dataset — COLL-01 and COLL-02 can share the same download step, then filter by `trans_group_en` (Sale vs Rent)
 - PropertyFinder was user's addition — not in original requirements. Register as a new collector source alongside Bayut for cross-validation of listing data
+- ADREC dashboard replaces DARI UAE Pass — user confirmed CSV export buttons work, JS-triggered download via browser click
 
 </specifics>
 
@@ -101,7 +107,7 @@ Deferred: COLL-04 (DARI)
 - SQLite database: `/opt/lobsec/data/uae-re.db` — new `area_names` table for canonical mapping
 - Raw data directory: `/opt/lobsec/data/raw/` — new subdirectories per source
 - Python package: `packages/uae-re/python/uae_re/` — new normalization modules
-- CollectorRegistry: Register 5+ concrete collectors at plugin startup
+- CollectorRegistry: Register 7 concrete collectors at plugin startup (DLD, Ejari, permits, ADREC, Bayut, PropertyFinder, DEWA)
 - Normalization auto-trigger: Wire into registry's `runAll()` completion callback
 
 </code_context>
@@ -109,7 +115,7 @@ Deferred: COLL-04 (DARI)
 <deferred>
 ## Deferred Ideas
 
-- **DARI Abu Dhabi** (COLL-04) — UAE Pass auth is too complex for MVP. Parked indefinitely until account access and auth strategy are resolved
+- **DARI via UAE Pass** — Original COLL-04 approach (Playwright + UAE Pass auth) is replaced by ADREC public dashboards. UAE Pass route is permanently abandoned
 - **Embedding/vectorization of collected data** — Not needed for structured time-series data. SQL queries via plugin tools (Phase 12) are the correct access pattern. Revisit only if unstructured text search is needed later
 
 </deferred>
