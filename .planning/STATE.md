@@ -17,8 +17,8 @@ progress:
 
 Phase: 6 of 12 -- Ready to start Phase 6 (Foundation & Infrastructure)
 Plan: None yet -- plans to be created during Phase 6 execution
-Status: Phase 6 planning BLOCKED — `gsd-tools roadmap get-phase 6` returns `found: false` despite Phase 6 existing in ROADMAP.md
-Last activity: 2026-03-11 — Blocked on roadmap parsing. Phase dir exists at `.planning/phases/06-foundation-infrastructure/`
+Status: Phase 6 context gathered — ready for planning
+Last activity: 2026-03-11 — CONTEXT.md captured (package layout, data org, Python structure, collector errors)
 
 ## Resume Instructions
 
@@ -27,7 +27,7 @@ Last activity: 2026-03-11 — Blocked on roadmap parsing. Phase dir exists at `.
 3. Research completed and synthesized in `.planning/research/SUMMARY.md`
 4. Full playbook at `.planning/uae-re-playbook.md`
 5. Requirements at `.planning/REQUIREMENTS.md` with full traceability table
-6. **BLOCKER**: `gsd-tools roadmap get-phase 6` returns `found: false`. The v1.3 phases are under `### v1.3 UAE Real Estate...` heading (not `<details>` block). GSD tool may only parse phases inside `<details>` blocks or expect a specific format. Fix: either restructure ROADMAP.md to match GSD expected format, or bypass the tool and manually construct the planner prompt with phase info from ROADMAP.md lines 42-49.
+6. **NOTE**: `gsd-tools roadmap get-phase 6` returns `found: false` — v1.3 phases are in `<details>` block. Bypass by manually constructing planner prompts with phase info from ROADMAP.md lines 43-48.
 7. Phase 6 dir: `.planning/phases/06-foundation-infrastructure/` (exists, empty)
 8. Phase 6 reqs: INFRA-01..07, SEC-01, SEC-02, SCHED-01 (10 requirements)
 9. Phase 6 goal: Database, package structure, collector framework, Python analytics environment
@@ -101,5 +101,5 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: v1.3 roadmap created (7 phases, 88 requirements)
-Resume file: None (start Phase 6 planning)
+Stopped at: Phase 6 context gathered
+Resume file: .planning/phases/06-foundation-infrastructure/06-CONTEXT.md
