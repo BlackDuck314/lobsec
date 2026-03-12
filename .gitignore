@@ -5,6 +5,10 @@ node_modules/
 dist/
 *.tgz
 
+# Python
+__pycache__/
+*.pyc
+
 # Environment variables
 .env
 .env.*
