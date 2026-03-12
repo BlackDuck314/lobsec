@@ -3,15 +3,57 @@
  *
  * Manages collector registration and execution with concurrency control.
  * Supports running all collectors, filtering by frequency, or running individual collectors.
+ * Provides factory method to create 7 UAE RE collectors backed by Ninja Scraper API.
  */
 
+import type Database from "better-sqlite3";
 import { SourceCollector } from "./base.js";
 import type {
   CollectionFrequency,
   CollectorInfo,
   CollectionResult,
+  CollectorMetadata,
   RegistryRunResult,
+  ScraperApiConfig,
 } from "./types.js";
+
+/**
+ * Collector definitions for 7 UAE RE sources.
+ * Each entry maps to a Ninja Scraper YAML mission file.
+ */
+const COLLECTOR_DEFINITIONS: Array<{
+  missionName: string;
+  metadata: CollectorMetadata;
+}> = [
+  {
+    missionName: "dld-sales",
+    metadata: { source: "dld-sales", frequency: "weekly", priority: 1, timeout: 120_000 },
+  },
+  {
+    missionName: "ejari-rentals",
+    metadata: { source: "ejari-rentals", frequency: "weekly", priority: 1, timeout: 120_000 },
+  },
+  {
+    missionName: "building-permits",
+    metadata: { source: "building-permits", frequency: "monthly", priority: 2, timeout: 120_000 },
+  },
+  {
+    missionName: "adrec-abu-dhabi",
+    metadata: { source: "adrec-abu-dhabi", frequency: "monthly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "bayut-listings",
+    metadata: { source: "bayut-listings", frequency: "weekly", priority: 3, timeout: 600_000 },
+  },
+  {
+    missionName: "propertyfinder-listings",
+    metadata: { source: "propertyfinder-listings", frequency: "weekly", priority: 3, timeout: 600_000 },
+  },
+  {
+    missionName: "dewa-connections",
+    metadata: { source: "dewa-connections", frequency: "monthly", priority: 2, timeout: 300_000 },
+  },
+];
 
 /**
  * Manages a collection of SourceCollector instances with concurrency control.
@@ -24,6 +66,52 @@ export class CollectorRegistry {
 
   constructor(maxConcurrency: number = 3) {
     this.maxConcurrency = maxConcurrency;
+  }
+
+  /**
+   * Create and register all 7 UAE RE collectors backed by Ninja Scraper API.
+   *
+   * Each collector is a SourceCollector instance differentiated by missionName.
+   * All delegate scraping to the Ninja Scraper HTTP API.
+   *
+   * @param db - Database instance for audit logging
+   * @param scraperConfig - Ninja Scraper API connection config
+   */
+  createCollectors(db: Database.Database, scraperConfig: ScraperApiConfig): void {
+    for (const def of COLLECTOR_DEFINITIONS) {
+      const collector = new SourceCollector(
+        def.metadata,
+        db,
+        scraperConfig,
+        def.missionName
+      );
+      this.register(collector);
+    }
+  }
+
+  /**
+   * Check if the Ninja Scraper service is running and healthy.
+   *
+   * @param baseUrl - Scraper API base URL (defaults to http://127.0.0.1:18791)
+   * @returns true if scraper responds with status "ok", false otherwise
+   */
+  async checkScraperHealth(
+    baseUrl: string = "http://127.0.0.1:18791"
+  ): Promise<boolean> {
+    try {
+      const response = await fetch(`${baseUrl}/health`, {
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = (await response.json()) as { status: string };
+      return data.status === "ok";
+    } catch {
+      return false;
+    }
   }
 
   /**
