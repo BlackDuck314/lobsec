@@ -30,7 +30,8 @@ from ninja_scraper.api.schemas import (
     ScrapeRequest,
     ScrapeResponse,
 )
-from ninja_scraper.engine.crawler import MissionResult, run_browser_mission, run_http_mission
+from ninja_scraper.engine.crawler import MissionResult, run_http_mission
+from ninja_scraper.engine.handlers import execute_mission as handler_execute_mission
 from ninja_scraper.engine.mission import Mission, load_all_missions
 from ninja_scraper.utils.logging import setup_logging
 
@@ -116,7 +117,7 @@ async def scrape_endpoint(
             timeout_ms=request.timeout_ms,
         )
 
-        result = await run_http_mission(mission)
+        result = await handler_execute_mission(mission)
 
         duration_ms = int((time.monotonic() - start) * 1000)
 
@@ -194,7 +195,7 @@ async def crawl_endpoint(
 
     # Queue background execution
     background_tasks.add_task(
-        execute_mission, job_id, request.mission_name, request.params
+        _run_background_mission, job_id, request.mission_name, request.params
     )
 
     logger.info(
@@ -241,8 +242,11 @@ async def list_missions(
     ]
 
 
-async def execute_mission(job_id: str, mission_name: str, params: dict) -> None:
-    """Background task: execute a mission and update job status.
+async def _run_background_mission(job_id: str, mission_name: str, params: dict) -> None:
+    """Background task: execute a mission via handler and update job status.
+
+    Uses the handler module's execute_mission() for type-specific dispatch
+    including area iteration, timeout enforcement, and error wrapping.
 
     Args:
         job_id: Unique job identifier.
@@ -261,13 +265,8 @@ async def execute_mission(job_id: str, mission_name: str, params: dict) -> None:
 
         mission = _missions[mission_name]
 
-        # Execute based on mission type
-        if mission.type == "http_download" or mission.type == "api_call":
-            result = await run_http_mission(mission)
-        elif mission.type == "browser_scrape":
-            result = await run_browser_mission(mission)
-        else:
-            raise ValueError(f"Unknown mission type: {mission.type}")
+        # Execute via handler (dispatches by type, handles areas, enforces timeout)
+        result = await handler_execute_mission(mission)
 
         # Update job status
         _jobs[job_id].completed_at = datetime.now(timezone.utc).isoformat()
