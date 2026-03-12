@@ -126,6 +126,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | Ad-hoc Mission for /scrape | POST /scrape creates temporary Mission object so it works without pre-defined YAML files. Enables simple one-off scraping. |
 | CRAWLEE_STORAGE_DIR at import | Set env var at module import time to ensure all Crawlee storage goes to /opt/lobsec/data/raw/crawlee-storage. |
 | Handler as execution layer | Single execute_mission() entry point wraps type dispatch, area iteration, timeout, error handling. API and CLI both use handler, never call crawler directly. |
+| SourceCollector uses native fetch() | Node 22 has native fetch — no HTTP client dependency needed for Ninja Scraper API calls. |
+| All collectors same class | All 7 collectors are SourceCollector instances differentiated by missionName. Eliminates class hierarchy. |
+| Factory pattern for registration | CollectorRegistry.createCollectors(db, scraperConfig) centralizes definitions in COLLECTOR_DEFINITIONS array. |
 | Sequential area iteration | Areas within a single mission are visited sequentially (not concurrently). max_concurrent applies to concurrent missions at scheduler level. |
 | Bayut/PropertyFinder slug differences | Bayut uses abbreviated slugs (jvc, jbr, jlt). PropertyFinder uses full slugs (jumeirah-village-circle, jumeirah-beach-residence). Same 20 areas mapped differently. |
 
@@ -143,8 +146,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Completed 07.1-02-PLAN.md — 7 YAML missions + handler module
+Stopped at: Completed 07.1-03-PLAN.md — TS integration refactor (deleted old collectors, HTTP client wrapper)
 Resume file: None
-Next: Execute 07.1-03-PLAN.md — TS integration refactor (delete old collectors, HTTP client wrapper)
-Key context: packages/scraper/ has full engine + 7 missions + handler. Handler provides execute_mission() entry point. API main.py uses handler for all execution. Missions directory has all 7 YAML files validated.
+Next: Execute 07.1-04-PLAN.md — Production deployment + end-to-end verification
+Key context: TS layer is now a thin HTTP client. SourceCollector calls Ninja Scraper API at 127.0.0.1:18791. CollectorRegistry.createCollectors() registers 7 sources via factory. Python engine + 7 missions + handler ready. Need systemd service deployment and e2e test.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 collectors)
