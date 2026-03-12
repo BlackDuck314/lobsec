@@ -72,3 +72,17 @@ export interface RegistryRunResult {
   /** Number of failed collections. */
   failureCount: number;
 }
+
+/**
+ * Configuration for connecting to the Ninja Scraper HTTP API.
+ */
+export interface ScraperApiConfig {
+  /** Ninja Scraper API base URL. */
+  baseUrl: string;
+  /** Bearer token for authentication. */
+  authToken: string;
+  /** Polling interval for background jobs (ms). */
+  pollIntervalMs: number;
+  /** Maximum wait time for job completion (ms). */
+  maxWaitMs: number;
+}

@@ -44,6 +44,7 @@ export type {
   CollectorInfo,
   RegistryRunResult,
   CollectionFrequency,
+  ScraperApiConfig,
 } from "./collectors/types.js";
 
 // Analytics bridge
@@ -91,14 +92,7 @@ import { IntelligenceCache } from "./cache/manager.js";
 import { getLatestCollection } from "./db/queries.js";
 import { initAreaTable } from "./areas/mapping.js";
 
-// Import all 7 collectors
-import { DLDSalesCollector } from "./collectors/dld-sales.js";
-import { EjariRentalsCollector } from "./collectors/ejari-rentals.js";
-import { BuildingPermitsCollector } from "./collectors/building-permits.js";
-import { ADRECAbuDhabiCollector } from "./collectors/adrec-abu-dhabi.js";
-import { BayutListingsCollector } from "./collectors/bayut-listings.js";
-import { PropertyFinderListingsCollector } from "./collectors/propertyfinder-listings.js";
-import { DEWAConnectionsCollector } from "./collectors/dewa-connections.js";
+import type { ScraperApiConfig } from "./collectors/types.js";
 
 // OpenClaw type stubs (matches pi-agent-core AgentTool shape)
 interface AgentToolResult {
@@ -196,14 +190,16 @@ export default {
     const registry = new CollectorRegistry();
     const cache = new IntelligenceCache(db);
 
-    // Register all 7 collectors
-    registry.register(new DLDSalesCollector(db));
-    registry.register(new EjariRentalsCollector(db));
-    registry.register(new BuildingPermitsCollector(db));
-    registry.register(new ADRECAbuDhabiCollector(db));
-    registry.register(new BayutListingsCollector(db));
-    registry.register(new PropertyFinderListingsCollector(db));
-    registry.register(new DEWAConnectionsCollector(db));
+    // Create scraper API config from environment
+    const scraperConfig: ScraperApiConfig = {
+      baseUrl: process.env.SCRAPER_BASE_URL || "http://127.0.0.1:18791",
+      authToken: getEnv("SCRAPER_AUTH_TOKEN", ""),
+      pollIntervalMs: 5000,
+      maxWaitMs: 600_000,
+    };
+
+    // Register all 7 collectors via factory (all are SourceCollector instances)
+    registry.createCollectors(db, scraperConfig);
 
     // Register uae_collection_status tool
     api.registerTool({

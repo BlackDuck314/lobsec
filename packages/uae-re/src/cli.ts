@@ -14,14 +14,7 @@ import type { CollectionFrequency } from "./collectors/types.js";
 import { normalizeCollectionResult } from "./normalization/orchestrator.js";
 import { initAreaTable } from "./areas/mapping.js";
 
-// Import all 7 collectors
-import { DLDSalesCollector } from "./collectors/dld-sales.js";
-import { EjariRentalsCollector } from "./collectors/ejari-rentals.js";
-import { BuildingPermitsCollector } from "./collectors/building-permits.js";
-import { ADRECAbuDhabiCollector } from "./collectors/adrec-abu-dhabi.js";
-import { BayutListingsCollector } from "./collectors/bayut-listings.js";
-import { PropertyFinderListingsCollector } from "./collectors/propertyfinder-listings.js";
-import { DEWAConnectionsCollector } from "./collectors/dewa-connections.js";
+import type { ScraperApiConfig } from "./collectors/types.js";
 
 // Parse command line args
 const args = process.argv.slice(2);
@@ -29,6 +22,18 @@ const command = args[0];
 
 // Get data directory from env or use default
 const dataDir = process.env.UAE_RE_DATA_DIR || "/opt/lobsec/data";
+
+/**
+ * Create scraper API config from environment
+ */
+function createScraperConfig(): ScraperApiConfig {
+  return {
+    baseUrl: process.env.SCRAPER_BASE_URL || "http://127.0.0.1:18791",
+    authToken: process.env.SCRAPER_AUTH_TOKEN || "",
+    pollIntervalMs: 5000,
+    maxWaitMs: 600_000,
+  };
+}
 
 /**
  * Print usage message and exit
@@ -61,14 +66,8 @@ async function runAll(): Promise<void> {
 
   const registry = new CollectorRegistry();
 
-  // Register all 7 collectors
-  registry.register(new DLDSalesCollector(db));
-  registry.register(new EjariRentalsCollector(db));
-  registry.register(new BuildingPermitsCollector(db));
-  registry.register(new ADRECAbuDhabiCollector(db));
-  registry.register(new BayutListingsCollector(db));
-  registry.register(new PropertyFinderListingsCollector(db));
-  registry.register(new DEWAConnectionsCollector(db));
+  // Register all 7 collectors via factory
+  registry.createCollectors(db, createScraperConfig());
 
   const result = await registry.runAll();
 
@@ -151,14 +150,8 @@ async function runFrequency(freq: string): Promise<void> {
 
   const registry = new CollectorRegistry();
 
-  // Register all 7 collectors
-  registry.register(new DLDSalesCollector(db));
-  registry.register(new EjariRentalsCollector(db));
-  registry.register(new BuildingPermitsCollector(db));
-  registry.register(new ADRECAbuDhabiCollector(db));
-  registry.register(new BayutListingsCollector(db));
-  registry.register(new PropertyFinderListingsCollector(db));
-  registry.register(new DEWAConnectionsCollector(db));
+  // Register all 7 collectors via factory
+  registry.createCollectors(db, createScraperConfig());
 
   const result = await registry.runByFrequency(freq as CollectionFrequency);
 
@@ -232,14 +225,8 @@ async function runOne(source: string): Promise<void> {
 
   const registry = new CollectorRegistry();
 
-  // Register all 7 collectors
-  registry.register(new DLDSalesCollector(db));
-  registry.register(new EjariRentalsCollector(db));
-  registry.register(new BuildingPermitsCollector(db));
-  registry.register(new ADRECAbuDhabiCollector(db));
-  registry.register(new BayutListingsCollector(db));
-  registry.register(new PropertyFinderListingsCollector(db));
-  registry.register(new DEWAConnectionsCollector(db));
+  // Register all 7 collectors via factory
+  registry.createCollectors(db, createScraperConfig());
 
   try {
     const result = await registry.runOne(source);
