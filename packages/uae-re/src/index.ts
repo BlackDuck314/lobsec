@@ -46,6 +46,7 @@ export type {
   CollectionFrequency,
   ScraperApiConfig,
 } from "./collectors/types.js";
+export { createDefaultScraperConfig } from "./collectors/config.js";
 
 // Analytics bridge
 export {
