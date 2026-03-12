@@ -22,8 +22,8 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [x] **COLL-01**: DLD sales transactions -- weekly CSV download from Dubai Pulse, fields: trans_group_en, actual_worth, meter_sale_price, prop_type_en, area_name_en, rooms_en, trans_date ✅ 2026-03-11
 - [x] **COLL-02**: Ejari rental contracts -- filtered from same DLD CSV (trans_group_en=Rent), derived: renewal_rate, avg_rent_per_sqft, rent_YoY_change ✅ 2026-03-11
 - [x] **COLL-03**: Dubai building permits -- monthly CSV from Dubai Pulse, classify residential vs commercial, track permit withdrawal/expiry ✅ 2026-03-11
-- [ ] **COLL-04**: DARI Abu Dhabi -- headless browser scrape with UAE Pass authentication (Playwright), extract transaction summaries
-- [ ] **COLL-05**: Property listings -- Bayut via Apify scraper, extract: listing count, asking price, days on market (DOM), price reductions per area
+- [x] **COLL-04**: DARI Abu Dhabi -- headless browser scrape with UAE Pass authentication (Playwright), extract transaction summaries
+- [x] **COLL-05**: Property listings -- Bayut via Apify scraper, extract: listing count, asking price, days on market (DOM), price reductions per area
 
 ### Data Collection -- Tier B (Population & Employment Signals)
 
@@ -39,7 +39,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 ### Data Collection -- Tier C (Alternative Economic Signals)
 
 - [ ] **COLL-14**: Google Trends -- pytrends API, 6 keyword groups (buy/rent/expat/distress/luxury/exit)
-- [ ] **COLL-15**: DEWA connections/closures -- press release scrape, new connections and disconnections per area
+- [x] **COLL-15**: DEWA connections/closures -- press release scrape, new connections and disconnections per area
 - [ ] **COLL-16**: RTA metro ridership -- monthly from RTA open data, station-level ridership
 - [ ] **COLL-17**: CBUAE mortgage rates -- quarterly PDF extraction, EIBOR + mortgage outstanding
 - [ ] **COLL-18**: DTCM tourism stats -- monthly from dubaitourism.ae, hotel occupancy, visitor numbers
@@ -177,8 +177,8 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | COLL-01 | 7 | ✅ Complete (07-02) |
 | COLL-02 | 7 | ✅ Complete (07-02) |
 | COLL-03 | 7 | ✅ Complete (07-02) |
-| COLL-04 | 7 | Pending |
-| COLL-05 | 7 | Pending |
+| COLL-04 | 7 | Complete |
+| COLL-05 | 7 | Complete |
 | COLL-06 | 8 | Pending |
 | COLL-07 | 8 | Pending |
 | COLL-08 | 8 | Pending |
@@ -188,7 +188,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | COLL-12 | 8 | Pending |
 | COLL-13 | 8 | Pending |
 | COLL-14 | 9 | Pending |
-| COLL-15 | 7 | Pending |
+| COLL-15 | 7 | Complete |
 | COLL-16 | 9 | Pending |
 | COLL-17 | 9 | Pending |
 | COLL-18 | 9 | Pending |
