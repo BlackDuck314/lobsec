@@ -1,9 +1,9 @@
 /**
- * SourceCollector Abstract Base Class
+ * SourceCollector — Thin HTTP Client for Ninja Scraper API
  *
+ * Delegates all scraping to the Ninja Scraper service via HTTP.
  * Provides retry logic, circuit breaker, schema validation, and audit logging
- * for all data collection operations. Collectors inherit from this and implement
- * the collect() method.
+ * for all data collection operations.
  */
 
 import type Database from "better-sqlite3";
@@ -18,29 +18,44 @@ import type {
   CollectionResult,
   CollectorStatus,
   CollectorInfo,
+  ScraperApiConfig,
 } from "./types.js";
 
 /**
- * Abstract base class for all source collectors.
+ * Concrete collector class that delegates scraping to Ninja Scraper API.
+ *
+ * Each instance is differentiated by its missionName, which maps to a
+ * YAML mission spec loaded by the Ninja Scraper service.
  *
  * Provides:
+ * - HTTP client calling Ninja Scraper /crawl endpoint
+ * - Polling for job completion
  * - Retry with exponential backoff
  * - Circuit breaker pattern
  * - Schema validation
  * - Audit logging via collection_log table
  */
-export abstract class SourceCollector {
+export class SourceCollector {
   readonly metadata: CollectorMetadata;
+  readonly missionName: string;
   protected db: Database.Database;
   protected circuitBreaker: CircuitBreaker;
+  protected scraperConfig: ScraperApiConfig;
 
   status: CollectorStatus = "idle";
   consecutiveFailures: number = 0;
   lastRun?: string;
 
-  constructor(metadata: CollectorMetadata, db: Database.Database) {
+  constructor(
+    metadata: CollectorMetadata,
+    db: Database.Database,
+    scraperConfig: ScraperApiConfig,
+    missionName: string
+  ) {
     this.metadata = metadata;
     this.db = db;
+    this.scraperConfig = scraperConfig;
+    this.missionName = missionName;
     this.circuitBreaker = new CircuitBreaker({
       failureThreshold: 3,
       resetTimeoutMs: 30_000,
@@ -49,12 +64,101 @@ export abstract class SourceCollector {
   }
 
   /**
-   * Implement this method in subclasses to perform the actual collection.
+   * Trigger a scrape via Ninja Scraper API and poll for completion.
+   *
+   * 1. POST /crawl to start the job
+   * 2. Poll GET /crawl/{job_id} until completed or failed
+   * 3. Return file path and row count from result
    *
    * @returns Object with filePath and rowCount on success
-   * @throws Error on collection failure
+   * @throws Error on collection failure or timeout
    */
-  abstract collect(): Promise<{ filePath: string; rowCount: number }>;
+  async collect(): Promise<{ filePath: string; rowCount: number }> {
+    const { baseUrl, authToken, pollIntervalMs, maxWaitMs } =
+      this.scraperConfig;
+
+    // Step 1: Trigger the crawl job
+    const crawlResponse = await fetch(`${baseUrl}/crawl`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        mission_name: this.missionName,
+        params: {},
+      }),
+    });
+
+    if (!crawlResponse.ok) {
+      const body = await crawlResponse.text().catch(() => "");
+      throw new Error(
+        `Scraper API POST /crawl failed: HTTP ${crawlResponse.status} ${crawlResponse.statusText}${body ? ` — ${body}` : ""}`
+      );
+    }
+
+    const crawlData = (await crawlResponse.json()) as {
+      job_id: string;
+      status: string;
+    };
+    const { job_id } = crawlData;
+
+    if (!job_id) {
+      throw new Error("Scraper API returned no job_id");
+    }
+
+    // Step 2: Poll for job completion
+    const deadline = Date.now() + maxWaitMs;
+
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+
+      const statusResponse = await fetch(`${baseUrl}/crawl/${job_id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (!statusResponse.ok) {
+        throw new Error(
+          `Scraper API GET /crawl/${job_id} failed: HTTP ${statusResponse.status}`
+        );
+      }
+
+      const statusData = (await statusResponse.json()) as {
+        job_id: string;
+        status: string;
+        result?: {
+          file_path: string;
+          row_count: number;
+          duration_ms: number;
+          error?: string;
+        };
+      };
+
+      if (statusData.status === "completed") {
+        if (!statusData.result) {
+          throw new Error("Scraper API returned completed but no result");
+        }
+        return {
+          filePath: statusData.result.file_path,
+          rowCount: statusData.result.row_count,
+        };
+      }
+
+      if (statusData.status === "failed") {
+        const errorMsg =
+          statusData.result?.error || "Mission failed (no error details)";
+        throw new Error(`Scraper mission '${this.missionName}' failed: ${errorMsg}`);
+      }
+
+      // Status is "queued" or "running" — continue polling
+    }
+
+    throw new Error(
+      `Scraper mission '${this.missionName}' timed out after ${maxWaitMs}ms`
+    );
+  }
 
   /**
    * Validate collection result schema.
