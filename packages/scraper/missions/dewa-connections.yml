@@ -1,0 +1,57 @@
+# DEWA Connections — Press Release Browser Scrape
+# Source 15 (COLL-15): Electricity connection/closure data as occupancy proxy
+# Signal: LEADING (1-2 months) | Lifecycle: Settlement
+
+schema_version: "1.0"
+name: dewa-connections
+description: >
+  DEWA (Dubai Electricity and Water Authority) new connection and closure
+  data scraped from press releases. New DEWA connections are a direct proxy
+  for move-ins; closures proxy move-outs. Navigate press releases page, find
+  latest release mentioning "connections" or "customers", extract connection
+  and closure numbers from text. Rising closures relative to new connections
+  indicate net outflow.
+type: browser_scrape
+frequency: monthly
+priority: 2
+
+source:
+  url: "https://www.dewa.gov.ae/en/about-dewa/news-and-media/press-releases"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: json
+  strategy: press_release_text
+  keywords:
+    - connections
+    - customers
+    - new connections
+    - disconnections
+    - closures
+  selectors:
+    press_releases: ".press-release-item, .news-item, article"
+    press_title: "h2, h3, .title"
+    press_date: ".date, time, .press-release-date"
+    press_content: ".content, .body, article p"
+  fields:
+    - date
+    - title
+    - new_connections
+    - closures
+    - total_customers
+
+output:
+  path: "/opt/lobsec/data/raw/dewa-connections/{date}.json"
+  format: json
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 2000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: true
+
+timeout_ms: 300000

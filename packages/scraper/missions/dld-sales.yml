@@ -1,0 +1,54 @@
+# DLD Sales Transactions — Dubai Pulse CSV Download
+# Source 1 (COLL-01): Ground truth for Dubai sales price and volume tracking
+# Signal: COINCIDENT | Lifecycle: Settlement / Commitment
+
+schema_version: "1.0"
+name: dld-sales
+description: >
+  Dubai Land Department sales transactions from Dubai Pulse open data.
+  Downloads full CSV and filters for trans_group_en=="Sales" in extraction.
+  Covers off-plan transfers, mortgaged transactions, cash sales, and gifts.
+  Granular to neighbourhood and unit type. Single most authoritative dataset
+  for price and volume tracking.
+type: http_download
+frequency: weekly
+priority: 1
+
+source:
+  url: "https://www.dubaipulse.gov.ae/data/dld-transactions/dld_transactions-open"
+  method: GET
+  headers:
+    User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+    Accept: "text/csv, application/csv, text/plain, */*"
+    Accept-Language: "en-US,en;q=0.9"
+
+extraction:
+  format: csv
+  encoding: utf-8
+  filters:
+    - field: trans_group_en
+      operator: equals
+      value: "Sales"
+  fields:
+    - trans_group_en
+    - procedure_name_en
+    - actual_worth
+    - meter_sale_price
+    - prop_type_en
+    - area_name_en
+    - rooms_en
+    - trans_date
+
+output:
+  path: "/opt/lobsec/data/raw/dld-sales/{date}.csv"
+  format: csv
+
+retry:
+  max_attempts: 3
+  initial_delay_ms: 2000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: false
+
+timeout_ms: 120000
