@@ -69,6 +69,21 @@
   4. DEWA connections/closures scraped from press releases with new connections and disconnections per area
   5. All sources normalized to monthly frequency via pandas resample('ME').mean() with forward-fill limited to 1 period; both measurement_date and available_date stored; gap detection, schema validation, and volume validation operational
 
+- [ ] Phase 7.1: Ninja Scraper (INSERTED) — General-purpose Python scraping engine replacing failed TS collectors
+  Requirements: COLL-01, COLL-02, COLL-03, COLL-04, COLL-05, COLL-15, NORM-01, NORM-02, NORM-03, NORM-04, NORM-05
+  **Plans:** 4 plans
+  Plans:
+  - [ ] 07.1-01-PLAN.md — Scraper engine core + FastAPI service (Crawlee, Patchright, missions, auth)
+  - [ ] 07.1-02-PLAN.md — 7 YAML missions for UAE RE sources + mission handler
+  - [ ] 07.1-03-PLAN.md — TS integration refactor (delete old collectors, HTTP client wrapper)
+  - [ ] 07.1-04-PLAN.md — Production deployment + end-to-end verification
+  Success criteria:
+  1. @lobsec/scraper package at packages/scraper/ with Crawlee, Patchright, FastAPI engine
+  2. 7 YAML mission files validated and loaded by Ninja Scraper service
+  3. TS CollectorRegistry refactored to thin HTTP client calling scraper API
+  4. lobsec-scraper.service running on port 18791 with token auth
+  5. At least 1 end-to-end collection verified: scrape -> raw file -> normalization -> SQLite
+
 - [ ] Phase 8: Tier B Collection (Population & Employment Signals) — 8 demographic and employment data sources with scheduling
   Requirements: COLL-06, COLL-07, COLL-08, COLL-09, COLL-10, COLL-11, COLL-12, COLL-13, SCHED-02, SCHED-03, SCHED-04, SCHED-07
   Success criteria:
@@ -127,6 +142,7 @@
 | 5. Scheduling & Hardening | v1.2 | 2/2 | Complete | 2026-03-05 |
 | 6. Foundation & Infrastructure | v1.3 | 3/3 | Complete | 2026-03-11 |
 | 7. MVP Data Collection | v1.3 | 1/4 | In Progress | - |
+| 7.1 Ninja Scraper | v1.3 | 0/4 | Planned | - |
 | 8. Tier B Collection | v1.3 | 0/? | Pending | - |
 | 9. Tier C Collection | v1.3 | 0/? | Pending | - |
 | 10. Statistical Analysis | v1.3 | 0/? | Pending | - |
@@ -134,4 +150,4 @@
 | 12. Plugin Tools & Hardening | v1.3 | 0/? | Pending | - |
 
 ---
-*Roadmap updated: 2026-03-11 after Plan 07-01 completion*
+*Roadmap updated: 2026-03-12 after Phase 7.1 planning*
