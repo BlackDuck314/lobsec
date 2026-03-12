@@ -1,0 +1,58 @@
+# ADREC Abu Dhabi — Browser Scrape with Click-to-Download
+# Source 4 (COLL-04): Abu Dhabi transaction data via ADREC public dashboards
+# Signal: COINCIDENT | Lifecycle: Settlement / Transaction
+# NOTE: DARI/UAE Pass authentication permanently abandoned per user decision.
+#       ADREC public dashboards provide transaction, lease, and price index
+#       data without authentication. COLL-04 fulfilled by ADREC substitution.
+
+schema_version: "1.0"
+name: adrec-abu-dhabi
+description: >
+  Abu Dhabi Real Estate Centre (ADREC) public dashboard data.
+  Uses Patchright stealth browser to navigate the ADREC dashboard (hosted as
+  iframe on dari.ae), wait for chart/data render, then click export buttons
+  to download CSV files. Export buttons: exportBtnTransactionDesktop (Transactions
+  by Type - critical), exportBtnLeaseDesktop (Lease Data), saleExportBtn (Sale
+  Price Index), rentExportBtn (Rent Price Index). Uses waitForEvent('download')
+  + saveAs() pattern with Promise.all for atomic click+download binding.
+type: browser_scrape
+frequency: monthly
+priority: 2
+
+source:
+  url: "https://www.dari.ae/adrec/MarketDetails.html"
+  browser: chromium
+  stealth: true
+  wait_until: domcontentloaded
+  post_load_wait_ms: 5000
+
+extraction:
+  strategy: click_to_download
+  export_buttons:
+    - id: exportBtnTransactionDesktop
+      label: "Transactions by Type"
+      critical: true
+    - id: exportBtnLeaseDesktop
+      label: "Lease Data"
+      critical: false
+    - id: saleExportBtn
+      label: "Sale Price Index"
+      critical: false
+    - id: rentExportBtn
+      label: "Rent Price Index"
+      critical: false
+  download_pattern: "waitForEvent_download_saveAs"
+
+output:
+  path: "/opt/lobsec/data/raw/adrec-abu-dhabi/{date}.csv"
+  format: csv
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 2000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: true
+
+timeout_ms: 300000
