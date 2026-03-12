@@ -75,7 +75,7 @@
   Plans:
   - [x] 07.1-01-PLAN.md — Scraper engine core + FastAPI service (Crawlee, Patchright, missions, auth) ✅ 2026-03-12
   - [x] 07.1-02-PLAN.md — 7 YAML missions for UAE RE sources + mission handler ✅ 2026-03-12
-  - [ ] 07.1-03-PLAN.md — TS integration refactor (delete old collectors, HTTP client wrapper)
+  - [x] 07.1-03-PLAN.md — TS integration refactor (delete old collectors, HTTP client wrapper) ✅ 2026-03-12
   - [ ] 07.1-04-PLAN.md — Production deployment + end-to-end verification
   Success criteria:
   1. @lobsec/scraper package at packages/scraper/ with Crawlee, Patchright, FastAPI engine
@@ -142,7 +142,7 @@
 | 5. Scheduling & Hardening | v1.2 | 2/2 | Complete | 2026-03-05 |
 | 6. Foundation & Infrastructure | v1.3 | 3/3 | Complete | 2026-03-11 |
 | 7. MVP Data Collection | v1.3 | 1/4 | In Progress | - |
-| 7.1 Ninja Scraper | v1.3 | 2/4 | In Progress | - |
+| 7.1 Ninja Scraper | v1.3 | 3/4 | In Progress | - |
 | 8. Tier B Collection | v1.3 | 0/? | Pending | - |
 | 9. Tier C Collection | v1.3 | 0/? | Pending | - |
 | 10. Statistical Analysis | v1.3 | 0/? | Pending | - |
@@ -150,4 +150,4 @@
 | 12. Plugin Tools & Hardening | v1.3 | 0/? | Pending | - |
 
 ---
-*Roadmap updated: 2026-03-12 after Plan 07.1-02 completion*
+*Roadmap updated: 2026-03-12 after Plan 07.1-03 completion*
