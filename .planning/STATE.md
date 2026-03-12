@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-11T19:57:01.442Z"
+last_updated: "2026-03-12T12:31:22Z"
 progress:
   total_phases: 2
   completed_phases: 2
@@ -15,10 +15,10 @@ progress:
 
 ## Current Position
 
-Phase: 7 of 12 -- MVP Data Collection (Tier A + DEWA)
-Plan: 4 of 4 -- Plan 04 BLOCKED at deployment
-Status: DEWA collector built, all 7 collectors coded and wired. BLOCKED by SQLite WAL mode failure during OpenClaw plugin loading. Code complete, deployment environment issue.
-Last activity: 2026-03-11 — Plan 07-04 Task 1 complete, Task 2 blocked by better-sqlite3 WAL pragma failure in plugin context. Requires user investigation of OpenClaw plugin loader filesystem permissions.
+Phase: 7.1 of 12 -- Ninja Scraper (INSERTED)
+Plan: 1 of 4 -- Plan 01 COMPLETE (scraper engine core + FastAPI service)
+Status: @lobsec/scraper package created with engine core, mission specs, Patchright stealth, and FastAPI service layer. Ready for Plan 02 (YAML missions).
+Last activity: 2026-03-12 — Plan 07.1-01 complete. 2 tasks, 15 files created. Engine + API verified.
 
 ## Resume Instructions
 
@@ -40,14 +40,15 @@ Last activity: 2026-03-11 — Plan 07-04 Task 1 complete, Task 2 blocked by bett
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** No credential or sensitive data ever reaches an LLM provider
-**Current focus:** v1.3 UAE Real Estate Intelligence System -- Phase 7 (MVP Data Collection)
+**Current focus:** v1.3 UAE Real Estate Intelligence System -- Phase 7.1 (Ninja Scraper)
 
 ## v1.3 Phase Summary
 
 | Phase | Name | Requirements | Status |
 |-------|------|-------------|--------|
 | 6 | Foundation & Infrastructure | 10 (INFRA-01..07, SEC-01..02, SCHED-01) | ✅ Complete |
-| 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | In Progress (3/4 plans) |
+| 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | Paused (3/4 plans, blocked) |
+| 7.1 | Ninja Scraper | 11 (same as Phase 7) | In Progress (1/4 plans) |
 | 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | Pending |
 | 9 | Tier C Collection | 15 (COLL-14, COLL-16..28, SCHED-05) | Pending |
 | 10 | Statistical Analysis Pipeline | 11 (STAT-01..08, SCHED-06, SEC-06..07) | Pending |
@@ -120,6 +121,10 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | Anti-bot measures for listing scrapers | Random 1-3s delays between areas, realistic user agent, graceful 403/CAPTCHA handling (skip, no retry). Do NOT retry immediately on block — makes it worse. |
 | Price reduction single-scrape metric | Detected from portal badges during scraping (not historical comparison). Bayut/PropertyFinder show "Reduced" badge on listings. If badge absent, count=0 and log warning. |
 | Bayut/PropertyFinder independent registration | Both collectors registered independently per user decision. Can fail without affecting each other. Enables cross-validation via identical output format. |
+| Patchright Option A (bypass Crawlee pool) | Use Patchright pages directly, bypass Crawlee's browser pool. Lose auto-scaling but gain full stealth control. Evaluate Option B if browser pool becomes bottleneck. |
+| BackgroundTasks over Celery | FastAPI BackgroundTasks sufficient for <10min scrapes. Max 10 concurrent limit. Celery deferred to Phase 8 if long scrapes emerge. |
+| Ad-hoc Mission for /scrape | POST /scrape creates temporary Mission object so it works without pre-defined YAML files. Enables simple one-off scraping. |
+| CRAWLEE_STORAGE_DIR at import | Set env var at module import time to ensure all Crawlee storage goes to /opt/lobsec/data/raw/crawlee-storage. |
 
 ## Blockers
 
@@ -135,8 +140,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Phase 7.1 context gathered — Ninja Scraper design decisions captured
-Resume file: .planning/phases/07.1-ninja-scraper/07.1-CONTEXT.md
-Next: /gsd:plan-phase 7.1 — research and plan the Ninja Scraper engine
-Key decisions: General-purpose @lobsec/scraper package (not UAE-RE-specific), Crawlee+Patchright+FastAPI, YAML missions, own venv, port 18791, token auth, always-running service
+Stopped at: Completed 07.1-01-PLAN.md — Scraper engine core + FastAPI service
+Resume file: None
+Next: Execute 07.1-02-PLAN.md — 7 YAML missions for UAE RE sources + mission handler
+Key context: packages/scraper/ has full engine, API, stealth, utils. Mission model validated. FastAPI routes registered. Need YAML missions next.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 collectors)
