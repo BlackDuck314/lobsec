@@ -68,6 +68,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 
 ## Accumulated Context
 
+### Roadmap Evolution
+- Phase 7.1 inserted after Phase 7: Ninja Scraper (URGENT)
+
 ### Production Environment
 - Server: Ubuntu 25.04 (VMware), <HOSTNAME> (<HOST_IP>)
 - OpenClaw v2026.2.24, Node.js 22, sandbox mode off, skills enabled
@@ -131,10 +134,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 
 ## Session Continuity
 
-Last session: 2026-03-11
-Stopped at: Plan 07-04 Task 2 — Deployment blocked by SQLite WAL mode failure
-Resume file: .planning/phases/07-mvp-collection/07-04-SUMMARY.md
-Next: Resolve OpenClaw plugin loader + better-sqlite3 WAL compatibility issue
-Requires: User investigation of plugin loading context, filesystem permissions, or WAL mode workaround
-Code status: Complete and ready (all 7 collectors, normalization, CLI integration)
-Deployment status: Files deployed, service won't load plugin due to runtime error
+Last session: 2026-03-12
+Stopped at: Phase 7.1 context gathered — Ninja Scraper design decisions captured
+Resume file: .planning/phases/07.1-ninja-scraper/07.1-CONTEXT.md
+Next: /gsd:plan-phase 7.1 — research and plan the Ninja Scraper engine
+Key decisions: General-purpose @lobsec/scraper package (not UAE-RE-specific), Crawlee+Patchright+FastAPI, YAML missions, own venv, port 18791, token auth, always-running service
+User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 collectors)
