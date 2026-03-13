@@ -87,10 +87,10 @@
 
 - [ ] Phase 8: Tier B Collection (Population & Employment Signals) — 8 demographic and employment data sources with scheduling
   Requirements: COLL-06, COLL-07, COLL-08, COLL-09, COLL-10, COLL-11, COLL-12, COLL-13, SCHED-02, SCHED-03, SCHED-04, SCHED-07
-  **Plans:** 4 plans
+  **Plans:** 4 plans (2/4 complete)
   Plans:
-  - [ ] 08-01-PLAN.md — Government/institutional YAML missions + Python normalizers (MOHRE, DXB, GDRFA, KHDA, RTA, CBUAE)
-  - [ ] 08-02-PLAN.md — Job platform + salary survey YAML missions + normalizers (LinkedIn, Bayt, Indeed, GulfTalent, Cooper Fitch, Hays, Robert Half)
+  - [x] 08-01-PLAN.md — Government/institutional YAML missions + Python normalizers (MOHRE, DXB, GDRFA, KHDA, RTA, CBUAE) ✅ 2026-03-13
+  - [x] 08-02-PLAN.md — Job platform + salary survey YAML missions + normalizers (LinkedIn, Bayt, Indeed, GulfTalent, Cooper Fitch, Hays, Robert Half) ✅ 2026-03-13
   - [ ] 08-03-PLAN.md — TS registry integration + collect.sh orchestrator
   - [ ] 08-04-PLAN.md — systemd timers + production deployment + verification
   Success criteria:

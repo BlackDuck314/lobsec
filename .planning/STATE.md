@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-12T15:52:23.545Z"
+last_updated: "2026-03-13T07:22:00Z"
 progress:
   total_phases: 3
   completed_phases: 3
-  total_plans: 11
-  completed_plans: 11
+  total_plans: 12
+  completed_plans: 12
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: 7.1 of 12 -- Ninja Scraper (COMPLETE)
-Plan: 4 of 4 -- Plan 04 COMPLETE (production deployment + e2e verification)
-Status: Phase 7.1 COMPLETE. Ninja Scraper deployed as lobsec-scraper.service on port 18791. 7 missions loaded. Engine verified end-to-end for both HTTP download and browser scrape mission types. TS integration confirmed (native fetch to scraper API). Ready for Phase 8 (Tier B Collection).
-Last activity: 2026-03-12 — Plan 07.1-04 complete. 2 tasks. Service deployed, 6/7 missions tested, all produced raw output files. Bayut 20-area browser iteration successful (205s). Dubai Pulse WAF-blocked (expected). TS compile clean.
+Phase: 8 of 12 -- Tier B Collection (IN PROGRESS)
+Plan: 2 of 4 -- Plan 02 COMPLETE (job postings and salary surveys)
+Status: Phase 8 Tier B Collection in progress. Plan 08-02 complete: 7 YAML missions (4 job platforms + 3 salary surveys) and 2 Python normalizers (normalize_jobs.py aggregates job postings with sector/seniority classification, normalize_salary.py extracts salary data from PDFs via pdfplumber). Total 20 missions in Ninja Scraper (7 from Phase 7.1 + 6 from 08-01 + 7 from 08-02). Ready for Plan 08-03 (scheduling infrastructure - systemd timers and orchestrator script).
+Last activity: 2026-03-13 — Plan 08-02 complete. 2 tasks. 11 files created (7 YAML + 2 normalizers + 2 schemas). Job posting aggregation stores weekly counts per sector/seniority. GulfTalent uses HSM-authenticated session. Anti-bot measures with skip_on_403/skip_on_captcha.
 
 ## Resume Instructions
 
@@ -49,7 +49,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | 6 | Foundation & Infrastructure | 10 (INFRA-01..07, SEC-01..02, SCHED-01) | ✅ Complete |
 | 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | Paused (3/4 plans, blocked) |
 | 7.1 | Ninja Scraper | 11 (same as Phase 7) | ✅ Complete (4/4 plans) |
-| 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | Pending |
+| 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | In Progress (1/3 plans, 6 reqs) |
 | 9 | Tier C Collection | 15 (COLL-14, COLL-16..28, SCHED-05) | Pending |
 | 10 | Statistical Analysis Pipeline | 11 (STAT-01..08, SCHED-06, SEC-06..07) | Pending |
 | 11 | Intelligence Products | 10 (PROD-01..08, QUAL-01, QUAL-03) | Pending |
@@ -134,6 +134,18 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | Deploy code via copy not pip install | /opt/lobsec/scraper/ receives cp -r of ninja_scraper module + missions. Matches lobsec service deployment pattern. |
 | Dubai Pulse WAF expected | All 3 HTTP download sources (DLD, Ejari, permits) get "Request Rejected" from Dubai Pulse WAF. Engine correct, needs API credentials. |
 | Bayut selectors need Phase 8 tuning | CSS selectors in bayut-listings.yml return null. Engine area iteration works (20 areas, 205s). DOM inspection needed for correct selectors. |
+| All Tier B missions use browser_scrape | Consistent approach for government sources. Patchright overhead is small. RTA browser scrape may bypass Dubai Pulse WAF. |
+| PDF extraction in Python not YAML | Clean separation: scraper collects files, Python understands content. pdfplumber in normalization modules, not missions. |
+| Page targeting for PDF extraction | DXB 0-4, GDRFA 1-4, KHDA 0-9, CBUAE all pages. Reduces false positives from decorative tables. |
+| Header detection for table identification | Lowercase keyword matching (visa+issued, enrollment+student, remittance+personal) before extracting values. |
+| Sanity validation for critical metrics | DXB >100K passengers, KHDA >100K students. Raises error if suspiciously low (likely wrong table). |
+| MOHRE targets statistical reports | mohre.gov.ae/en/data-library/statistical-report.aspx instead of press releases for structured data. |
+| DXB targets PDF factsheets | More reliable for pdfplumber than HTML press releases. Consistent table formatting. |
+| KHDA uses quarterly frequency | Quarterly timer checks for new annual report. No separate "annual" frequency in CollectionFrequency type. |
+| GDRFA and CBUAE independent missions | Different URLs, different extraction logic, independent failure modes. |
+| Measurement date patterns | Monthly → start of month, quarterly → start of quarter, annual → September (academic year). |
+| Error messages for Telegram fallback | Descriptive ValueError with required field names when PDF extraction fails. Bot prompts user for manual entry. |
+| UAE-level prefix for CBUAE | uae|cbuae_* instead of dubai|cbuae_* — remittance data is national, not Dubai-specific. |
 
 ## Blockers
 
@@ -148,9 +160,13 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 
 ## Session Continuity
 
-Last session: 2026-03-12
-Stopped at: Phase 8 context gathered — ready for planning
-Resume file: .planning/phases/08-tier-b-collection/08-CONTEXT.md
-Next: /gsd:plan-phase 8 — plan Tier B Collection (8 sources + scheduling)
-Key context: Ninja Scraper running at 127.0.0.1:18791 with 7 missions. All Tier B sources use browser_scrape missions. PDF extraction in Python normalization (pdfplumber). Job postings from 4 platforms (LinkedIn, Bayt, Indeed, GulfTalent). systemd timers for weekly/monthly/quarterly. Orchestrator at /opt/lobsec/bin/collect.sh.
+Last session: 2026-03-13
+Stopped at: Phase 8 Plan 08-01 complete — 6 government sources ready
+Resume file: .planning/phases/08-tier-b-collection/08-01-SUMMARY.md
+Next: Execute Plan 08-02 — job postings (4 platforms) and salary surveys (3 firms)
+Key context: 13 missions total (7 from Phase 7.1 + 6 from 08-01). PDF extraction pattern established with page targeting (DXB 0-4, GDRFA 1-4, KHDA 0-9, CBUAE all pages) and header detection. Measurement date patterns: monthly → start of month, quarterly → start of quarter, annual → September. Job platform YAMLs already exist (linkedin-jobs, bayt-jobs, indeed-jobs, gulftalent-jobs) and salary survey YAMLs (cooper-fitch-salary, hays-salary, roberthalf-salary) committed in 08-01 Task 1.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 collectors). Create GulfTalent account for COLL-11.
+| Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
+| Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
+| GulfTalent HSM-authenticated session | Credentials in HSM enable authenticated browser session for higher data quality (explicit seniority levels, better salary disclosure rates). Worth credential management overhead. |
+| Seniority from salary range brackets | Junior <10K, Mid 10-25K, Senior 25-50K, Executive >50K AED/month. Based on UAE salary survey data, provides consistent classification across platforms. |
