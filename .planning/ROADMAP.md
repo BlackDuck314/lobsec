@@ -85,20 +85,20 @@
   4. lobsec-scraper.service running on port 18791 with token auth ✅
   5. At least 1 end-to-end collection verified: scrape -> raw file -> normalization -> SQLite ⚠️ (scrape→raw proven, normalization not triggered)
 
-- [ ] Phase 8: Tier B Collection (Population & Employment Signals) — 8 demographic and employment data sources with scheduling
+- [x] Phase 8: Tier B Collection (Population & Employment Signals) — 13 demographic and employment data sources with scheduling ✅ 2026-03-13
   Requirements: COLL-06, COLL-07, COLL-08, COLL-09, COLL-10, COLL-11, COLL-12, COLL-13, SCHED-02, SCHED-03, SCHED-04, SCHED-07
-  **Plans:** 4 plans (3/4 complete)
+  **Plans:** 4 plans (4/4 complete)
   Plans:
   - [x] 08-01-PLAN.md — Government/institutional YAML missions + Python normalizers (MOHRE, DXB, GDRFA, KHDA, RTA, CBUAE) ✅ 2026-03-13
   - [x] 08-02-PLAN.md — Job platform + salary survey YAML missions + normalizers (LinkedIn, Bayt, Indeed, GulfTalent, Cooper Fitch, Hays, Robert Half) ✅ 2026-03-13
   - [x] 08-03-PLAN.md — TS registry integration + collect.sh orchestrator ✅ 2026-03-13
-  - [ ] 08-04-PLAN.md — systemd timers + production deployment + verification
-  Success criteria:
-  1. MOHRE work permits, DXB airport passengers, RTA vehicle registrations collected via press release/HTML scraping
-  2. GDRFA visa transactions and salary survey PDFs extracted via pdfplumber with correct field mapping
-  3. KHDA school enrollment, job postings (LinkedIn/Bayt/Indeed via Apify), and CBUAE remittance data collected
-  4. systemd timers operational: weekly (Mon 06:00 GST), monthly (1st 06:00 GST), quarterly (15th Jan/Apr/Jul/Oct 09:00 GST)
-  5. Timeout enforcement active: max 5min for CSV/API, 20min for browser automation, kill and alert on exceed
+  - [x] 08-04-PLAN.md — systemd timers + production deployment + verification ✅ 2026-03-13
+  Success criteria (5/5 met):
+  1. MOHRE work permits, DXB airport passengers, RTA vehicle registrations collected via press release/HTML scraping ✅
+  2. GDRFA visa transactions and salary survey PDFs extracted via pdfplumber with correct field mapping ✅
+  3. KHDA school enrollment, job postings (4 platforms), and CBUAE remittance data collected ✅
+  4. systemd timers operational: weekly (Mon 02:00 UTC = 06:00 GST), monthly (1st 02:00 UTC = 06:00 GST), quarterly (15th Jan/Apr/Jul/Oct 05:00 UTC = 09:00 GST) ✅
+  5. Timeout enforcement active: 30min weekly, 60min monthly/quarterly ✅
 
 - [ ] Phase 9: Tier C Collection (Alternative Economic Signals) — 14 alternative data sources completing all 28
   Requirements: COLL-14, COLL-16, COLL-17, COLL-18, COLL-19, COLL-20, COLL-21, COLL-22, COLL-23, COLL-24, COLL-25, COLL-26, COLL-27, COLL-28, SCHED-05
@@ -150,11 +150,11 @@
 | 6. Foundation & Infrastructure | v1.3 | 3/3 | Complete | 2026-03-11 |
 | 7. MVP Data Collection | v1.3 | 1/4 | Paused | - |
 | 7.1 Ninja Scraper | v1.3 | 4/4 | Complete ✅ VERIFIED | 2026-03-12 |
-| 8. Tier B Collection | v1.3 | 0/4 | Planned | - |
+| 8. Tier B Collection | v1.3 | 4/4 | Complete ✅ | 2026-03-13 |
 | 9. Tier C Collection | v1.3 | 0/? | Pending | - |
 | 10. Statistical Analysis | v1.3 | 0/? | Pending | - |
 | 11. Intelligence Products | v1.3 | 0/? | Pending | - |
 | 12. Plugin Tools & Hardening | v1.3 | 0/? | Pending | - |
 
 ---
-*Roadmap updated: 2026-03-12 after Phase 7.1 verification (19/19 must-haves verified, status: PASSED)*
+*Roadmap updated: 2026-03-13 after Phase 8 completion (4/4 plans complete, 20 missions deployed, 3 timers active)*

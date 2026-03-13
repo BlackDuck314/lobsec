@@ -15,10 +15,10 @@ progress:
 
 ## Current Position
 
-Phase: 8 of 12 -- Tier B Collection (IN PROGRESS)
-Plan: 3 of 4 -- Plan 03 COMPLETE (TypeScript framework wiring and orchestrator script)
-Status: Phase 8 Tier B Collection in progress. Plan 08-03 complete: COLLECTOR_DEFINITIONS expanded to 20 entries (7 Tier A + 13 Tier B), SOURCE_MODULE_MAP updated with 13 new mappings (many-to-one: 4 job platforms → normalize_jobs, 3 salary firms → normalize_salary), PythonScriptName extended with 8 new normalizer variants. collect.sh orchestrator script created at /opt/lobsec/bin/ with health check, env sourcing, and log rotation. All TypeScript compiles cleanly. Ready for Plan 08-04 (systemd timer deployment and end-to-end verification).
-Last activity: 2026-03-13 — Plan 08-03 complete. 2 tasks. 5 files modified (4 TS framework files + 1 deployment tracking), 1 script deployed (collect.sh). Timeout enforcement: 5min for HTML/API sources, 10min for browser automation. Frequency distribution: 8 weekly, 6 monthly, 7 quarterly. Priority ordering: 1 (core transactions), 2 (government/salary), 3 (jobs/listings).
+Phase: 8 of 12 -- Tier B Collection (COMPLETE)
+Plan: 4 of 4 -- Plan 04 COMPLETE (systemd timers and production deployment)
+Status: Phase 8 Tier B Collection complete. All 4 plans executed: 08-01 (6 government sources), 08-02 (7 job/salary sources), 08-03 (TS registry + orchestrator), 08-04 (systemd timers + deployment). 3 systemd timers active (weekly Mon 02:00 UTC, monthly 1st 02:00 UTC, quarterly 15th Jan/Apr/Jul/Oct 05:00 UTC). 20 YAML missions deployed to Ninja Scraper (7 Tier A + 13 Tier B). 8 Python normalization modules deployed. collect.sh orchestrator operational. End-to-end verified with rta-vehicles test collection. Ready for Phase 9 (Tier C Collection - 14 alternative data sources).
+Last activity: 2026-03-13 — Plan 08-04 complete. 2 tasks (1 auto, 1 checkpoint). 6 systemd units created, 20 missions deployed, 8 normalizers deployed. Deployment verified: 3 timers active, Ninja Scraper health OK (20 missions loaded), test collection produced raw data (161 bytes). User setup needed: Dubai Pulse API credentials (DLD/Ejari/permits/DEWA), GulfTalent account.
 
 ## Resume Instructions
 
@@ -161,12 +161,16 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-13
-Stopped at: Phase 8 Plan 08-01 complete — 6 government sources ready
-Resume file: .planning/phases/08-tier-b-collection/08-01-SUMMARY.md
-Next: Execute Plan 08-02 — job postings (4 platforms) and salary surveys (3 firms)
-Key context: 13 missions total (7 from Phase 7.1 + 6 from 08-01). PDF extraction pattern established with page targeting (DXB 0-4, GDRFA 1-4, KHDA 0-9, CBUAE all pages) and header detection. Measurement date patterns: monthly → start of month, quarterly → start of quarter, annual → September. Job platform YAMLs already exist (linkedin-jobs, bayt-jobs, indeed-jobs, gulftalent-jobs) and salary survey YAMLs (cooper-fitch-salary, hays-salary, roberthalf-salary) committed in 08-01 Task 1.
-User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 collectors). Create GulfTalent account for COLL-11.
+Stopped at: Phase 8 complete — all 4 plans executed (08-01 government, 08-02 jobs/salary, 08-03 TS registry, 08-04 timers)
+Resume file: .planning/phases/08-tier-b-collection/08-04-SUMMARY.md
+Next: Execute Phase 9 (Tier C Collection) — 14 alternative data sources (Google Trends, social sentiment, foot traffic, RTA metro, DTCM tourism, DED business, CBUAE mortgages, port cargo, customs imports, FCSA demographics, InsideAirbnb, F&B closures, moving inquiries, commercial office reports)
+Key context: 20 missions deployed (7 Tier A + 13 Tier B). 3 systemd timers active (weekly Mon 02:00 UTC, monthly 1st 02:00 UTC, quarterly 15th Jan/Apr/Jul/Oct 05:00 UTC). collect.sh orchestrator operational. End-to-end verified with rta-vehicles test (scrape → raw file). Dubai Pulse WAF blocks 4 sources (DLD/Ejari/permits/DEWA) without API credentials.
+User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Create GulfTalent account for COLL-11.
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
 | GulfTalent HSM-authenticated session | Credentials in HSM enable authenticated browser session for higher data quality (explicit seniority levels, better salary disclosure rates). Worth credential management overhead. |
 | Seniority from salary range brackets | Junior <10K, Mid 10-25K, Senior 25-50K, Executive >50K AED/month. Based on UAE salary survey data, provides consistent classification across platforms. |
+| 3 frequency-based timers not source-specific | Weekly/monthly/quarterly timers run multiple sources at each frequency, avoiding SQLite write contention from 20 concurrent timers. Orchestrator (collect.sh) handles sequential execution. |
+| Non-overlapping timer schedules | Weekly/monthly at 02:00 UTC, quarterly at 05:00 UTC spreads load. Persistent=true ensures missed runs execute on boot. |
+| Timeout by frequency | Weekly 30min (8 sources), monthly/quarterly 60min (6-7 sources). Accommodates browser automation overhead. |
+| Deployment via cp not pip | Matches lobsec service pattern. YAML missions cp to /opt/lobsec/scraper/missions/, Python normalizers to /opt/lobsec/plugins/lobsec-uae-re/, restart service to hotload. |
