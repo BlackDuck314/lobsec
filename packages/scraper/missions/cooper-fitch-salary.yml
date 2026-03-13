@@ -8,7 +8,7 @@ description: >
   find latest salary guide PDF, download it. Normalization extracts median salaries
   by role/seniority via pdfplumber. Manual fallback if CAPTCHA/email gate detected.
 type: browser_scrape
-frequency: annual
+frequency: quarterly
 priority: 2
 
 source:

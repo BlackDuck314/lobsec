@@ -8,7 +8,7 @@ description: >
   and tech roles with detailed compensation data. Navigate to salary guide page,
   find latest PDF, download. Normalization extracts median salaries via pdfplumber.
 type: browser_scrape
-frequency: annual
+frequency: quarterly
 priority: 2
 
 source:
