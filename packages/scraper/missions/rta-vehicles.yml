@@ -1,0 +1,47 @@
+# RTA Vehicle Registrations — Dubai Pulse Browser Scrape
+# Source 10 (COLL-10): Monthly vehicle registration/deregistration data
+# Signal: LEADING (1-3 months) | Lifecycle: Settlement
+
+schema_version: "1.0"
+name: rta-vehicles
+description: >
+  RTA (Roads and Transport Authority) vehicle registration data from Dubai
+  Pulse. Browser scrape to bypass WAF that blocks HTTP downloads. Extract
+  table data for new registrations, deregistrations, and total registered
+  vehicles. Graceful failure if WAF still blocks.
+type: browser_scrape
+frequency: monthly
+priority: 2
+
+source:
+  url: "https://www.dubaipulse.gov.ae/data/rta-vehicle-registration"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: json
+  strategy: browser_table_extract
+  selectors:
+    data_table: "table, .data-table, [class*='table']"
+    pagination: "[class*='pagination'], .page-controls"
+    filter_controls: "[class*='filter']"
+  fields:
+    - date
+    - new_registrations
+    - deregistrations
+    - total_registered
+
+output:
+  path: "/opt/lobsec/data/raw/rta-vehicles/{date}.json"
+  format: json
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 2000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: true
+
+timeout_ms: 300000
