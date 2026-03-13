@@ -18,13 +18,14 @@ import type {
 } from "./types.js";
 
 /**
- * Collector definitions for 7 UAE RE sources.
+ * Collector definitions for 20 UAE RE sources.
  * Each entry maps to a Ninja Scraper YAML mission file.
  */
 const COLLECTOR_DEFINITIONS: Array<{
   missionName: string;
   metadata: CollectorMetadata;
 }> = [
+  // Phase 7 Tier A — Core transaction and listing sources
   {
     missionName: "dld-sales",
     metadata: { source: "dld-sales", frequency: "weekly", priority: 1, timeout: 120_000 },
@@ -53,6 +54,64 @@ const COLLECTOR_DEFINITIONS: Array<{
     missionName: "dewa-connections",
     metadata: { source: "dewa-connections", frequency: "monthly", priority: 2, timeout: 300_000 },
   },
+
+  // Phase 8 Tier B — Government/Institutional Sources
+  {
+    missionName: "mohre-permits",
+    metadata: { source: "mohre-permits", frequency: "monthly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "dxb-passengers",
+    metadata: { source: "dxb-passengers", frequency: "monthly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "gdrfa-visas",
+    metadata: { source: "gdrfa-visas", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "khda-enrollment",
+    metadata: { source: "khda-enrollment", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "rta-vehicles",
+    metadata: { source: "rta-vehicles", frequency: "monthly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "cbuae-remittances",
+    metadata: { source: "cbuae-remittances", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
+
+  // Phase 8 Tier B — Job Platforms (weekly, lower priority)
+  {
+    missionName: "linkedin-jobs",
+    metadata: { source: "linkedin-jobs", frequency: "weekly", priority: 3, timeout: 600_000 },
+  },
+  {
+    missionName: "bayt-jobs",
+    metadata: { source: "bayt-jobs", frequency: "weekly", priority: 3, timeout: 600_000 },
+  },
+  {
+    missionName: "indeed-jobs",
+    metadata: { source: "indeed-jobs", frequency: "weekly", priority: 3, timeout: 600_000 },
+  },
+  {
+    missionName: "gulftalent-jobs",
+    metadata: { source: "gulftalent-jobs", frequency: "weekly", priority: 3, timeout: 600_000 },
+  },
+
+  // Phase 8 Tier B — Salary Surveys (quarterly, medium priority)
+  {
+    missionName: "cooper-fitch-salary",
+    metadata: { source: "cooper-fitch-salary", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "hays-salary",
+    metadata: { source: "hays-salary", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "roberthalf-salary",
+    metadata: { source: "roberthalf-salary", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
 ];
 
 /**
@@ -69,7 +128,7 @@ export class CollectorRegistry {
   }
 
   /**
-   * Create and register all 7 UAE RE collectors backed by Ninja Scraper API.
+   * Create and register all collectors via factory (Tier A + Tier B).
    *
    * Each collector is a SourceCollector instance differentiated by missionName.
    * All delegate scraping to the Ninja Scraper HTTP API.

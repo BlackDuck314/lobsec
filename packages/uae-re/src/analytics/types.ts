@@ -36,7 +36,15 @@ export type PythonScriptName =
   | "normalize_adrec"
   | "normalize_bayut"
   | "normalize_propertyfinder"
-  | "normalize_dewa";
+  | "normalize_dewa"
+  | "normalize_mohre"
+  | "normalize_dxb"
+  | "normalize_gdrfa"
+  | "normalize_khda"
+  | "normalize_rta"
+  | "normalize_remittances"
+  | "normalize_jobs"
+  | "normalize_salary";
 
 /**
  * Configuration for the Python subprocess bridge.

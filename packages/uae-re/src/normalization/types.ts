@@ -86,6 +86,7 @@ export interface NormalizedRecord {
  * Used by orchestrator to call correct per-source normalization script.
  */
 export const SOURCE_MODULE_MAP: Record<string, string> = {
+  // Phase 7 Tier A
   "dld-sales": "normalize_dld",
   "ejari-rentals": "normalize_ejari",
   "building-permits": "normalize_permits",
@@ -93,4 +94,23 @@ export const SOURCE_MODULE_MAP: Record<string, string> = {
   "bayut-listings": "normalize_bayut",
   "propertyfinder-listings": "normalize_propertyfinder",
   "dewa-connections": "normalize_dewa",
+
+  // Phase 8 Tier B — Government/Institutional
+  "mohre-permits": "normalize_mohre",
+  "dxb-passengers": "normalize_dxb",
+  "gdrfa-visas": "normalize_gdrfa",
+  "khda-enrollment": "normalize_khda",
+  "rta-vehicles": "normalize_rta",
+  "cbuae-remittances": "normalize_remittances",
+
+  // Phase 8 Tier B — Job platforms (all use normalize_jobs with platform detection)
+  "linkedin-jobs": "normalize_jobs",
+  "bayt-jobs": "normalize_jobs",
+  "indeed-jobs": "normalize_jobs",
+  "gulftalent-jobs": "normalize_jobs",
+
+  // Phase 8 Tier B — Salary surveys (all use normalize_salary with firm detection)
+  "cooper-fitch-salary": "normalize_salary",
+  "hays-salary": "normalize_salary",
+  "roberthalf-salary": "normalize_salary",
 };

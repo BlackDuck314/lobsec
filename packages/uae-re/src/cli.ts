@@ -66,7 +66,7 @@ async function runAll(): Promise<void> {
 
   const registry = new CollectorRegistry();
 
-  // Register all 7 collectors via factory
+  // Register all collectors via factory (Tier A + Tier B)
   registry.createCollectors(db, createScraperConfig());
 
   const result = await registry.runAll();
@@ -150,7 +150,7 @@ async function runFrequency(freq: string): Promise<void> {
 
   const registry = new CollectorRegistry();
 
-  // Register all 7 collectors via factory
+  // Register all collectors via factory (Tier A + Tier B)
   registry.createCollectors(db, createScraperConfig());
 
   const result = await registry.runByFrequency(freq as CollectionFrequency);
@@ -225,7 +225,7 @@ async function runOne(source: string): Promise<void> {
 
   const registry = new CollectorRegistry();
 
-  // Register all 7 collectors via factory
+  // Register all collectors via factory (Tier A + Tier B)
   registry.createCollectors(db, createScraperConfig());
 
   try {
