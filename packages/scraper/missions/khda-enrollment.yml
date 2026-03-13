@@ -1,0 +1,44 @@
+# KHDA School Enrollment — Annual PDF Census Browser Scrape
+# Source 9 (COLL-09): Private school enrollment by curriculum
+# Signal: LEADING (3-6 months) | Lifecycle: Settlement
+
+schema_version: "1.0"
+name: khda-enrollment
+description: >
+  KHDA (Knowledge and Human Development Authority) annual school census PDF.
+  Navigate to data & statistics page, find latest census or enrollment PDF,
+  download it. Normalization extracts enrollment tables by curriculum via
+  pdfplumber. Test against last year's published PDFs (KHDA 2024-25).
+type: browser_scrape
+frequency: quarterly
+priority: 2
+
+source:
+  url: "https://web.khda.gov.ae/en/Resources/KHDA-data-statistics"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: pdf
+  strategy: find_and_download
+  selectors:
+    pdf_links: "a[href$='.pdf']"
+    census_filter: "text*='Census' | text*='Enrollment' | text*='Schools' | text*='Annual'"
+  fields:
+    - pdf_url
+    - academic_year
+
+output:
+  path: "/opt/lobsec/data/raw/khda-enrollment/{date}.pdf"
+  format: binary
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 2000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: true
+
+timeout_ms: 300000

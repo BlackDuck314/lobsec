@@ -1,0 +1,45 @@
+# DXB Airport Passengers — PDF Factsheet Browser Scrape
+# Source 7 (COLL-07): Airport passenger traffic data (arrivals/departures)
+# Signal: LEADING (1-2 months) | Lifecycle: Population Movement
+
+schema_version: "1.0"
+name: dxb-passengers
+description: >
+  Dubai International Airport (DXB) monthly passenger statistics from PDF
+  factsheets. Navigate to fact sheets page, find latest PDF containing
+  "Traffic" or "Monthly" or "Factsheet", download PDF. Normalization
+  extracts passenger counts via pdfplumber.
+type: browser_scrape
+frequency: monthly
+priority: 2
+
+source:
+  url: "https://www.dubaiairports.ae/corporate/media-centre/fact-sheets"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: pdf
+  strategy: find_and_download
+  selectors:
+    pdf_links: "a[href$='.pdf']"
+    factsheet_filter: "text*='Traffic' | text*='Monthly' | text*='Factsheet' | text*='Statistics'"
+  fields:
+    - pdf_url
+    - report_month
+    - report_year
+
+output:
+  path: "/opt/lobsec/data/raw/dxb-passengers/{date}.pdf"
+  format: binary
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 2000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: true
+
+timeout_ms: 300000

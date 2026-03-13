@@ -1,0 +1,63 @@
+# GulfTalent Job Postings — Authenticated Browser Scrape
+# Source: COLL-11 (Job Postings) | Signal: LEADING (2-3 months) | Lifecycle: Job Search
+
+schema_version: "1.0"
+name: gulftalent-jobs
+description: >
+  GulfTalent UAE job postings scraped via authenticated browser session.
+  Premium job platform focused on Gulf region with best salary disclosure rates.
+  Credentials stored in HSM for authenticated access to detailed job data including
+  explicit seniority levels.
+type: browser_scrape
+frequency: weekly
+priority: 3
+
+source:
+  url: "https://www.gulftalent.com/jobs/uae"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+  authentication:
+    enabled: true
+    credentials_source: hsm
+    hsm_key: "gulftalent-username"
+    hsm_password_key: "gulftalent-password"
+    login_url: "https://www.gulftalent.com/login"
+    username_selector: "input[name='username'], input[type='email'], #email"
+    password_selector: "input[name='password'], input[type='password'], #password"
+    submit_selector: "button[type='submit'], .login-button, .btn-login"
+
+extraction:
+  format: json
+  selectors:
+    total_count: ".search-count, .job-count"
+    job_cards: ".job-result, .job-listing, .job-item"
+    job_title: ".job-title, h3 a"
+    company: ".company-name, .employer-name"
+    location: ".job-location, .location"
+    salary: ".salary-range, [class*='salary']"
+    seniority: ".seniority-level, .job-level, [class*='level']"
+  fields:
+    - total_count
+    - job_title
+    - company
+    - salary_min
+    - salary_max
+    - seniority_level
+    - location
+
+output:
+  path: "/opt/lobsec/data/raw/gulftalent-jobs/{date}.json"
+  format: json
+
+concurrency:
+  max_concurrent: 1
+  delay_between_requests_ms: [3000, 8000]
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 10000
+  skip_on_403: true
+  skip_on_captcha: true
+
+timeout_ms: 600000

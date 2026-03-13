@@ -1,0 +1,40 @@
+# Cooper Fitch Salary Survey — PDF Download
+# Source: COLL-12 (Salary Surveys) | Signal: LAGGING (annual baseline) | Lifecycle: Employment
+
+schema_version: "1.0"
+name: cooper-fitch-salary
+description: >
+  Cooper Fitch annual salary guide PDF download. Navigate to insights/reports page,
+  find latest salary guide PDF, download it. Normalization extracts median salaries
+  by role/seniority via pdfplumber. Manual fallback if CAPTCHA/email gate detected.
+type: browser_scrape
+frequency: annual
+priority: 2
+
+source:
+  url: "https://www.cooperfitch.com/salary-guide"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: pdf
+  strategy: find_and_download
+  selectors:
+    pdf_links: "a[href$='.pdf'], a[href*='salary'], a[href*='guide']"
+    filter_text: "Salary|Guide|Compensation|UAE|Dubai"
+  fields:
+    - pdf_url
+    - report_year
+
+output:
+  path: "/opt/lobsec/data/raw/cooper-fitch-salary/{date}.pdf"
+  format: binary
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 5000
+  skip_on_403: true
+  skip_on_captcha: true
+
+timeout_ms: 300000

@@ -1,0 +1,51 @@
+# Bayt Job Postings — Browser Scrape
+# Source: COLL-11 (Job Postings) | Signal: LEADING (2-3 months) | Lifecycle: Job Search
+
+schema_version: "1.0"
+name: bayt-jobs
+description: >
+  Bayt UAE job postings scraped via Patchright stealth browser.
+  Major job platform in MENA region with good salary disclosure rates.
+  Extracts job listings with salary ranges for sector/seniority classification.
+type: browser_scrape
+frequency: weekly
+priority: 3
+
+source:
+  url: "https://www.bayt.com/en/uae/jobs/"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: json
+  selectors:
+    total_count: ".t-result-count, .results-count"
+    job_cards: ".jb-card, .job-card, [data-js-job-card]"
+    job_title: ".jb-title, .job-title, h3 a"
+    company: ".jb-company, .company-name"
+    location: ".jb-location, .location"
+    salary: ".jb-salary, .salary-range, [class*='salary']"
+  fields:
+    - total_count
+    - job_title
+    - company
+    - salary_min
+    - salary_max
+    - location
+
+output:
+  path: "/opt/lobsec/data/raw/bayt-jobs/{date}.json"
+  format: json
+
+concurrency:
+  max_concurrent: 1
+  delay_between_requests_ms: [2000, 5000]
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 5000
+  skip_on_403: true
+  skip_on_captcha: true
+
+timeout_ms: 600000

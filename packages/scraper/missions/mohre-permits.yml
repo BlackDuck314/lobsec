@@ -1,0 +1,57 @@
+# MOHRE Work Permits — Statistical Report Browser Scrape
+# Source 6 (COLL-06): Work permit issuance data by sector/nationality
+# Signal: LEADING (2-3 months) | Lifecycle: Employment
+
+schema_version: "1.0"
+name: mohre-permits
+description: >
+  MOHRE (Ministry of Human Resources and Emiratisation) monthly work permit
+  data from statistical reports page. Navigate to statistical reports page,
+  find latest release mentioning "work permits" or "labour market", extract
+  permit counts by sector and nationality from text or embedded tables.
+  English first (mohre.gov.ae/en/), Arabic fallback if needed.
+type: browser_scrape
+frequency: monthly
+priority: 2
+
+source:
+  url: "https://www.mohre.gov.ae/en/data-library/statistical-report.aspx"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: json
+  strategy: press_release_text
+  keywords:
+    - work permits
+    - labour market
+    - employment
+    - new permits
+    - sector
+    - nationality
+  selectors:
+    press_releases: ".news-item, article, .report-item"
+    press_title: "h2, h3, .title"
+    press_date: ".date, time"
+    press_content: ".content, .body, article p, article table"
+  fields:
+    - date
+    - title
+    - total_permits
+    - sector_breakdown
+    - nationality_breakdown
+
+output:
+  path: "/opt/lobsec/data/raw/mohre-permits/{date}.json"
+  format: json
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 2000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: true
+
+timeout_ms: 300000

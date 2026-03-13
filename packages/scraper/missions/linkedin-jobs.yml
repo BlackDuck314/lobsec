@@ -1,0 +1,53 @@
+# LinkedIn Job Postings — Browser Scrape with Stealth
+# Source: COLL-11 (Job Postings) | Signal: LEADING (2-3 months) | Lifecycle: Job Search
+# New job postings are a leading indicator for housing demand (new hires need housing within 2-3 months)
+
+schema_version: "1.0"
+name: linkedin-jobs
+description: >
+  LinkedIn UAE job postings scraped via Patchright stealth browser.
+  Extracts total job count and sample listings with salary ranges for seniority classification.
+  Graceful failure on 403/CAPTCHA — Bayt/Indeed/GulfTalent provide coverage if blocked.
+  Aggregated to weekly counts per sector/seniority via normalize_jobs.py.
+type: browser_scrape
+frequency: weekly
+priority: 3
+
+source:
+  url: "https://www.linkedin.com/jobs/search/?location=United%20Arab%20Emirates&f_TPR=r86400"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: json
+  selectors:
+    total_count: ".results-context-header__job-count, .jobs-search-results-list__subtitle"
+    job_cards: ".job-search-card, .base-card"
+    job_title: ".job-search-card__title, .base-search-card__title"
+    company: ".job-search-card__company-name, .base-search-card__subtitle"
+    location: ".job-search-card__location, .job-search-card-location"
+    salary: ".job-search-card__salary-info, [class*='salary']"
+  fields:
+    - total_count
+    - job_title
+    - company
+    - salary_min
+    - salary_max
+    - location
+
+output:
+  path: "/opt/lobsec/data/raw/linkedin-jobs/{date}.json"
+  format: json
+
+concurrency:
+  max_concurrent: 1
+  delay_between_requests_ms: [3000, 8000]  # Random 3-8s delay for anti-bot evasion
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 10000
+  skip_on_403: true
+  skip_on_captcha: true
+
+timeout_ms: 600000

@@ -1,0 +1,51 @@
+# Indeed Job Postings — Browser Scrape
+# Source: COLL-11 (Job Postings) | Signal: LEADING (2-3 months) | Lifecycle: Job Search
+
+schema_version: "1.0"
+name: indeed-jobs
+description: >
+  Indeed UAE job postings scraped via Patchright stealth browser.
+  Global job platform with strong UAE presence. Lower salary disclosure rate
+  than Bayt/GulfTalent but high volume.
+type: browser_scrape
+frequency: weekly
+priority: 3
+
+source:
+  url: "https://ae.indeed.com/jobs?l=United+Arab+Emirates"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: json
+  selectors:
+    total_count: "#searchCountPages, .jobsearch-JobCountAndSortPane-jobCount"
+    job_cards: ".job_seen_beacon, .jobsearch-ResultsList > li"
+    job_title: ".jobTitle, h2.jobTitle a"
+    company: ".companyName, [data-testid='company-name']"
+    location: ".companyLocation, [data-testid='text-location']"
+    salary: ".salary-snippet, .metadata.salary-snippet-container"
+  fields:
+    - total_count
+    - job_title
+    - company
+    - salary_min
+    - salary_max
+    - location
+
+output:
+  path: "/opt/lobsec/data/raw/indeed-jobs/{date}.json"
+  format: json
+
+concurrency:
+  max_concurrent: 1
+  delay_between_requests_ms: [2000, 5000]
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 5000
+  skip_on_403: true
+  skip_on_captcha: true
+
+timeout_ms: 600000
