@@ -16,9 +16,9 @@ progress:
 ## Current Position
 
 Phase: 8 of 12 -- Tier B Collection (IN PROGRESS)
-Plan: 2 of 4 -- Plan 02 COMPLETE (job postings and salary surveys)
-Status: Phase 8 Tier B Collection in progress. Plan 08-02 complete: 7 YAML missions (4 job platforms + 3 salary surveys) and 2 Python normalizers (normalize_jobs.py aggregates job postings with sector/seniority classification, normalize_salary.py extracts salary data from PDFs via pdfplumber). Total 20 missions in Ninja Scraper (7 from Phase 7.1 + 6 from 08-01 + 7 from 08-02). Ready for Plan 08-03 (scheduling infrastructure - systemd timers and orchestrator script).
-Last activity: 2026-03-13 — Plan 08-02 complete. 2 tasks. 11 files created (7 YAML + 2 normalizers + 2 schemas). Job posting aggregation stores weekly counts per sector/seniority. GulfTalent uses HSM-authenticated session. Anti-bot measures with skip_on_403/skip_on_captcha.
+Plan: 3 of 4 -- Plan 03 COMPLETE (TypeScript framework wiring and orchestrator script)
+Status: Phase 8 Tier B Collection in progress. Plan 08-03 complete: COLLECTOR_DEFINITIONS expanded to 20 entries (7 Tier A + 13 Tier B), SOURCE_MODULE_MAP updated with 13 new mappings (many-to-one: 4 job platforms → normalize_jobs, 3 salary firms → normalize_salary), PythonScriptName extended with 8 new normalizer variants. collect.sh orchestrator script created at /opt/lobsec/bin/ with health check, env sourcing, and log rotation. All TypeScript compiles cleanly. Ready for Plan 08-04 (systemd timer deployment and end-to-end verification).
+Last activity: 2026-03-13 — Plan 08-03 complete. 2 tasks. 5 files modified (4 TS framework files + 1 deployment tracking), 1 script deployed (collect.sh). Timeout enforcement: 5min for HTML/API sources, 10min for browser automation. Frequency distribution: 8 weekly, 6 monthly, 7 quarterly. Priority ordering: 1 (core transactions), 2 (government/salary), 3 (jobs/listings).
 
 ## Resume Instructions
 
@@ -49,7 +49,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | 6 | Foundation & Infrastructure | 10 (INFRA-01..07, SEC-01..02, SCHED-01) | ✅ Complete |
 | 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | Paused (3/4 plans, blocked) |
 | 7.1 | Ninja Scraper | 11 (same as Phase 7) | ✅ Complete (4/4 plans) |
-| 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | In Progress (1/3 plans, 6 reqs) |
+| 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | In Progress (3/4 plans, 10 reqs) |
 | 9 | Tier C Collection | 15 (COLL-14, COLL-16..28, SCHED-05) | Pending |
 | 10 | Statistical Analysis Pipeline | 11 (STAT-01..08, SCHED-06, SEC-06..07) | Pending |
 | 11 | Intelligence Products | 10 (PROD-01..08, QUAL-01, QUAL-03) | Pending |
