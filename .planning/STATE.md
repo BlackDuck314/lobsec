@@ -169,9 +169,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 09-02-PLAN.md — government Tier C sources (RTA metro, CBUAE mortgages, DTCM tourism, DED licenses, FCSA demographics, Jebel Ali port)
-Resume file: .planning/phases/09-tier-c-collection/09-02-SUMMARY.md
-Next: Execute remaining Phase 9 plans (09-03 and beyond) — alternative/commercial sources (InsideAirbnb, F&B closures, customs imports, Google Maps foot traffic, commercial office reports, Google Trends, Reddit sentiment)
+Stopped at: Completed 09-03-PLAN.md — alternative/commercial Tier C sources (InsideAirbnb STR, F&B closures, customs household imports, Google Maps foot traffic 50 locations, commercial office reports JLL/CBRE/Savills)
+Resume file: .planning/phases/09-tier-c-collection/09-03-SUMMARY.md
+Next: Execute Phase 9 Plan 09-04 — collector registry additions, daily timer deployment, production deployment of all Tier C sources. Requirements remaining: COLL-14 (Google Trends), COLL-24 (Reddit sentiment), COLL-27 (moving inquiry proxy), SCHED-05 (daily timer).
 Key context: 31 missions total in Ninja Scraper (7 Tier A + 13 Tier B + 6 government Tier C from 09-02 + others from 09-01/09-03). Requirements COLL-16, COLL-17, COLL-18, COLL-20, COLL-23, COLL-25 complete. Dubai Pulse WAF blocks 4 sources without API credentials.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Create GulfTalent account for COLL-11.
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
