@@ -17,7 +17,7 @@ progress:
 
 Phase: POST v1.3 — Scraper Tuning (unplanned maintenance)
 Status: 5 sources producing real data. Pagination engine added. Continuing tuning.
-Last activity: 2026-03-16 — Pagination engine, LinkedIn selectors, JS click fallback. PF 10-page crawl running.
+Last activity: 2026-03-16 — DP World RSS + Indeed + DEWA mission fixes. 9 sources → 287 metrics → SQLite.
 
 ### Scraper Tuning Progress (outside GSD phases)
 This work fills the gap between "missions written" (Phases 7.1-9) and "missions producing data".
@@ -25,10 +25,21 @@ This work fills the gap between "missions written" (Phases 7.1-9) and "missions 
 **DONE:**
 - Engine: post_load_wait_ms, wait_for_selector, pre_extract_js, container_selector
 - Engine: PaginationConfig (click_next + page_param strategies), JS click fallback for overlay intercept
-- PropertyFinder: ~200 cards/area (10 pages), data-testid selectors, page_param pagination
+- Engine: PDF download handler (run_pdf_download_mission) with keyword filtering + metadata
+- Engine: page_selectors extracted before pagination (was after, giving wrong data)
+- Engine: page_size field for offset-based pagination (e.g. Indeed start=10,20,30)
+- PropertyFinder: 3,936 cards/20 areas (10 pages each), data-testid selectors, page_param pagination
 - Bayt Jobs: 150 cards (5 pages), click_next pagination with JS fallback, 12.4K total UAE jobs
 - ADREC Abu Dhabi: 20 transactions, #salesTable, 14 fields per row
 - LinkedIn Jobs: 60 structured cards (was raw HTML blobs), container_selector extraction
+- KHDA Enrollment: PDF downloaded (Dubai private school landscape 2024-25, 2.5MB, enrollment data)
+- CBUAE Remittances: PDF downloaded (Statistical Bulletin Dec 2025, 59 pages, fund transfer data on p58)
+- CBUAE Mortgages: PDF downloaded (Banking Indicators Dec 2025, 1 page, credit/lending data)
+- DP World / Jebel Ali: RSS feed from __NEXT_DATA__ → 15.5M TEU + 5.4M breakbulk tonnes (2024)
+- Indeed Jobs: 16 cards (domcontentloaded fix, page 2 blocked by anti-bot)
+- Ingest pipeline: 9 sources → 287 metrics → SQLite (was 7→280)
+- DEWA: Found new stats page (/en/about-us/strategy-excellence/annual-statistics) with annual PDFs
+- pdfplumber installed in scraper-venv
 
 **BLOCKED (confirmed via inspection):**
 - RTA Statistics: WAF "Request Rejected" (headless detected)
@@ -40,18 +51,17 @@ This work fills the gap between "missions written" (Phases 7.1-9) and "missions 
 - GulfTalent: 403 Access Denied
 - Bayut: CAPTCHA ("Please verify your identity" — anti-bot detection)
 - Indeed: Timeout (networkidle never fires)
+- Hays Salary: Form-gated PDF (requires registration to download)
 
-**ACCESSIBLE (need selector work):**
-- CBUAE Statistics: 200 OK, 40 cards, 16 PDF links — fixable
-- KHDA Enrollment: 200 OK, 5 PDF links — fixable
-- Hays Salary: 200 OK — may have downloadable PDF
-- DP World (Jebel Ali): 200 OK, 3MB press releases — need content selectors
+**ACCESSIBLE (need work):**
+- DEWA Annual Statistics: PDFs accessible via browser but WAF blocks httpx download. Need browser-session download.
 
 **TODO (next):**
-- Verify PropertyFinder full crawl results (running now, ~50 min)
-- Fix CBUAE and KHDA missions (PDF download selectors)
-- Normalization pipeline: raw JSON → parsed numerics → SQLite
-- End-to-end: scrape → normalize → DB (Phase 7 success criterion 5)
+- DEWA PDF download via browser session (not httpx — Akamai WAF blocks)
+- SQLite WAL blocker investigation (blocks plugin integration)
+- Bayut requires residential proxy to bypass CAPTCHA
+- Indeed pagination blocked by anti-bot (16 cards only)
+- InsideAirbnb: Dubai not available (0 UAE listings)
 
 ### v1.3 Phase Status (actual, not aspirational)
 | Phase | Status | Notes |
@@ -251,11 +261,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 12-01-PLAN.md. area-normalizer.ts + 8 product tools registered in plugin index.ts.
-Resume file: .planning/phases/12-plugin-tools-telegram-hardening/12-01-SUMMARY.md
-Next: Phase 12 Plan 02 — 5 operational tools + Python scripts (TOOL-09..13, QUAL-02, QUAL-05). Phase 12 Plan 03 — security hardening (SEC-03..05). Both are wave 1 parallel.
-Key context: Phase 11 complete. All 8 products deployed to /opt/lobsec/plugins/lobsec-uae-re/dist/products/. validation_results table in production DB. Digest has distress alerting. lobsec service active and verified by user.
-User action needed: Register for Dubai Pulse API credentials. Store Reddit API credentials in HSM. Set up residential proxy for Google Maps foot traffic.
+Stopped at: Scraper tuning — 9 sources producing 287 metrics. DP World RSS, Indeed, DEWA mission fixes. Full ingest pipeline verified.
+Resume file: N/A (post-phase tuning work)
+Next: DEWA browser PDF download, SQLite WAL blocker fix, more source tuning.
+Key context: 9 sources ingested (PF, ADREC, Bayt, LinkedIn, Indeed, KHDA, CBUAE×2, DP World). pdfplumber in scraper-venv. Bayut CAPTCHA blocked. Indeed anti-bot blocks page 2+. DEWA PDFs behind Akamai WAF.
+User action needed: Register for Dubai Pulse API credentials. Set up residential proxy for Bayut/Google Maps.
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
 | GulfTalent HSM-authenticated session | Credentials in HSM enable authenticated browser session for higher data quality (explicit seniority levels, better salary disclosure rates). Worth credential management overhead. |

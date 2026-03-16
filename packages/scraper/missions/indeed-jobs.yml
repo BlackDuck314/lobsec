@@ -1,38 +1,42 @@
-# Indeed Job Postings — Browser Scrape
+# Indeed Job Postings — Browser Scrape with Container Extraction
 # Source: COLL-11 (Job Postings) | Signal: LEADING (2-3 months) | Lifecycle: Job Search
+#
+# FIX: Changed wait_until from networkidle (timeout) to domcontentloaded + post_load_wait.
+# Added container_selector for structured card extraction.
+# Added pagination (page_param strategy, 5 pages).
 
 schema_version: "1.0"
 name: indeed-jobs
 description: >
   Indeed UAE job postings scraped via Patchright stealth browser.
   Global job platform with strong UAE presence. Lower salary disclosure rate
-  than Bayt/GulfTalent but high volume.
+  than Bayt/GulfTalent but high volume (~31K jobs in Dubai).
 type: browser_scrape
 frequency: weekly
 priority: 3
 
 source:
-  url: "https://ae.indeed.com/jobs?l=United+Arab+Emirates"
+  url: "https://ae.indeed.com/jobs?q=&l=Dubai"
   browser: chromium
   stealth: true
-  wait_until: networkidle
+  wait_until: domcontentloaded
+  post_load_wait_ms: 3000
+  wait_for_selector: ".job_seen_beacon"
 
 extraction:
   format: json
+  container_selector: ".job_seen_beacon"
   selectors:
-    total_count: "#searchCountPages, .jobsearch-JobCountAndSortPane-jobCount"
-    job_cards: ".job_seen_beacon, .jobsearch-ResultsList > li"
-    job_title: ".jobTitle, h2.jobTitle a"
-    company: ".companyName, [data-testid='company-name']"
-    location: ".companyLocation, [data-testid='text-location']"
-    salary: ".salary-snippet, .metadata.salary-snippet-container"
-  fields:
-    - total_count
-    - job_title
-    - company
-    - salary_min
-    - salary_max
-    - location
+    job_title: ".jobTitle a"
+    company: "[data-testid='company-name']"
+    location: "[data-testid='text-location']"
+    salary: "[data-testid='attribute_snippet_testid']"
+
+pagination:
+  strategy: click_next
+  next_selector: "[data-testid='pagination-page-next']"
+  max_pages: 5
+  wait_after_ms: 3000
 
 output:
   path: "/opt/lobsec/data/raw/indeed-jobs/{date}.json"

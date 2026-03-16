@@ -1,50 +1,42 @@
-# DEWA Connections — Press Release Browser Scrape
-# Source 15 (COLL-15): Electricity connection/closure data as occupancy proxy
+# DEWA Annual Statistics — PDF Download via Browser Session
+# Source 15 (COLL-15): Electricity connections, consumption, customers as occupancy proxy
 # Signal: LEADING (1-2 months) | Lifecycle: Settlement
+#
+# The old press-releases URL was 404. DEWA publishes annual statistics PDFs at
+# /en/about-us/strategy-excellence/annual-statistics. PDF downloads are behind
+# Akamai WAF so we use browser PDF download (not HTTP GET).
 
 schema_version: "1.0"
 name: dewa-connections
 description: >
-  DEWA (Dubai Electricity and Water Authority) new connection and closure
-  data scraped from press releases. New DEWA connections are a direct proxy
-  for move-ins; closures proxy move-outs. Navigate press releases page, find
-  latest release mentioning "connections" or "customers", extract connection
-  and closure numbers from text. Rising closures relative to new connections
-  indicate net outflow.
+  DEWA annual statistics PDF containing electricity/water connections, consumption,
+  and customer data. Browser navigates to the statistics page and downloads the
+  latest PDF via link click. PDF contains multi-year data on new connections,
+  closures, electricity/water consumption — all proxies for occupancy and
+  economic activity.
 type: browser_scrape
-frequency: monthly
+frequency: quarterly
 priority: 2
 
 source:
-  url: "https://www.dewa.gov.ae/en/about-dewa/news-and-media/press-releases"
+  url: "https://www.dewa.gov.ae/en/about-us/strategy-excellence/annual-statistics"
   browser: chromium
   stealth: true
-  wait_until: networkidle
+  wait_until: domcontentloaded
+  post_load_wait_ms: 3000
 
 extraction:
-  format: json
-  strategy: press_release_text
-  keywords:
-    - connections
-    - customers
-    - new connections
-    - disconnections
-    - closures
+  format: pdf
   selectors:
-    press_releases: ".press-release-item, .news-item, article"
-    press_title: "h2, h3, .title"
-    press_date: ".date, time, .press-release-date"
-    press_content: ".content, .body, article p"
-  fields:
-    - date
-    - title
-    - new_connections
-    - closures
-    - total_customers
+    pdf_links: "a[href*='Annual-Statistics'][href*='.ashx']"
+  keywords:
+    - "statistics"
+    - "2024"
+    - "booklet"
 
 output:
-  path: "/opt/lobsec/data/raw/dewa-connections/{date}.json"
-  format: json
+  path: "/opt/lobsec/data/raw/dewa-connections/{date}.pdf"
+  format: pdf
 
 retry:
   max_attempts: 2
@@ -54,4 +46,4 @@ retry:
   jitter: true
   skip_on_403: true
 
-timeout_ms: 300000
+timeout_ms: 120000

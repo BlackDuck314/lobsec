@@ -555,6 +555,117 @@ def ingest_cbuae_remittances(file_path: Path, collected_at: str) -> list[dict]:
     return metrics
 
 
+# ── DP World / Jebel Ali Port (RSS from __NEXT_DATA__) ────────
+
+def ingest_dpworld(file_path: Path, collected_at: str) -> list[dict]:
+    """Extract Jebel Ali port throughput metrics from DP World RSS feed.
+
+    The news/releases page embeds an RSS feed with 446+ items in __NEXT_DATA__.
+    We filter for Jebel Ali throughput releases and extract TEU + cargo figures
+    from titles, subtitles, and descriptions.
+    """
+    html = file_path.read_text(encoding="utf-8", errors="replace")
+
+    # Extract __NEXT_DATA__ JSON
+    m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', html, re.DOTALL)
+    if not m:
+        print("  WARN: No __NEXT_DATA__ found in DP World HTML", file=sys.stderr)
+        return []
+
+    data = json.loads(m.group(1))
+    cp = data.get("props", {}).get("pageProps", {}).get("componentProps", {})
+
+    # Find the RSS feed in componentProps
+    items = []
+    for comp in cp.values():
+        fd = comp.get("params", {}).get("feedData")
+        if fd:
+            if isinstance(fd, str):
+                fd = json.loads(fd)
+            items = fd.get("channel", {}).get("item", [])
+            break
+
+    if not items:
+        print("  WARN: No RSS items found in DP World page", file=sys.stderr)
+        return []
+
+    print(f"  Found {len(items)} RSS items, filtering for Jebel Ali...", file=sys.stderr)
+
+    metrics = []
+
+    # Keywords that indicate Jebel Ali / UAE port throughput data
+    jebel_ali_keywords = ["jebel ali", "jebel ali port"]
+    throughput_keywords = ["teu", "throughput", "cargo volume", "breakbulk"]
+
+    for item in items:
+        title = item.get("title", "")
+        subtitle = item.get("subtitle", "")
+        pub_date = item.get("pubDate", "")
+        combined = f"{title} {subtitle}".lower()
+
+        # Must mention Jebel Ali AND have throughput data
+        has_jebel_ali = any(kw in combined for kw in jebel_ali_keywords)
+        has_throughput = any(kw in combined for kw in throughput_keywords)
+
+        if not (has_jebel_ali and has_throughput):
+            continue
+
+        # Parse publication date → measurement date (start of quarter)
+        try:
+            # pubDate format: "Wed, 19 Feb 2025 13:31:45 +0100"
+            from email.utils import parsedate_to_datetime
+            pub_dt = parsedate_to_datetime(pub_date)
+            # Use start of reporting year (data is annual)
+            measurement_date = f"{pub_dt.year - 1}-01-01"
+            item_collected_at = pub_dt.isoformat()
+        except Exception:
+            measurement_date = datetime.fromisoformat(collected_at[:10]).replace(day=1, month=1).strftime("%Y-%m-%d")
+            item_collected_at = collected_at
+
+        combined_text = f"{title} {subtitle}"
+
+        # Extract TEU figures: "15.5 million TEUs" or "88.3 million TEUs"
+        teu_matches = re.findall(r"([\d,.]+)\s*million\s*TEU", combined_text, re.I)
+        if teu_matches:
+            # First TEU figure is usually Jebel Ali specific
+            teu_value = float(teu_matches[0].replace(",", ""))
+            metrics.append({
+                "source": "dpworld",
+                "measurement_date": measurement_date,
+                "metric_name": "dubai|jebel_ali_container_throughput_mn_teu",
+                "value": teu_value,
+                "available_date": item_collected_at,
+            })
+
+        # Extract cargo/breakbulk tonnage: "5.4 million metric tonnes"
+        tonnage_matches = re.findall(r"([\d,.]+)\s*million\s*(?:metric\s+)?tonnes", combined_text, re.I)
+        if tonnage_matches:
+            tonnage = float(tonnage_matches[0].replace(",", ""))
+            metrics.append({
+                "source": "dpworld",
+                "measurement_date": measurement_date,
+                "metric_name": "dubai|jebel_ali_breakbulk_cargo_mn_tonnes",
+                "value": tonnage,
+                "available_date": item_collected_at,
+            })
+
+        # Extract YoY growth: "up 8.3%" or "volumes rise 6.7%"
+        growth_matches = re.findall(r"(?:up|rise|growth of|grew)\s+([\d,.]+)\s*%", combined_text, re.I)
+        if growth_matches:
+            growth = float(growth_matches[0].replace(",", ""))
+            metrics.append({
+                "source": "dpworld",
+                "measurement_date": measurement_date,
+                "metric_name": "dubai|jebel_ali_volume_yoy_growth_pct",
+                "value": growth,
+                "available_date": item_collected_at,
+            })
+
+        print(f"  Matched: {title[:80]}... → {len([m for m in metrics if m['measurement_date'] == measurement_date])} metrics", file=sys.stderr)
+
+    return metrics
+
+
 # ── Database insertion ──────────────────────────────────────────
 
 def insert_metrics(db_path: Path, metrics: list[dict], dry_run: bool = False) -> int:
@@ -611,9 +722,11 @@ SOURCE_HANDLERS = {
     "adrec-abu-dhabi": ("json", ingest_adrec),
     "bayt-jobs": ("json", lambda fp, ca: ingest_jobs(fp, ca, "bayt")),
     "linkedin-jobs": ("json", lambda fp, ca: ingest_jobs(fp, ca, "linkedin")),
+    "indeed-jobs": ("json", lambda fp, ca: ingest_jobs(fp, ca, "indeed")),
     "khda-enrollment": ("pdf", ingest_khda),
     "cbuae-mortgages": ("pdf", ingest_cbuae_mortgages),
     "cbuae-remittances": ("pdf", ingest_cbuae_remittances),
+    "jebel-ali-port": ("html", ingest_dpworld),
 }
 
 
