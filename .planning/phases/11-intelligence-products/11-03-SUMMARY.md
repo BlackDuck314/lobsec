@@ -121,3 +121,16 @@ None. Products query existing normalized_monthly and intelligence_cache tables. 
 ---
 *Phase: 11-intelligence-products*
 *Completed: 2026-03-16*
+
+## Self-Check: PASSED
+
+Files verified:
+- FOUND: packages/uae-re/src/products/prod03-rental.ts
+- FOUND: packages/uae-re/src/products/prod04-supply.ts
+- FOUND: packages/uae-re/src/products/prod07-arbitrage.ts
+- FOUND: .planning/phases/11-intelligence-products/11-03-SUMMARY.md
+
+Commits verified:
+- FOUND: 16207d1 (Task 1: DLD normalizer extension + PROD-07)
+- FOUND: 06b249c (Task 2: PROD-03 rental intelligence + PROD-04 supply pipeline)
+- FOUND: 0d03466 (Plan metadata)

@@ -122,10 +122,10 @@
   Requirements: PROD-01, PROD-02, PROD-03, PROD-04, PROD-05, PROD-06, PROD-07, PROD-08, QUAL-01, QUAL-03
   **Plans:** 4 plans
   Plans:
-  - [ ] 11-01-PLAN.md — Out-of-sample validation (QUAL-01), forward-fill audit (QUAL-03), validation_results table, pipeline integration, composite downweighting
-  - [ ] 11-02-PLAN.md — PROD-01 area signal score + PROD-02 distress detection + shared format utilities
-  - [ ] 11-03-PLAN.md — PROD-03 rental intelligence + PROD-04 supply pipeline + PROD-07 off-plan/ready arbitrage + DLD normalizer extension
-  - [ ] 11-04-PLAN.md — PROD-05 expat funnel + PROD-06 macro health + PROD-08 salary-rent + digest distress alerting + production deployment
+  - [x] 11-01-PLAN.md — Out-of-sample validation (QUAL-01), forward-fill audit (QUAL-03), validation_results table, pipeline integration, composite downweighting ✅
+  - [x] 11-02-PLAN.md — PROD-01 area signal score + PROD-02 distress detection + shared format utilities ✅
+  - [x] 11-03-PLAN.md — PROD-03 rental intelligence + PROD-04 supply pipeline + PROD-07 off-plan/ready arbitrage + DLD normalizer extension ✅
+  - [x] 11-04-PLAN.md — PROD-05 expat funnel + PROD-06 macro health + PROD-08 salary-rent + digest distress alerting + production deployment ✅
   Success criteria:
   1. Area Buy/Sell Signal Score produces 9-component composite scaled -1 to +1 per area/property type; Distress Detection System produces 17-signal score with alert threshold >=0.6
   2. Rental Intelligence Dashboard computes all 10 metrics (gross yield, rental momentum, vacancy proxy, renewal rate, listing absorption, pipeline pressure, affordability ratio, STR premium, rent-to-income, DOM trend)
