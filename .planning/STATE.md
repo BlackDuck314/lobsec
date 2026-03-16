@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T14:42:33.882Z"
+last_updated: "2026-03-16T15:27:58.185Z"
 progress:
-  total_phases: 7
+  total_phases: 8
   completed_phases: 7
-  total_plans: 27
-  completed_plans: 27
+  total_plans: 31
+  completed_plans: 28
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: 12 of 12 -- Plugin Tools, Telegram Interface & Production Hardening (PLANNED)
-Plan: 0 of 4 -- Plans created, verified, ready to execute.
-Status: Phase 12 planned. 4 plans in 2 waves covering 19 requirements (TOOL-01..13, QUAL-02, QUAL-04, QUAL-05, SEC-03..05). Wave 1 (parallel): 12-01 (area normalizer + 8 product tools), 12-02 (5 operational tools + Python scripts), 12-03 (security hardening). Wave 2: 12-04 (deploy + Telegram verification checkpoint).
-Last activity: 2026-03-16 — Phase 12 discuss, research, plan, verify all complete. Ready for /gsd:execute-phase 12.
+Phase: 12 of 12 -- Plugin Tools, Telegram Interface & Production Hardening (IN PROGRESS)
+Plan: 1 of 4 -- 12-01 complete (area normalizer + 8 product tools). Next: 12-02, 12-03 (wave 1 parallel), then 12-04 (deploy).
+Status: Phase 12 wave 1 underway. 12-01 done: area-normalizer.ts + 9 tools registered. TOOL-01..08, QUAL-04 marked complete.
+Last activity: 2026-03-16 — 12-01 complete. area-normalizer with 30 aliases + Levenshtein fuzzy, 8 product tools registered, TypeScript clean.
 
 ## Resume Instructions
 
@@ -178,6 +178,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 11-03]: PROD-03 gross yield: uses 750 sqft 1BR proxy constant (ejari avg_rent_per_sqft * 750 * 12 / sale_price * 100)
 - [Phase 11]: [Phase 11-04]: Distress digest uses composite_scores proxy (score <= -0.6) not full PROD-02 17-signal calculation — approximation sufficient for monthly digest alerting
 - [Phase 11-04]: Task 3 human-verify checkpoint approved by user — production deployment of all 8 intelligence products confirmed operational
+- [Phase 12]: Hand-rolled Levenshtein over npm library: 20-line DP matrix sufficient, avoids dependency weight
+- [Phase 12]: resolveAreaOrError helper centralises ambiguity/unknown error messaging across 6 area-param tools
 
 ## Blockers
 
@@ -193,9 +195,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 11-04-PLAN.md all tasks including Task 3 human-verify (user approved). Phase 11 Intelligence Products fully closed.
-Resume file: .planning/phases/11-intelligence-products/11-04-SUMMARY.md
-Next: Phase 12 Plan 01 — Plugin Tools & Hardening (TOOL-01..13, QUAL-02,04,05, SEC-03..05). Register all 8 product query functions as Telegram bot tools.
+Stopped at: Completed 12-01-PLAN.md. area-normalizer.ts + 8 product tools registered in plugin index.ts.
+Resume file: .planning/phases/12-plugin-tools-telegram-hardening/12-01-SUMMARY.md
+Next: Phase 12 Plan 02 — 5 operational tools + Python scripts (TOOL-09..13, QUAL-02, QUAL-05). Phase 12 Plan 03 — security hardening (SEC-03..05). Both are wave 1 parallel.
 Key context: Phase 11 complete. All 8 products deployed to /opt/lobsec/plugins/lobsec-uae-re/dist/products/. validation_results table in production DB. Digest has distress alerting. lobsec service active and verified by user.
 User action needed: Register for Dubai Pulse API credentials. Store Reddit API credentials in HSM. Set up residential proxy for Google Maps foot traffic.
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
