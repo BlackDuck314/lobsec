@@ -179,11 +179,13 @@ export function initSchema(db: Database.Database): void {
   `);
 
   // Table 10: Analysis pipeline audit log (metadata only — no PII per SEC-07)
+  // 'in_progress' is used as intermediate state during step execution;
+  // updated to 'success' or 'failed' on completion (or 'skipped' for dependency-gated steps).
   db.exec(`
     CREATE TABLE IF NOT EXISTS analysis_log (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       pipeline_step TEXT NOT NULL,
-      status TEXT NOT NULL CHECK(status IN ('success', 'failed', 'skipped')),
+      status TEXT NOT NULL CHECK(status IN ('in_progress', 'success', 'failed', 'skipped')),
       signals_processed INTEGER,
       signals_skipped INTEGER,
       duration_ms INTEGER,

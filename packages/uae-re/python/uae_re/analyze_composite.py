@@ -88,28 +88,23 @@ def fetch_signal_zscore(
     """
     Fetch the z-score of the most recent value for a (source, metric_name) pair.
 
-    If area_name provided, filter to that area (for area-level signals).
+    The normalized_monthly table stores data without an area_name column — area
+    dimension is not yet supported in the base table schema. The area_name parameter
+    is accepted for interface compatibility but is not used as a filter condition.
+    All signals are fetched as city-wide aggregates regardless of area_name.
+
     Uses the last `months` observations for z-score normalization.
     Returns None if fewer than 2 observations (can't compute z-score).
 
     Parameterized SQL — SEC-06.
     """
-    if area_name is not None:
-        rows = db.execute(
-            "SELECT value FROM normalized_monthly "
-            "WHERE source = ? AND metric_name = ? AND area_name = ? "
-            "AND value IS NOT NULL "
-            "ORDER BY measurement_date DESC LIMIT ?",
-            (source, metric_name, area_name, months),
-        ).fetchall()
-    else:
-        rows = db.execute(
-            "SELECT value FROM normalized_monthly "
-            "WHERE source = ? AND metric_name = ? "
-            "AND value IS NOT NULL "
-            "ORDER BY measurement_date DESC LIMIT ?",
-            (source, metric_name, months),
-        ).fetchall()
+    rows = db.execute(
+        "SELECT value FROM normalized_monthly "
+        "WHERE source = ? AND metric_name = ? "
+        "AND value IS NOT NULL "
+        "ORDER BY measurement_date DESC LIMIT ?",
+        (source, metric_name, months),
+    ).fetchall()
 
     values = [row[0] for row in rows]
 
