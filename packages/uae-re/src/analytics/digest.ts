@@ -38,6 +38,12 @@ interface AnomalyFlag {
   zScore: number;
 }
 
+/** An area flagged as a potential distress candidate. */
+export interface DistressCandidate {
+  area: string;
+  score: number;
+}
+
 /** Structured data for the monthly digest. */
 export interface DigestData {
   compositeScore: CompositeScore;
@@ -45,6 +51,7 @@ export interface DigestData {
   newGrangerSignals: Array<GrangerSignal>;
   anomaliesDetected: Array<AnomalyFlag>;
   funnelSummary: string;
+  distressAreas: Array<DistressCandidate>;
 }
 
 /** Row types for raw DB queries */
@@ -75,6 +82,11 @@ interface AnomalyRow {
 
 interface CacheRow {
   result_json: string;
+}
+
+interface DistressAreaRow {
+  area: string;
+  score: number;
 }
 
 /**
@@ -176,12 +188,35 @@ export function generateDigest(db: Database.Database): DigestData {
     }
   }
 
+  // ── Distress candidates: areas with strongly negative composite scores ────
+  // Approximation: areas with composite score <= -0.6 are flagged as potential
+  // distress candidates. Full PROD-02 distress calculation uses 17 signals;
+  // this digest check uses the pre-computed composite score as a proxy.
+  const distressRows = db
+    .prepare(
+      "SELECT area, score FROM composite_scores WHERE area != 'dubai' AND score <= -0.6 ORDER BY computed_at DESC LIMIT 20"
+    )
+    .all() as DistressAreaRow[];
+
+  // Deduplicate — keep worst score per area (rows ordered by computed_at DESC)
+  const distressAreaMap = new Map<string, number>();
+  for (const row of distressRows) {
+    if (!distressAreaMap.has(row.area)) {
+      distressAreaMap.set(row.area, row.score);
+    }
+  }
+
+  const distressAreas: DistressCandidate[] = Array.from(distressAreaMap.entries())
+    .map(([area, score]) => ({ area, score }))
+    .sort((a, b) => a.score - b.score); // most negative first
+
   return {
     compositeScore,
     topMovers: movers,
     newGrangerSignals,
     anomaliesDetected,
     funnelSummary,
+    distressAreas,
   };
 }
 
@@ -256,6 +291,17 @@ export function formatDigestMessage(data: DigestData): string {
   // Expat funnel
   lines.push("EXPAT FUNNEL:");
   lines.push(data.funnelSummary);
+
+  // Distress alerts (only shown when areas are flagged)
+  if (data.distressAreas.length > 0) {
+    lines.push("");
+    lines.push("DISTRESS ALERTS:");
+    for (const area of data.distressAreas) {
+      lines.push(
+        `- ${area.area}: distress score ${area.score.toFixed(2)} — investigate with /uae_distress`
+      );
+    }
+  }
 
   const full = lines.join("\n");
 
