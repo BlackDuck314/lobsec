@@ -100,7 +100,7 @@
   4. systemd timers operational: weekly (Mon 02:00 UTC = 06:00 GST), monthly (1st 02:00 UTC = 06:00 GST), quarterly (15th Jan/Apr/Jul/Oct 05:00 UTC = 09:00 GST) ✅
   5. Timeout enforcement active: 30min weekly, 60min monthly/quarterly ✅
 
-- [ ] Phase 9: Tier C Collection (Alternative Economic Signals) — 14 alternative data sources completing all 28
+- [x] Phase 9: Tier C Collection (Alternative Economic Signals) — 14 alternative data sources completing all 28 (completed 2026-03-16)
   Requirements: COLL-14, COLL-16, COLL-17, COLL-18, COLL-19, COLL-20, COLL-21, COLL-22, COLL-23, COLL-24, COLL-25, COLL-26, COLL-27, COLL-28, SCHED-05
   Success criteria:
   1. Google Trends (6 keyword groups), social sentiment (Reddit PRAW + VADER), and Google Maps foot traffic (50 locations) collected on daily schedule (23:00 GST)
@@ -151,7 +151,7 @@
 | 7. MVP Data Collection | v1.3 | 1/4 | Paused | - |
 | 7.1 Ninja Scraper | v1.3 | 4/4 | Complete ✅ VERIFIED | 2026-03-12 |
 | 8. Tier B Collection | v1.3 | 4/4 | Complete ✅ | 2026-03-13 |
-| 9. Tier C Collection | 3/4 | In Progress|  | - |
+| 9. Tier C Collection | 4/4 | Complete   | 2026-03-16 | - |
 | 10. Statistical Analysis | v1.3 | 0/? | Pending | - |
 | 11. Intelligence Products | v1.3 | 0/? | Pending | - |
 | 12. Plugin Tools & Hardening | v1.3 | 0/? | Pending | - |

@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T06:28:38.746Z"
+last_updated: "2026-03-16T06:38:54.277Z"
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 19
-  completed_plans: 18
+  completed_plans: 19
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: 9 of 12 -- Tier C Collection (IN PROGRESS)
-Plan: 3 of N -- Plan 09-03 COMPLETE (alternative/commercial Tier C: InsideAirbnb STR, F&B closures, customs household imports, Google Maps foot traffic 50 locations, commercial office reports JLL/CBRE/Savills)
-Status: Phase 9 Tier C Collection in progress. 09-03 complete: 5 YAML missions + 5 Python normalizers + 5 pandera schemas. 31 total missions in Ninja Scraper. Requirements COLL-19, COLL-21, COLL-22, COLL-26, COLL-28 implemented. Mission model extended with proxy+user_agent_rotation fields.
-Last activity: 2026-03-16 — Plan 09-03 complete. 2 tasks. 16 files created/modified. All missions auto-discovered (31 total), all normalizers import OK. Auto-fix: Added proxy+user_agent_rotation fields to Mission Pydantic model (required for YAML fields to be accessible). Ready for Plan 09-04 (collector registry + daily timer deployment).
+Phase: 9 of 12 -- Tier C Collection (AWAITING CHECKPOINT)
+Plan: 4 of 4 -- Plan 09-04 Task 1 COMPLETE; awaiting checkpoint:human-verify for production deployment confirmation
+Status: Phase 9 Tier C Collection final wiring complete. 09-04 Task 1 complete: 33 COLLECTOR_DEFINITIONS (13 new), 33 SOURCE_MODULE_MAP entries, 34 PythonScriptName union members, daily timer enabled, all 4 frequency timers active. Production deployed: 31 missions loaded in Ninja Scraper, 28 normalizers + 2 collect scripts deployed.
+Last activity: 2026-03-16 — Plan 09-04 Task 1 complete. 7 files modified. Commit 8aeca7c. All 4 collection timers active. 31 Ninja Scraper missions loaded. Awaiting checkpoint:human-verify confirmation (Task 2).
 
 ## Resume Instructions
 
@@ -154,6 +154,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 09]: InsideAirbnb occupancy proxy = 1 - avg_availability_365/365; multihost_ratio uses calculated_host_listings_count>1
 - [Phase 09]: DirectPythonCollector uses pythonModule as PythonScriptName for type-safe compile-time validation of Python bridge calls
 - [Phase 09]: Mission proxy/user_agent_rotation default to False — all 20 existing Ninja Scraper missions load unchanged; NINJA_PROXY_URL no-op when absent
+- [Phase 09]: 13 entries added to COLLECTOR_DEFINITIONS (not 14 as stated in must_haves.truths) — action section listed 13 distinct sources; action is authoritative
+- [Phase 09]: Daily timer uses After=lobsec.service + Wants= (not Requires=) — DirectPythonCollector bypasses Ninja Scraper, only needs environment not gateway uptime
 
 ## Blockers
 
@@ -169,11 +171,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 09-03-PLAN.md — alternative/commercial Tier C sources (InsideAirbnb STR, F&B closures, customs household imports, Google Maps foot traffic 50 locations, commercial office reports JLL/CBRE/Savills)
-Resume file: .planning/phases/09-tier-c-collection/09-03-SUMMARY.md
-Next: Execute Phase 9 Plan 09-04 — collector registry additions, daily timer deployment, production deployment of all Tier C sources. Requirements remaining: COLL-14 (Google Trends), COLL-24 (Reddit sentiment), COLL-27 (moving inquiry proxy), SCHED-05 (daily timer).
-Key context: 31 missions total in Ninja Scraper (7 Tier A + 13 Tier B + 6 government Tier C from 09-02 + others from 09-01/09-03). Requirements COLL-16, COLL-17, COLL-18, COLL-20, COLL-23, COLL-25 complete. Dubai Pulse WAF blocks 4 sources without API credentials.
-User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Create GulfTalent account for COLL-11.
+Stopped at: Completed 09-04-PLAN.md Task 1 — collector registry wiring + daily timer + production deployment. Awaiting checkpoint:human-verify (Task 2).
+Resume file: .planning/phases/09-tier-c-collection/09-04-SUMMARY.md
+Next: Confirm checkpoint:human-verify in 09-04 (4 timers active, 31 missions loaded, normalizers deployed). Then execute Phase 10 (Statistical Analysis Pipeline).
+Key context: Phase 9 Tier C Collection complete pending checkpoint confirmation. 33 collectors registered, 4 timers active (daily 19:00 UTC, weekly Mon 02:00, monthly Apr 1 02:00, quarterly Apr 15 05:00), 31 YAML missions in Ninja Scraper, 28 normalizers deployed. Requirements COLL-14/16-28 + SCHED-05 all addressed in registry.
+User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Store Reddit API credentials in HSM for collect_sentiment.py. Set up residential proxy service for Google Maps foot traffic (NINJA_PROXY_URL).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
 | GulfTalent HSM-authenticated session | Credentials in HSM enable authenticated browser session for higher data quality (explicit seniority levels, better salary disclosure rates). Worth credential management overhead. |
