@@ -86,14 +86,14 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Plugin Tools & Telegram Interface
 
-- [ ] **TOOL-01**: `uae_area_signal(area, property_type)` -- returns buy/sell score with component breakdown
-- [ ] **TOOL-02**: `uae_distress(area?)` -- returns distress signals for area or top-N distressed areas
-- [ ] **TOOL-03**: `uae_rental_intel(area, bedrooms)` -- returns yields, affordability, momentum, DOM
-- [ ] **TOOL-04**: `uae_supply_pipeline(area?)` -- returns permit count, DEWA, cargo, delivery timeline
-- [ ] **TOOL-05**: `uae_expat_flow()` -- returns 10-stage funnel with current stage metrics
-- [ ] **TOOL-06**: `uae_macro_health()` -- returns traffic light dashboard with signal group details
-- [ ] **TOOL-07**: `uae_arbitrage(area, property_type)` -- returns off-plan vs ready premium spread
-- [ ] **TOOL-08**: `uae_salary_rent(income_bracket)` -- returns pressure map with affordable areas
+- [x] **TOOL-01**: `uae_area_signal(area, property_type)` -- returns buy/sell score with component breakdown
+- [x] **TOOL-02**: `uae_distress(area?)` -- returns distress signals for area or top-N distressed areas
+- [x] **TOOL-03**: `uae_rental_intel(area, bedrooms)` -- returns yields, affordability, momentum, DOM
+- [x] **TOOL-04**: `uae_supply_pipeline(area?)` -- returns permit count, DEWA, cargo, delivery timeline
+- [x] **TOOL-05**: `uae_expat_flow()` -- returns 10-stage funnel with current stage metrics
+- [x] **TOOL-06**: `uae_macro_health()` -- returns traffic light dashboard with signal group details
+- [x] **TOOL-07**: `uae_arbitrage(area, property_type)` -- returns off-plan vs ready premium spread
+- [x] **TOOL-08**: `uae_salary_rent(income_bracket)` -- returns pressure map with affordable areas
 - [ ] **TOOL-09**: `uae_raw_data(source, start_date, end_date)` -- returns raw CSV data for any source
 - [ ] **TOOL-10**: `uae_collection_status()` -- returns last run times, row counts, and staleness flags
 - [ ] **TOOL-11**: `uae_trigger_collection(source?)` -- manually trigger collection for one or all sources
@@ -125,7 +125,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [x] **QUAL-01**: Out-of-sample validation -- split data into training/test sets, validate Granger results on held-out data
 - [ ] **QUAL-02**: Staleness surfacing -- Telegram responses include data freshness warnings when sources are >2x overdue
 - [x] **QUAL-03**: Conditional forward-fill -- fill gaps up to 1 period only; leave NULL for extended outages instead of propagating stale data
-- [ ] **QUAL-04**: Area name normalization -- fuzzy matching for Telegram queries, support abbreviations (JVC, JBR, DIFC), show "Did you mean?" for ambiguous input
+- [x] **QUAL-04**: Area name normalization -- fuzzy matching for Telegram queries, support abbreviations (JVC, JBR, DIFC), show "Did you mean?" for ambiguous input
 - [ ] **QUAL-05**: Collection health dashboard -- `uae_collection_status()` shows all sources with last update, row count, staleness flag, next scheduled run
 
 ## v1.4 Requirements (Deferred)
@@ -223,14 +223,14 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | PROD-06 | 11 | Complete |
 | PROD-07 | 11 | Complete |
 | PROD-08 | 11 | Complete |
-| TOOL-01 | 12 | Pending |
-| TOOL-02 | 12 | Pending |
-| TOOL-03 | 12 | Pending |
-| TOOL-04 | 12 | Pending |
-| TOOL-05 | 12 | Pending |
-| TOOL-06 | 12 | Pending |
-| TOOL-07 | 12 | Pending |
-| TOOL-08 | 12 | Pending |
+| TOOL-01 | 12 | Complete |
+| TOOL-02 | 12 | Complete |
+| TOOL-03 | 12 | Complete |
+| TOOL-04 | 12 | Complete |
+| TOOL-05 | 12 | Complete |
+| TOOL-06 | 12 | Complete |
+| TOOL-07 | 12 | Complete |
+| TOOL-08 | 12 | Complete |
 | TOOL-09 | 12 | Pending |
 | TOOL-10 | 12 | Pending |
 | TOOL-11 | 12 | Pending |
@@ -253,7 +253,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | QUAL-01 | 11 | Complete |
 | QUAL-02 | 12 | Pending |
 | QUAL-03 | 11 | Complete |
-| QUAL-04 | 12 | Pending |
+| QUAL-04 | 12 | Complete |
 | QUAL-05 | 12 | Pending |
 
 **Coverage:**

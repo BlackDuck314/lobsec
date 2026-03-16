@@ -160,7 +160,7 @@
 | 9. Tier C Collection | 4/4 | Complete   | 2026-03-16 | - |
 | 10. Statistical Analysis | 4/4 | Complete    | 2026-03-16 | - |
 | 11. Intelligence Products | 4/4 | Complete    | 2026-03-16 | - |
-| 12. Plugin Tools & Hardening | v1.3 | 0/? | Pending | - |
+| 12. Plugin Tools & Hardening | 1/4 | In Progress|  | - |
 
 ---
 *Roadmap updated: 2026-03-13 after Phase 8 completion (4/4 plans complete, 20 missions deployed, 3 timers active)*
