@@ -1,0 +1,50 @@
+# RTA Metro & Public Transport Ridership — Monthly Browser Scrape
+# Source (COLL-16): Monthly station-level ridership data for metro, tram, bus
+# Signal: COINCIDENT | Lifecycle: Settlement Activity
+
+schema_version: "1.0"
+name: rta-metro
+description: >
+  RTA (Roads and Transport Authority) public transport ridership statistics.
+  Navigate to statistics page and extract monthly ridership data for metro rail,
+  Dubai Tram, and bus network. Government source — browser scrape bypasses WAF.
+  Graceful failure if statistics section is temporarily unavailable.
+type: browser_scrape
+frequency: monthly
+priority: 2
+
+source:
+  url: "https://www.rta.ae/wps/portal/rta/ae/about-rta/statistics"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: json
+  strategy: browser_table_extract
+  selectors:
+    data_table: "table, .data-table, [class*='table'], [class*='stats'], [class*='ridership']"
+    pagination: "[class*='pagination'], .page-controls"
+    filter_controls: "[class*='filter'], [class*='year']"
+  fields:
+    - total_ridership
+    - metro_ridership
+    - tram_ridership
+    - bus_ridership
+    - measurement_period
+
+output:
+  path: "/opt/lobsec/data/raw/rta-metro/{date}.json"
+  format: json
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 3000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: true
+
+proxy: false
+user_agent_rotation: false
+timeout_ms: 300000
