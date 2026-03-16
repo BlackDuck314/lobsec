@@ -62,6 +62,7 @@ export type PythonScriptName =
   | "normalize_office"
   | "analyze_stationarity"
   | "analyze_granger"
+  | "analyze_validation"
   | "analyze_composite"
   | "analyze_anomalies"
   | "analyze_affordability"
