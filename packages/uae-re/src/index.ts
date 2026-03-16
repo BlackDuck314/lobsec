@@ -7,6 +7,17 @@
  * OpenClaw plugin entry point with uae_collection_status tool.
  */
 
+// Product query functions
+import { queryAreaSignal } from "./products/prod01-area-signal.js";
+import { queryDistress } from "./products/prod02-distress.js";
+import { queryRentalIntel } from "./products/prod03-rental.js";
+import { querySupplyPipeline } from "./products/prod04-supply.js";
+import { queryExpatFunnel } from "./products/prod05-expat-funnel.js";
+import { queryMacroHealth } from "./products/prod06-macro-health.js";
+import { queryArbitrage } from "./products/prod07-arbitrage.js";
+import { querySalaryRent } from "./products/prod08-salary-rent.js";
+import { resolveArea, type ResolveResult } from "./tools/area-normalizer.js";
+
 // Database layer
 export { initDatabase, closeDatabase } from "./db/connection.js";
 export { initSchema } from "./db/schema.js";
@@ -92,6 +103,9 @@ import { CollectorRegistry } from "./collectors/registry.js";
 import { IntelligenceCache } from "./cache/manager.js";
 import { getLatestCollection } from "./db/queries.js";
 import { initAreaTable } from "./areas/mapping.js";
+import { runPython } from "./analytics/bridge.js";
+import { detectGaps } from "./normalization/gap-detection.js";
+import path from "node:path";
 
 import type { ScraperApiConfig } from "./collectors/types.js";
 
@@ -202,6 +216,359 @@ export default {
     // Register all 7 collectors via factory (all are SourceCollector instances)
     registry.createCollectors(db, scraperConfig);
 
+    // Shared area resolution helper
+    function resolveAreaOrError(
+      input: string
+    ): { result: ResolveResult; prefix: string } | { error: string } {
+      const resolved = resolveArea(input, db);
+      if (!resolved)
+        return {
+          error: `Unknown area: "${input}". Use uae_collection_status() to see valid areas.`,
+        };
+      if (resolved.alternatives && resolved.alternatives.length > 1) {
+        return {
+          error: `Ambiguous area "${input}". Did you mean:\n${resolved.alternatives.slice(0, 8).join("\n")}`,
+        };
+      }
+      const prefix = resolved.correctedFrom
+        ? `Showing results for "${resolved.canonical}" (from "${resolved.correctedFrom}")\n\n`
+        : "";
+      return { result: resolved, prefix };
+    }
+
+    // TOOL-01: uae_area_signal
+    api.registerTool({
+      name: "uae_area_signal",
+      label: "UAE Area Signal",
+      description:
+        "Returns buy/sell signal score (-1 to +1) with component breakdown for a Dubai area.",
+      parameters: Type.Object({
+        area: Type.String({
+          description: "Area name or abbreviation (e.g. JVC, Dubai Marina)",
+        }),
+        property_type: Type.Optional(
+          Type.String({
+            description: "apartment | villa | townhouse",
+          })
+        ),
+      }),
+      execute: async (_id, params) => {
+        try {
+          const area = String(params.area ?? "");
+          const property_type = params.property_type
+            ? String(params.property_type)
+            : undefined;
+          const resolved = resolveAreaOrError(area);
+          if ("error" in resolved) return textResult(resolved.error);
+          const cacheKey = { area: resolved.result.canonical, property_type };
+          const cached = cache.get<{ formattedText: string }>(
+            "area_signal",
+            cacheKey
+          );
+          if (cached) return textResult(resolved.prefix + cached.formattedText);
+          const result = queryAreaSignal(db, resolved.result.canonical);
+          if (!result)
+            return textResult(
+              `No area signal data available for "${resolved.result.canonical}".`
+            );
+          cache.set("area_signal", cacheKey, result, 3600000);
+          return textResult(resolved.prefix + result.formattedText);
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-02: uae_distress
+    api.registerTool({
+      name: "uae_distress",
+      label: "UAE Distress Signals",
+      description:
+        "Returns distress signals. With area: detailed 17-signal breakdown. Without: top 5 most distressed areas.",
+      parameters: Type.Object({
+        area: Type.Optional(
+          Type.String({
+            description: "Area name or abbreviation. Omit for top-5 ranking.",
+          })
+        ),
+      }),
+      execute: async (_id, params) => {
+        try {
+          if (params.area) {
+            const area = String(params.area);
+            const resolved = resolveAreaOrError(area);
+            if ("error" in resolved) return textResult(resolved.error);
+            const cacheKey = { area: resolved.result.canonical };
+            const cached = cache.get<{ formattedText: string }>(
+              "distress",
+              cacheKey
+            );
+            if (cached)
+              return textResult(resolved.prefix + cached.formattedText);
+            const result = queryDistress(db, resolved.result.canonical);
+            if (!result)
+              return textResult(
+                `No distress data available for "${resolved.result.canonical}".`
+              );
+            cache.set("distress", cacheKey, result, 3600000);
+            return textResult(resolved.prefix + result.formattedText);
+          } else {
+            // Top-5 mode
+            const cacheKey = { product: "distress_topN" };
+            const cached = cache.get<{ formattedText: string }>(
+              "distress_topN",
+              cacheKey
+            );
+            if (cached) return textResult(cached.formattedText);
+            const rows = db
+              .prepare(
+                `SELECT area, score FROM composite_scores
+                 WHERE measurement_date = (SELECT MAX(measurement_date) FROM composite_scores)
+                 ORDER BY score DESC LIMIT 5`
+              )
+              .all() as Array<{ area: string; score: number }>;
+            if (rows.length === 0)
+              return textResult("No composite scores available yet.");
+            const lines = [
+              "Top 5 Most Distressed Areas (latest month)",
+              "",
+              ...rows.map(
+                (r, i) => `${i + 1}. ${r.area}: ${r.score.toFixed(2)}`
+              ),
+            ];
+            const text = lines.join("\n");
+            cache.set("distress_topN", cacheKey, { formattedText: text }, 3600000);
+            return textResult(text);
+          }
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-03: uae_rental_intel
+    api.registerTool({
+      name: "uae_rental_intel",
+      label: "UAE Rental Intelligence",
+      description:
+        "Returns rental intelligence: gross yield, momentum, vacancy proxy, renewal rate, DOM trend, affordability.",
+      parameters: Type.Object({
+        area: Type.String({
+          description: "Area name or abbreviation (e.g. JBR, Dubai Marina)",
+        }),
+      }),
+      execute: async (_id, params) => {
+        try {
+          const area = String(params.area ?? "");
+          const resolved = resolveAreaOrError(area);
+          if ("error" in resolved) return textResult(resolved.error);
+          const cacheKey = { area: resolved.result.canonical };
+          const cached = cache.get<{ formattedText: string }>(
+            "rental_intel",
+            cacheKey
+          );
+          if (cached) return textResult(resolved.prefix + cached.formattedText);
+          const result = queryRentalIntel(db, resolved.result.canonical);
+          if (!result)
+            return textResult(
+              `No rental intelligence data available for "${resolved.result.canonical}".`
+            );
+          cache.set("rental_intel", cacheKey, result, 3600000);
+          return textResult(resolved.prefix + result.formattedText);
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-04: uae_supply_pipeline
+    api.registerTool({
+      name: "uae_supply_pipeline",
+      label: "UAE Supply Pipeline",
+      description:
+        "Returns supply pipeline: permits, DEWA connections, cargo, delivery timeline. Omit area for city-wide.",
+      parameters: Type.Object({
+        area: Type.Optional(
+          Type.String({
+            description: "Area name or abbreviation. Omit for city-wide view.",
+          })
+        ),
+      }),
+      execute: async (_id, params) => {
+        try {
+          let canonicalArea: string | undefined;
+          let prefix = "";
+          if (params.area) {
+            const area = String(params.area);
+            const resolved = resolveAreaOrError(area);
+            if ("error" in resolved) return textResult(resolved.error);
+            canonicalArea = resolved.result.canonical;
+            prefix = resolved.prefix;
+          }
+          const cacheKey = { area: canonicalArea ?? "all" };
+          const cached = cache.get<{ formattedText: string }>(
+            "supply_pipeline",
+            cacheKey
+          );
+          if (cached) return textResult(prefix + cached.formattedText);
+          const result = querySupplyPipeline(db, canonicalArea);
+          if (!result)
+            return textResult("No supply pipeline data available.");
+          cache.set("supply_pipeline", cacheKey, result, 3600000);
+          return textResult(prefix + result.formattedText);
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-05: uae_expat_flow
+    api.registerTool({
+      name: "uae_expat_flow",
+      label: "UAE Expat Flow",
+      description:
+        "Returns the 10-stage expat lifecycle funnel with current metrics at each stage.",
+      parameters: Type.Object({}),
+      execute: async (_id, _params) => {
+        try {
+          const cacheKey = {};
+          const cached = cache.get<{ formattedText: string }>(
+            "expat_flow",
+            cacheKey
+          );
+          if (cached) return textResult(cached.formattedText);
+          const result = queryExpatFunnel(db);
+          if (!result)
+            return textResult("No expat flow data available.");
+          cache.set("expat_flow", cacheKey, result, 3600000);
+          return textResult(result.formattedText);
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-06: uae_macro_health
+    api.registerTool({
+      name: "uae_macro_health",
+      label: "UAE Macro Health",
+      description:
+        "Returns macro health dashboard with traffic light (green/amber/red) for 6 signal groups.",
+      parameters: Type.Object({}),
+      execute: async (_id, _params) => {
+        try {
+          const cacheKey = {};
+          const cached = cache.get<{ formattedText: string }>(
+            "macro_health",
+            cacheKey
+          );
+          if (cached) return textResult(cached.formattedText);
+          const result = queryMacroHealth(db);
+          if (!result)
+            return textResult("No macro health data available.");
+          cache.set("macro_health", cacheKey, result, 3600000);
+          return textResult(result.formattedText);
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-07: uae_arbitrage
+    api.registerTool({
+      name: "uae_arbitrage",
+      label: "UAE Off-Plan Arbitrage",
+      description:
+        "Returns off-plan vs ready premium spread for an area.",
+      parameters: Type.Object({
+        area: Type.String({
+          description: "Area name or abbreviation",
+        }),
+        property_type: Type.Optional(
+          Type.String({ description: "apartment | villa | townhouse" })
+        ),
+      }),
+      execute: async (_id, params) => {
+        try {
+          const area = String(params.area ?? "");
+          const property_type = params.property_type
+            ? String(params.property_type)
+            : undefined;
+          const resolved = resolveAreaOrError(area);
+          if ("error" in resolved) return textResult(resolved.error);
+          const cacheKey = {
+            area: resolved.result.canonical,
+            property_type,
+          };
+          const cached = cache.get<{ formattedText: string }>(
+            "arbitrage",
+            cacheKey
+          );
+          if (cached) return textResult(resolved.prefix + cached.formattedText);
+          const result = queryArbitrage(db, resolved.result.canonical);
+          if (!result)
+            return textResult(
+              `No arbitrage data available for "${resolved.result.canonical}".`
+            );
+          cache.set("arbitrage", cacheKey, result, 3600000);
+          return textResult(resolved.prefix + result.formattedText);
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-08: uae_salary_rent
+    api.registerTool({
+      name: "uae_salary_rent",
+      label: "UAE Salary-Rent Pressure",
+      description:
+        "Returns salary-rent pressure map with affordable areas by income bracket.",
+      parameters: Type.Object({
+        income_bracket: Type.Optional(
+          Type.String({
+            description: "junior | mid | senior | executive | all",
+          })
+        ),
+      }),
+      execute: async (_id, params) => {
+        try {
+          const income_bracket = params.income_bracket
+            ? String(params.income_bracket)
+            : undefined;
+          const cacheKey = { bracket: income_bracket ?? "all" };
+          const cached = cache.get<{ formattedText: string }>(
+            "salary_rent",
+            cacheKey
+          );
+          if (cached) return textResult(cached.formattedText);
+          const result = querySalaryRent(db, income_bracket);
+          if (!result)
+            return textResult("No salary-rent data available.");
+          cache.set("salary_rent", cacheKey, result, 3600000);
+          return textResult(result.formattedText);
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
     // Register uae_collection_status tool
     api.registerTool({
       name: "uae_collection_status",
@@ -273,7 +640,7 @@ export default {
     });
 
       log.info(
-        "[lobsec-uae-re] registered 7 collectors + 1 tool"
+        "[lobsec-uae-re] registered 34 collectors + 9 tools"
       );
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
