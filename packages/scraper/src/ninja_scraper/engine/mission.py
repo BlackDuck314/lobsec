@@ -45,6 +45,9 @@ class PaginationConfig(BaseModel):
     wait_after_ms: int = Field(default=3000, ge=500, le=30000)
     page_param: str = "page"
     """URL query parameter name for page number (page_param strategy)."""
+    page_size: int = 0
+    """Items per page for offset-based pagination (e.g., Indeed uses start=10,20,30).
+    When >0, the param value is (page_num-1)*page_size instead of page_num."""
 
 
 class Mission(BaseModel):

@@ -130,7 +130,8 @@ async def paginate_and_extract(
                     break
 
         elif pagination.strategy == "page_param":
-            page_url = _build_page_url(url, page_num, pagination.page_param)
+            param_value = (page_num - 1) * pagination.page_size if pagination.page_size > 0 else page_num
+            page_url = _build_page_url(url, param_value, pagination.page_param)
             try:
                 response = await page.goto(page_url, wait_until=wait_until, timeout=30000)
                 if response and response.status in (403, 404):
