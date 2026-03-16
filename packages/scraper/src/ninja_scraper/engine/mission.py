@@ -35,6 +35,18 @@ class ConcurrencyConfig(BaseModel):
     """[min_delay, max_delay] in ms for random delay between requests."""
 
 
+class PaginationConfig(BaseModel):
+    """Pagination configuration for multi-page extraction."""
+
+    strategy: Literal["click_next", "page_param"] = "click_next"
+    next_selector: str = ""
+    """CSS selector for the next-page button (click_next strategy)."""
+    max_pages: int = Field(default=5, ge=1, le=100)
+    wait_after_ms: int = Field(default=3000, ge=500, le=30000)
+    page_param: str = "page"
+    """URL query parameter name for page number (page_param strategy)."""
+
+
 class Mission(BaseModel):
     """A scraping mission specification loaded from YAML.
 
@@ -54,6 +66,7 @@ class Mission(BaseModel):
     timeout_ms: int = Field(default=120000, ge=5000, le=3600000)
     concurrency: ConcurrencyConfig = Field(default_factory=ConcurrencyConfig)
     areas: list[str] | None = None
+    pagination: PaginationConfig | None = None
     proxy: bool = False
     user_agent_rotation: bool = False
     schema_version: str = "1.0"

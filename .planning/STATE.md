@@ -15,10 +15,61 @@ progress:
 
 ## Current Position
 
-Phase: 12 of 12 -- Plugin Tools, Telegram Interface & Production Hardening (COMPLETE)
-Plan: 4 of 4 -- All plans complete. Phase 12 done. v1.3 UAE Real Estate Intelligence System COMPLETE.
-Status: Phase 12 fully deployed. 13 UAE RE plugin tools live. Telegram end-to-end verified. All 88 v1.3 requirements fulfilled.
-Last activity: 2026-03-16 — 12-04 complete. TypeScript compiled, deployed to production, lobsec service restarted. User approved Telegram checkpoint.
+Phase: POST v1.3 — Scraper Tuning (unplanned maintenance)
+Status: 5 sources producing real data. Pagination engine added. Continuing tuning.
+Last activity: 2026-03-16 — Pagination engine, LinkedIn selectors, JS click fallback. PF 10-page crawl running.
+
+### Scraper Tuning Progress (outside GSD phases)
+This work fills the gap between "missions written" (Phases 7.1-9) and "missions producing data".
+
+**DONE:**
+- Engine: post_load_wait_ms, wait_for_selector, pre_extract_js, container_selector
+- Engine: PaginationConfig (click_next + page_param strategies), JS click fallback for overlay intercept
+- PropertyFinder: ~200 cards/area (10 pages), data-testid selectors, page_param pagination
+- Bayt Jobs: 150 cards (5 pages), click_next pagination with JS fallback, 12.4K total UAE jobs
+- ADREC Abu Dhabi: 20 transactions, #salesTable, 14 fields per row
+- LinkedIn Jobs: 60 structured cards (was raw HTML blobs), container_selector extraction
+
+**BLOCKED (confirmed via inspection):**
+- RTA Statistics: WAF "Request Rejected" (headless detected)
+- DTCM Tourism: 403 Access Denied (CDN block)
+- DXB Airport: 404 (page moved/removed)
+- DEWA Connections: 404 (site restructured, all URLs return "Not Found")
+- MOHRE Permits: 404 (statistical-report.aspx moved)
+- DSC Demographics: 404 (page not found)
+- GulfTalent: 403 Access Denied
+- Bayut: CAPTCHA ("Please verify your identity" — anti-bot detection)
+- Indeed: Timeout (networkidle never fires)
+
+**ACCESSIBLE (need selector work):**
+- CBUAE Statistics: 200 OK, 40 cards, 16 PDF links — fixable
+- KHDA Enrollment: 200 OK, 5 PDF links — fixable
+- Hays Salary: 200 OK — may have downloadable PDF
+- DP World (Jebel Ali): 200 OK, 3MB press releases — need content selectors
+
+**TODO (next):**
+- Verify PropertyFinder full crawl results (running now, ~50 min)
+- Fix CBUAE and KHDA missions (PDF download selectors)
+- Normalization pipeline: raw JSON → parsed numerics → SQLite
+- End-to-end: scrape → normalize → DB (Phase 7 success criterion 5)
+
+### v1.3 Phase Status (actual, not aspirational)
+| Phase | Status | Notes |
+|-------|--------|-------|
+| 6 | ✅ Complete | Foundation infrastructure |
+| 7 | ⏸ Blocked | Plan 4 blocked by SQLite WAL pragma failure |
+| 7.1 | ✅ Complete | Ninja Scraper engine |
+| 8 | ✅ Code complete | Missions written, selectors were placeholders |
+| 9 | ✅ Code complete | Missions written, selectors were placeholders |
+| 10 | ✅ Code complete | Analysis pipeline, needs data to run |
+| 11 | ✅ Code complete | Intelligence products, needs data to run |
+| 12 | ✅ Complete | Plugin tools + Telegram + hardening |
+| POST | 🔧 In progress | Scraper tuning — making missions actually work |
+
+### Key blocker: SQLite WAL pragma failure (Phase 7 Plan 4)
+- better-sqlite3 WAL pragma fails during OpenClaw plugin registration
+- Blocks: collector verification, end-to-end pipeline, Phases 10-11 actual execution
+- Carried since 2026-03-11
 
 ## Resume Instructions
 

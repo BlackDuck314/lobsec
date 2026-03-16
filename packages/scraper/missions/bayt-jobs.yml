@@ -41,6 +41,12 @@ extraction:
     - location
     - posted_date
 
+pagination:
+  strategy: click_next
+  next_selector: '.pagination-next a'
+  max_pages: 5
+  wait_after_ms: 5000
+
 output:
   path: "/opt/lobsec/data/raw/bayt-jobs/{date}.json"
   format: json

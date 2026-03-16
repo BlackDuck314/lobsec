@@ -17,6 +17,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import date
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import httpx
 import structlog
@@ -39,6 +40,126 @@ class MissionResult:
     duration_ms: int = 0
     error: str | None = None
     mission_name: str = ""
+
+
+async def _extract_page_cards(page: Any, container_sel: str, selectors: dict[str, str]) -> list[dict[str, Any]]:
+    """Extract structured card records from the current page state."""
+    containers = await page.query_selector_all(container_sel)
+    cards: list[dict[str, Any]] = []
+    for container in containers:
+        record: dict[str, Any] = {}
+        for field_name, selector in selectors.items():
+            try:
+                el = await container.query_selector(selector)
+                record[field_name] = (await el.text_content()).strip() if el else None
+            except Exception:
+                record[field_name] = None
+        cards.append(record)
+    return cards
+
+
+def _build_page_url(base_url: str, page_num: int, param_name: str) -> str:
+    """Append or replace page parameter in URL."""
+    parsed = urlparse(base_url)
+    params = parse_qs(parsed.query)
+    params[param_name] = [str(page_num)]
+    new_query = urlencode(params, doseq=True)
+    return urlunparse(parsed._replace(query=new_query))
+
+
+async def paginate_and_extract(
+    page: Any,
+    mission: Mission,
+    initial_cards: list[dict[str, Any]],
+    url: str,
+    log: Any,
+) -> list[dict[str, Any]]:
+    """Follow pagination and extract additional cards beyond page 1.
+
+    Supports two strategies:
+    - click_next: Click a next-page button, wait, re-extract from same page
+    - page_param: Navigate to URL?page=N for each subsequent page
+
+    Returns combined list of all cards across all pages.
+    """
+    pagination = mission.pagination
+    container_sel = mission.extraction.get("container_selector")
+    if not pagination or not container_sel:
+        return initial_cards
+
+    all_cards = list(initial_cards)
+    selectors = mission.extraction.get("selectors", {})
+    wait_until = mission.source.get("wait_until", "networkidle")
+    post_load_wait = mission.source.get("post_load_wait_ms", 0)
+    wait_sel = mission.source.get("wait_for_selector")
+
+    for page_num in range(2, pagination.max_pages + 1):
+        if pagination.strategy == "click_next":
+            next_btn = await page.query_selector(pagination.next_selector)
+            if not next_btn:
+                log.info("No next button found", pages_scraped=page_num - 1)
+                break
+
+            # Check disabled states
+            aria_disabled = await next_btn.get_attribute("aria-disabled")
+            if aria_disabled == "true":
+                log.info("Next button disabled", pages_scraped=page_num - 1)
+                break
+            classes = await next_btn.get_attribute("class") or ""
+            if "disabled" in classes.lower():
+                log.info("Next button has disabled class", pages_scraped=page_num - 1)
+                break
+
+            try:
+                await next_btn.click(timeout=10000)
+            except Exception:
+                # Fallback: JS click bypasses overlay/pointer interception
+                try:
+                    await page.evaluate("el => el.click()", next_btn)
+                except Exception as e:
+                    log.warning("Click next failed", error=str(e))
+                    break
+
+            await asyncio.sleep(pagination.wait_after_ms / 1000)
+
+            if wait_sel:
+                try:
+                    await page.wait_for_selector(wait_sel, timeout=15000)
+                except Exception:
+                    log.warning("Wait for selector after pagination failed", page=page_num)
+                    break
+
+        elif pagination.strategy == "page_param":
+            page_url = _build_page_url(url, page_num, pagination.page_param)
+            try:
+                response = await page.goto(page_url, wait_until=wait_until, timeout=30000)
+                if response and response.status in (403, 404):
+                    log.info("Pagination stopped on error status", page=page_num, status=response.status)
+                    break
+            except Exception as e:
+                log.warning("Page navigation failed", page=page_num, error=str(e))
+                break
+
+            if post_load_wait > 0:
+                await asyncio.sleep(post_load_wait / 1000)
+
+            if wait_sel:
+                try:
+                    await page.wait_for_selector(wait_sel, timeout=15000)
+                except Exception:
+                    log.info("No content on page", page=page_num)
+                    break
+
+        # Extract cards from this page
+        new_cards = await _extract_page_cards(page, container_sel, selectors)
+        if not new_cards:
+            log.info("No cards found, pagination done", pages_scraped=page_num - 1)
+            break
+
+        all_cards.extend(new_cards)
+        log.info("Pagination", page=page_num, new_cards=len(new_cards), total_cards=len(all_cards))
+
+    return all_cards
 
 
 async def run_http_mission(mission: Mission, output_dir: str | None = None) -> MissionResult:
@@ -250,20 +371,15 @@ async def run_browser_mission(mission: Mission, output_dir: str | None = None) -
                     container_sel = mission.extraction.get("container_selector")
                     if container_sel:
                         # Per-card structured extraction
-                        containers = await page.query_selector_all(container_sel)
-                        cards = []
-                        for container in containers:
-                            record: dict[str, Any] = {}
-                            for field_name, selector in selectors.items():
-                                try:
-                                    el = await container.query_selector(selector)
-                                    record[field_name] = (await el.text_content()).strip() if el else None
-                                except Exception:
-                                    record[field_name] = None
-                            cards.append(record)
+                        cards = await _extract_page_cards(page, container_sel, selectors)
+                        log.info("Container extraction", url=url, card_count=len(cards))
+
+                        # Follow pagination if configured
+                        if mission.pagination:
+                            cards = await paginate_and_extract(page, mission, cards, url, log)
+
                         page_data["cards"] = cards
                         page_data["card_count"] = len(cards)
-                        log.info("Container extraction", url=url, card_count=len(cards))
 
                         # Extract page-level selectors separately
                         for field_name, selector in mission.extraction.get("page_selectors", {}).items():

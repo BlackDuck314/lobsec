@@ -72,6 +72,12 @@ extraction:
     - location
     - title
 
+pagination:
+  strategy: page_param
+  page_param: page
+  max_pages: 10
+  wait_after_ms: 5000
+
 output:
   path: "/opt/lobsec/data/raw/propertyfinder-listings/{date}.json"
   format: json
@@ -88,4 +94,4 @@ retry:
   jitter: true
   skip_on_403: true
 
-timeout_ms: 600000
+timeout_ms: 3600000
