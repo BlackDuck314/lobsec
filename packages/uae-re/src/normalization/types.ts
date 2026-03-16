@@ -113,4 +113,19 @@ export const SOURCE_MODULE_MAP: Record<string, string> = {
   "cooper-fitch-salary": "normalize_salary",
   "hays-salary": "normalize_salary",
   "roberthalf-salary": "normalize_salary",
+
+  // Phase 9 Tier C
+  "google-trends": "normalize_trends",          // COLL-14 + COLL-27 (moving keywords)
+  "reddit-sentiment": "normalize_sentiment",    // COLL-24
+  "rta-metro": "normalize_metro",               // COLL-16
+  "cbuae-mortgages": "normalize_mortgages",     // COLL-17
+  "dtcm-tourism": "normalize_tourism",          // COLL-18
+  "insideairbnb": "normalize_airbnb",           // COLL-19
+  "jebel-ali-port": "normalize_port",           // COLL-20
+  "fb-closures": "normalize_fb_closures",       // COLL-21
+  "customs-imports": "normalize_customs",       // COLL-22
+  "ded-licenses": "normalize_licenses",         // COLL-23
+  "fcsa-demographics": "normalize_demographics", // COLL-25
+  "google-maps-traffic": "normalize_foot_traffic", // COLL-26
+  "commercial-office-reports": "normalize_office", // COLL-28
 };

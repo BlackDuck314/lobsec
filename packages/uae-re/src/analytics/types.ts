@@ -46,7 +46,20 @@ export type PythonScriptName =
   | "normalize_jobs"
   | "normalize_salary"
   | "collect_trends"
-  | "collect_sentiment";
+  | "collect_sentiment"
+  | "normalize_trends"
+  | "normalize_sentiment"
+  | "normalize_metro"
+  | "normalize_mortgages"
+  | "normalize_tourism"
+  | "normalize_airbnb"
+  | "normalize_port"
+  | "normalize_fb_closures"
+  | "normalize_customs"
+  | "normalize_licenses"
+  | "normalize_demographics"
+  | "normalize_foot_traffic"
+  | "normalize_office";
 
 /**
  * Configuration for the Python subprocess bridge.
