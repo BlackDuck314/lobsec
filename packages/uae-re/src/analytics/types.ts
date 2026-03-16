@@ -44,7 +44,9 @@ export type PythonScriptName =
   | "normalize_rta"
   | "normalize_remittances"
   | "normalize_jobs"
-  | "normalize_salary";
+  | "normalize_salary"
+  | "collect_trends"
+  | "collect_sentiment";
 
 /**
  * Configuration for the Python subprocess bridge.
