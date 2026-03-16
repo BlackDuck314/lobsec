@@ -66,7 +66,9 @@ export type PythonScriptName =
   | "analyze_composite"
   | "analyze_anomalies"
   | "analyze_affordability"
-  | "analyze_expat_funnel";
+  | "analyze_expat_funnel"
+  | "granger_ondemand"
+  | "correlation_ondemand";
 
 /**
  * Configuration for the Python subprocess bridge.
