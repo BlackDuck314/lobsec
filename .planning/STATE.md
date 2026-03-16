@@ -16,9 +16,9 @@ progress:
 ## Current Position
 
 Phase: 10 of 12 -- Statistical Analysis Pipeline (IN PROGRESS)
-Plan: 1 of 4 -- COMPLETE. Schema extended to 10 tables, analyze_stationarity.py and analyze_granger.py built.
-Status: Phase 10 Plan 01 complete. 5 new SQLite analysis tables (stationarity_results, granger_results, composite_scores, anomaly_flags, analysis_log), batch stationarity/Granger Python modules, PythonScriptName extended with 6 batch analysis names. Requirements STAT-01..04, SEC-06..07 addressed.
-Last activity: 2026-03-16 — Plan 10-01 complete. 2/2 tasks done. Ready for Phase 10 Plan 02 (composite index + anomaly detection).
+Plan: 3 of 4 -- COMPLETE. Pipeline orchestrator, digest formatter, CLI analyze subcommand.
+Status: Phase 10 Plan 03 complete. TypeScript pipeline orchestrator sequences 6 Python modules with dependency-aware error handling, 5-minute timeouts, analysis_log audit trail, parameterized SQL (SEC-06/07), and conditional Telegram digest dispatch. Requirements STAT-01..08, SEC-06..07 addressed.
+Last activity: 2026-03-16 — Plan 10-03 complete. 2/2 tasks done. Ready for Phase 10 Plan 04 (systemd timer + analyze.sh).
 
 ## Resume Instructions
 
@@ -160,6 +160,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 10-01]: Direct DB write pattern for batch analysis — analyze_stationarity.py and analyze_granger.py write directly to SQLite, bridge stdout carries summary JSON only (not full result sets)
 - [Phase 10-01]: Cross-correlation lag used as best_lag in granger_results — overrides Granger test best lag, more interpretable for downstream composite weighting
 - [Phase 10-01]: Bonferroni N = total (signal, target) pairs computed before test loop — correct scope for batch mode (existing granger.py used N = maxlag, incorrect for batch)
+- [Phase 10-03]: runStep() helper centralizes runPython call, analysis_log writes, and error handling — called 6 times for 6 pipeline steps (single call site, not duplicated)
+- [Phase 10-03]: Digest gated on >= 3 Granger signals from last 24h — ensures digest only sent after a fresh pipeline run with validated signals (not stale historical results)
+- [Phase 10-03]: Digest skip logged to analysis_log with reason — audit trail shows why digest was not dispatched when insufficient signals
 
 ## Blockers
 
@@ -175,10 +178,10 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 10-01-PLAN.md — Phase 10 Plan 01 complete. Schema extended to 10 tables, analyze_stationarity.py and analyze_granger.py built and import-verified.
-Resume file: .planning/phases/10-statistical-analysis/10-01-SUMMARY.md
-Next: Phase 10 Plan 02 — composite index (analyze_composite.py) + EWMA anomaly detection (analyze_anomalies.py).
-Key context: Phase 10 Plan 01 complete. 5 analysis tables in schema. Batch stationarity (ADF+KPSS, auto-diff) + Granger (Bonferroni, cross-corr lag) modules ready. Requirements STAT-01..04, SEC-06..07 addressed.
+Stopped at: Completed 10-03-PLAN.md — TypeScript pipeline orchestrator, Telegram digest formatter, CLI analyze subcommand.
+Resume file: .planning/phases/10-statistical-analysis/10-03-SUMMARY.md
+Next: Phase 10 Plan 04 — analyze.sh shell wrapper + systemd timer (lobsec-analyze.timer).
+Key context: Phase 10 Plan 03 complete. runAnalysisPipeline() sequences 6 Python modules with dependency gates, analysis_log audit, parameterized SQL, Telegram digest dispatch. getNextAnalysisDate() computes next 25th at 02:00 UTC. CLI analyze subcommand calls pipeline and emits JSON result to stdout.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Store Reddit API credentials in HSM for collect_sentiment.py. Set up residential proxy service for Google Maps foot traffic (NINJA_PROXY_URL).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |

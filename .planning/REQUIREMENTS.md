@@ -68,10 +68,10 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [x] **STAT-02**: KPSS cross-check -- run KPSS alongside ADF for confirmation; flag disagreements for manual review
 - [x] **STAT-03**: Granger causality testing -- test all Tier A+B signals against DLD price/volume with Bonferroni correction (p < 0.05/N)
 - [x] **STAT-04**: Cross-correlation lag detection -- find optimal lag (1-12 months) for each validated signal via `scipy.stats.pearsonr` loop
-- [ ] **STAT-05**: Composite index construction -- z-score normalize validated signals, apply Granger-derived weights, scale to [-1, +1]
-- [ ] **STAT-06**: Anomaly detection -- EWMA-based outlier flagging (rolling mean +/- 2 std dev) for DEWA closures, visa cancellations, listing volume
-- [ ] **STAT-07**: Affordability model -- salary-to-rent ratio by income bracket and area, using median salaries from COLL-12
-- [ ] **STAT-08**: Expat pipeline flow model -- 10-stage lifecycle funnel (awareness -> job search -> visa -> housing -> settlement -> ... -> exit), z-score aggregation per stage
+- [x] **STAT-05**: Composite index construction -- z-score normalize validated signals, apply Granger-derived weights, scale to [-1, +1]
+- [x] **STAT-06**: Anomaly detection -- EWMA-based outlier flagging (rolling mean +/- 2 std dev) for DEWA closures, visa cancellations, listing volume
+- [x] **STAT-07**: Affordability model -- salary-to-rent ratio by income bracket and area, using median salaries from COLL-12
+- [x] **STAT-08**: Expat pipeline flow model -- 10-stage lifecycle funnel (awareness -> job search -> visa -> housing -> settlement -> ... -> exit), z-score aggregation per stage
 
 ### Intelligence Products
 
@@ -211,10 +211,10 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | STAT-02 | 10 | Complete |
 | STAT-03 | 10 | Complete |
 | STAT-04 | 10 | Complete |
-| STAT-05 | 10 | Pending |
-| STAT-06 | 10 | Pending |
-| STAT-07 | 10 | Pending |
-| STAT-08 | 10 | Pending |
+| STAT-05 | 10 | Complete |
+| STAT-06 | 10 | Complete |
+| STAT-07 | 10 | Complete |
+| STAT-08 | 10 | Complete |
 | PROD-01 | 11 | Pending |
 | PROD-02 | 11 | Pending |
 | PROD-03 | 11 | Pending |
