@@ -1,5 +1,6 @@
 # Bayt Job Postings — Browser Scrape
 # Source: COLL-11 (Job Postings) | Signal: LEADING (2-3 months) | Lifecycle: Job Search
+# Selectors verified via DOM inspection 2026-03-16
 
 schema_version: "1.0"
 name: bayt-jobs
@@ -15,24 +16,30 @@ source:
   url: "https://www.bayt.com/en/uae/jobs/"
   browser: chromium
   stealth: true
-  wait_until: networkidle
+  wait_until: domcontentloaded
+  post_load_wait_ms: 5000
+  wait_for_selector: '[data-job-id]'
 
 extraction:
   format: json
+  container_selector: '[data-job-id]'
   selectors:
-    total_count: ".t-result-count, .results-count"
-    job_cards: ".jb-card, .job-card, [data-js-job-card]"
-    job_title: ".jb-title, .job-title, h3 a"
-    company: ".jb-company, .company-name"
-    location: ".jb-location, .location"
-    salary: ".jb-salary, .salary-range, [class*='salary']"
+    job_title: 'h2 a'
+    company: '.job-company-location-wrapper a.t-bold'
+    location: '.job-company-location-wrapper .t-mute span'
+    salary: '.jb-label-salary'
+    career_level: '.jb-label-careerlevel'
+    posted_date: '.jb-date span'
+  page_selectors:
+    total_count: '[data-automation-id="XJobsFound"]'
   fields:
     - total_count
     - job_title
     - company
-    - salary_min
-    - salary_max
+    - salary
+    - career_level
     - location
+    - posted_date
 
 output:
   path: "/opt/lobsec/data/raw/bayt-jobs/{date}.json"
@@ -46,6 +53,5 @@ retry:
   max_attempts: 2
   initial_delay_ms: 5000
   skip_on_403: true
-  skip_on_captcha: true
 
 timeout_ms: 600000

@@ -222,31 +222,91 @@ async def run_browser_mission(mission: Mission, output_dir: str | None = None) -
                         else:
                             log.warning("403 detected, will retry", url=url)
 
+                    # Post-load wait (lets SPAs render)
+                    post_load_wait = mission.source.get("post_load_wait_ms", 0)
+                    if post_load_wait > 0:
+                        await asyncio.sleep(post_load_wait / 1000)
+
+                    # Wait for specific selector before extracting
+                    wait_sel = mission.source.get("wait_for_selector")
+                    if wait_sel:
+                        try:
+                            await page.wait_for_selector(wait_sel, timeout=15000)
+                        except Exception:
+                            log.warning("wait_for_selector timeout", selector=wait_sel, url=url)
+
+                    # Run pre-extraction JavaScript
+                    pre_js = mission.extraction.get("pre_extract_js")
+                    if pre_js:
+                        try:
+                            await page.evaluate(pre_js)
+                            await asyncio.sleep(1)
+                        except Exception as e:
+                            log.warning("pre_extract_js failed", error=str(e), url=url)
+
                     # Extract data using selectors
                     page_data: dict[str, Any] = {"url": url}
 
-                    for field_name, selector in selectors.items():
-                        try:
-                            elements = await page.query_selector_all(selector)
-                            if len(elements) == 1:
-                                text = await elements[0].text_content()
-                                page_data[field_name] = text.strip() if text else None
-                            elif len(elements) > 1:
-                                texts = []
-                                for el in elements:
-                                    text = await el.text_content()
-                                    texts.append(text.strip() if text else "")
-                                page_data[field_name] = texts
-                            else:
+                    container_sel = mission.extraction.get("container_selector")
+                    if container_sel:
+                        # Per-card structured extraction
+                        containers = await page.query_selector_all(container_sel)
+                        cards = []
+                        for container in containers:
+                            record: dict[str, Any] = {}
+                            for field_name, selector in selectors.items():
+                                try:
+                                    el = await container.query_selector(selector)
+                                    record[field_name] = (await el.text_content()).strip() if el else None
+                                except Exception:
+                                    record[field_name] = None
+                            cards.append(record)
+                        page_data["cards"] = cards
+                        page_data["card_count"] = len(cards)
+                        log.info("Container extraction", url=url, card_count=len(cards))
+
+                        # Extract page-level selectors separately
+                        for field_name, selector in mission.extraction.get("page_selectors", {}).items():
+                            try:
+                                elements = await page.query_selector_all(selector)
+                                if len(elements) == 1:
+                                    text = await elements[0].text_content()
+                                    page_data[field_name] = text.strip() if text else None
+                                elif len(elements) > 1:
+                                    texts = []
+                                    for el in elements:
+                                        text = await el.text_content()
+                                        texts.append(text.strip() if text else "")
+                                    page_data[field_name] = texts
+                                else:
+                                    page_data[field_name] = None
+                            except Exception as e:
+                                log.warning("Page selector failed", field=field_name, error=str(e))
                                 page_data[field_name] = None
-                        except Exception as e:
-                            log.warning(
-                                "Selector extraction failed",
-                                field=field_name,
-                                selector=selector,
-                                error=str(e),
-                            )
-                            page_data[field_name] = None
+                    else:
+                        # Flat extraction (backward compatible)
+                        for field_name, selector in selectors.items():
+                            try:
+                                elements = await page.query_selector_all(selector)
+                                if len(elements) == 1:
+                                    text = await elements[0].text_content()
+                                    page_data[field_name] = text.strip() if text else None
+                                elif len(elements) > 1:
+                                    texts = []
+                                    for el in elements:
+                                        text = await el.text_content()
+                                        texts.append(text.strip() if text else "")
+                                    page_data[field_name] = texts
+                                else:
+                                    page_data[field_name] = None
+                            except Exception as e:
+                                log.warning(
+                                    "Selector extraction failed",
+                                    field=field_name,
+                                    selector=selector,
+                                    error=str(e),
+                                )
+                                page_data[field_name] = None
 
                     all_data.append(page_data)
 
