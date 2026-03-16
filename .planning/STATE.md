@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T11:17:37.283Z"
+last_updated: "2026-03-16T11:57:56.537Z"
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 23
-  completed_plans: 22
+  completed_plans: 23
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: 10 of 12 -- Statistical Analysis Pipeline (IN PROGRESS)
-Plan: 3 of 4 -- COMPLETE. Pipeline orchestrator, digest formatter, CLI analyze subcommand.
-Status: Phase 10 Plan 03 complete. TypeScript pipeline orchestrator sequences 6 Python modules with dependency-aware error handling, 5-minute timeouts, analysis_log audit trail, parameterized SQL (SEC-06/07), and conditional Telegram digest dispatch. Requirements STAT-01..08, SEC-06..07 addressed.
-Last activity: 2026-03-16 — Plan 10-03 complete. 2/2 tasks done. Ready for Phase 10 Plan 04 (systemd timer + analyze.sh).
+Phase: 10 of 12 -- Statistical Analysis Pipeline (COMPLETE)
+Plan: 4 of 4 -- COMPLETE. analyze.sh, systemd timer, full production deployment.
+Status: Phase 10 complete. analyze.sh + lobsec-uae-analyze.timer deployed. All 6 Python analysis modules running. Pipeline verified end-to-end (26 analysis_log entries). SCHED-06, SEC-06, SEC-07 fulfilled. Next run: 2026-03-25 02:00 UTC.
+Last activity: 2026-03-16 — Plan 10-04 complete. 2/2 tasks done (1 auto + 1 human-verify checkpoint approved). Phase 10 fully complete. Ready for Phase 11 (Intelligence Products).
 
 ## Resume Instructions
 
@@ -165,6 +165,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 10-03]: Digest skip logged to analysis_log with reason — audit trail shows why digest was not dispatched when insufficient signals
 - [Phase 10-statistical-analysis]: Area signal split for composite: bayut/propertyfinder/ejari = area-level signals; all other sources = city-wide signals contributing to both area and dubai composites
 - [Phase 10-02]: Affordability rent normalization: ejari avg_rent_per_sqft * 750 sqft / 12 months for monthly 1BR cost estimate (typical Dubai 1BR)
+- [Phase 10-statistical-analysis]: analyze.sh has no health check for Ninja Scraper — pipeline reads from SQLite not from scraper; no uptime dependency
 
 ## Blockers
 
@@ -180,10 +181,10 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 10-03-PLAN.md — TypeScript pipeline orchestrator, Telegram digest formatter, CLI analyze subcommand.
-Resume file: .planning/phases/10-statistical-analysis/10-03-SUMMARY.md
-Next: Phase 10 Plan 04 — analyze.sh shell wrapper + systemd timer (lobsec-analyze.timer).
-Key context: Phase 10 Plan 03 complete. runAnalysisPipeline() sequences 6 Python modules with dependency gates, analysis_log audit, parameterized SQL, Telegram digest dispatch. getNextAnalysisDate() computes next 25th at 02:00 UTC. CLI analyze subcommand calls pipeline and emits JSON result to stdout.
+Stopped at: Completed 10-04-PLAN.md — analyze.sh, systemd timer, full production deployment. Phase 10 complete.
+Resume file: .planning/phases/10-statistical-analysis/10-04-SUMMARY.md
+Next: Phase 11 — Intelligence Products (PROD-01..08, QUAL-01, QUAL-03).
+Key context: Phase 10 fully complete. Statistical analysis pipeline deployed and verified. lobsec-uae-analyze.timer fires 25th 02:00 UTC. All 6 Python modules (stationarity, granger, composite, anomalies, affordability, expat_funnel) deployed. 5 new DB tables populated. 26 analysis_log entries confirmed. 3 bugs auto-fixed (CHECK constraint, area_name column x2).
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Store Reddit API credentials in HSM for collect_sentiment.py. Set up residential proxy service for Google Maps foot traffic (NINJA_PROXY_URL).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |

@@ -107,7 +107,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [ ] **SCHED-03**: Monthly timer (1st 06:00 GST) -- permits, DARI, MOHRE, DXB, RTA, DEWA, metro, DED, DTCM
 - [ ] **SCHED-04**: Quarterly timer (15th Jan/Apr/Jul/Oct 09:00 GST) -- GDRFA, CBUAE, customs, port cargo, Airbnb, moving companies, commercial reports
 - [x] **SCHED-05**: Daily timer (23:00 GST) -- Google Trends, social sentiment, foot traffic
-- [ ] **SCHED-06**: Pipeline timer (25th 06:00 GST) -- recompute all intelligence products after monthly data lands
+- [x] **SCHED-06**: Pipeline timer (25th 06:00 GST) -- recompute all intelligence products after monthly data lands
 - [ ] **SCHED-07**: Timeout enforcement -- max 5min for CSV/API, 20min for browser automation, kill and alert on exceed
 
 ### Security Integration
@@ -241,7 +241,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | SCHED-03 | 8 | Pending |
 | SCHED-04 | 8 | Pending |
 | SCHED-05 | 9 | Complete |
-| SCHED-06 | 10 | Pending |
+| SCHED-06 | 10 | Complete |
 | SCHED-07 | 8 | Pending |
 | SEC-01 | 6 | Complete |
 | SEC-02 | 6 | Complete |
