@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-13T07:37:15.395Z"
+last_updated: "2026-03-16T06:27:08.271Z"
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 4
-  total_plans: 15
-  completed_plans: 15
+  total_plans: 19
+  completed_plans: 16
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: 8 of 12 -- Tier B Collection (COMPLETE)
-Plan: 4 of 4 -- Plan 04 COMPLETE (systemd timers and production deployment)
-Status: Phase 8 Tier B Collection complete. All 4 plans executed: 08-01 (6 government sources), 08-02 (7 job/salary sources), 08-03 (TS registry + orchestrator), 08-04 (systemd timers + deployment). 3 systemd timers active (weekly Mon 02:00 UTC, monthly 1st 02:00 UTC, quarterly 15th Jan/Apr/Jul/Oct 05:00 UTC). 20 YAML missions deployed to Ninja Scraper (7 Tier A + 13 Tier B). 8 Python normalization modules deployed. collect.sh orchestrator operational. End-to-end verified with rta-vehicles test collection. Ready for Phase 9 (Tier C Collection - 14 alternative data sources).
-Last activity: 2026-03-13 — Plan 08-04 complete. 2 tasks (1 auto, 1 checkpoint). 6 systemd units created, 20 missions deployed, 8 normalizers deployed. Deployment verified: 3 timers active, Ninja Scraper health OK (20 missions loaded), test collection produced raw data (161 bytes). User setup needed: Dubai Pulse API credentials (DLD/Ejari/permits/DEWA), GulfTalent account.
+Phase: 9 of 12 -- Tier C Collection (IN PROGRESS)
+Plan: 2 of N -- Plan 09-02 COMPLETE (government Tier C: RTA metro, CBUAE mortgages, DTCM tourism, DED licenses, FCSA demographics, Jebel Ali port)
+Status: Phase 9 Tier C Collection in progress. 09-02 complete: 6 government YAML missions + 6 Python normalizers + 6 pandera schemas. All missions load (31 total in Ninja Scraper). Requirements COLL-16, COLL-17, COLL-18, COLL-20, COLL-23, COLL-25 implemented.
+Last activity: 2026-03-16 — Plan 09-02 complete. 2 tasks. 18 files created (6 YAML missions, 6 normalizers, 6 schemas). All missions auto-discovered, all normalizers import OK. Ready for Plan 09-03 (remaining Tier C sources).
 
 ## Resume Instructions
 
@@ -146,6 +146,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | Measurement date patterns | Monthly → start of month, quarterly → start of quarter, annual → September (academic year). |
 | Error messages for Telegram fallback | Descriptive ValueError with required field names when PDF extraction fails. Bot prompts user for manual entry. |
 | UAE-level prefix for CBUAE | uae|cbuae_* instead of dubai|cbuae_* — remittance data is national, not Dubai-specific. |
+- [Phase 09-tier-c-collection]: DSC over FCSA for demographics: Dubai Statistics Centre URL for more granular Dubai-specific population data
+- [Phase 09-tier-c-collection]: Empty list valid for annual demographics: normalize_demographics returns [] on non-annual quarters — expected behavior, not an error
+- [Phase 09-tier-c-collection]: Construction material breakdown optional: Jebel Ali port warns + skips metric if press release lacks breakdown — not an error
 
 ## Blockers
 
@@ -160,11 +163,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 
 ## Session Continuity
 
-Last session: 2026-03-13
-Stopped at: Phase 8 complete — all 4 plans executed (08-01 government, 08-02 jobs/salary, 08-03 TS registry, 08-04 timers)
-Resume file: .planning/phases/08-tier-b-collection/08-04-SUMMARY.md
-Next: Execute Phase 9 (Tier C Collection) — 14 alternative data sources (Google Trends, social sentiment, foot traffic, RTA metro, DTCM tourism, DED business, CBUAE mortgages, port cargo, customs imports, FCSA demographics, InsideAirbnb, F&B closures, moving inquiries, commercial office reports)
-Key context: 20 missions deployed (7 Tier A + 13 Tier B). 3 systemd timers active (weekly Mon 02:00 UTC, monthly 1st 02:00 UTC, quarterly 15th Jan/Apr/Jul/Oct 05:00 UTC). collect.sh orchestrator operational. End-to-end verified with rta-vehicles test (scrape → raw file). Dubai Pulse WAF blocks 4 sources (DLD/Ejari/permits/DEWA) without API credentials.
+Last session: 2026-03-16
+Stopped at: Completed 09-02-PLAN.md — government Tier C sources (RTA metro, CBUAE mortgages, DTCM tourism, DED licenses, FCSA demographics, Jebel Ali port)
+Resume file: .planning/phases/09-tier-c-collection/09-02-SUMMARY.md
+Next: Execute remaining Phase 9 plans (09-03 and beyond) — alternative/commercial sources (InsideAirbnb, F&B closures, customs imports, Google Maps foot traffic, commercial office reports, Google Trends, Reddit sentiment)
+Key context: 31 missions total in Ninja Scraper (7 Tier A + 13 Tier B + 6 government Tier C from 09-02 + others from 09-01/09-03). Requirements COLL-16, COLL-17, COLL-18, COLL-20, COLL-23, COLL-25 complete. Dubai Pulse WAF blocks 4 sources without API credentials.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Create GulfTalent account for COLL-11.
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |

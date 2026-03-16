@@ -40,16 +40,16 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 - [ ] **COLL-14**: Google Trends -- pytrends API, 6 keyword groups (buy/rent/expat/distress/luxury/exit)
 - [x] **COLL-15**: DEWA connections/closures -- press release scrape, new connections and disconnections per area
-- [ ] **COLL-16**: RTA metro ridership -- monthly from RTA open data, station-level ridership
-- [ ] **COLL-17**: CBUAE mortgage rates -- quarterly PDF extraction, EIBOR + mortgage outstanding
-- [ ] **COLL-18**: DTCM tourism stats -- monthly from dubaitourism.ae, hotel occupancy, visitor numbers
+- [x] **COLL-16**: RTA metro ridership -- monthly from RTA open data, station-level ridership
+- [x] **COLL-17**: CBUAE mortgage rates -- quarterly PDF extraction, EIBOR + mortgage outstanding
+- [x] **COLL-18**: DTCM tourism stats -- monthly from dubaitourism.ae, hotel occupancy, visitor numbers
 - [ ] **COLL-19**: InsideAirbnb/STR data -- quarterly bulk download + Apify weekly, occupancy and ADR
-- [ ] **COLL-20**: Jebel Ali port cargo -- monthly from DP World press releases, construction material volumes
+- [x] **COLL-20**: Jebel Ali port cargo -- monthly from DP World press releases, construction material volumes
 - [ ] **COLL-21**: F&B closures -- Zomato API + Google Maps permanently_closed tracking
 - [ ] **COLL-22**: Dubai customs household imports -- quarterly CBUAE foreign trade stats, furniture/household goods
-- [ ] **COLL-23**: DED business licenses -- monthly from Dubai Pulse, new vs cancelled licenses by sector
+- [x] **COLL-23**: DED business licenses -- monthly from Dubai Pulse, new vs cancelled licenses by sector
 - [ ] **COLL-24**: Social sentiment -- Reddit (r/dubai, r/dubairealestate) via PRAW + VADER compound score
-- [ ] **COLL-25**: FCSA demographics -- annual population estimates, age/nationality breakdown
+- [x] **COLL-25**: FCSA demographics -- annual population estimates, age/nationality breakdown
 - [ ] **COLL-26**: Google Maps foot traffic -- weekly Popular Times for 50 key locations (malls, metro stations)
 - [ ] **COLL-27**: Moving company inquiries -- quarterly standardized quote requests, booking lead days
 - [ ] **COLL-28**: Commercial office reports -- quarterly JLL/CBRE/Savills PDFs, Grade A vacancy, absorption rates
@@ -189,16 +189,16 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | COLL-13 | 8 | Pending |
 | COLL-14 | 9 | Pending |
 | COLL-15 | 7 | Complete |
-| COLL-16 | 9 | Pending |
-| COLL-17 | 9 | Pending |
-| COLL-18 | 9 | Pending |
+| COLL-16 | 9 | Complete |
+| COLL-17 | 9 | Complete |
+| COLL-18 | 9 | Complete |
 | COLL-19 | 9 | Pending |
-| COLL-20 | 9 | Pending |
+| COLL-20 | 9 | Complete |
 | COLL-21 | 9 | Pending |
 | COLL-22 | 9 | Pending |
-| COLL-23 | 9 | Pending |
+| COLL-23 | 9 | Complete |
 | COLL-24 | 9 | Pending |
-| COLL-25 | 9 | Pending |
+| COLL-25 | 9 | Complete |
 | COLL-26 | 9 | Pending |
 | COLL-27 | 9 | Pending |
 | COLL-28 | 9 | Pending |
