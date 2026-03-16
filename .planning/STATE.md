@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T06:27:08.271Z"
+last_updated: "2026-03-16T06:28:38.746Z"
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 19
-  completed_plans: 16
+  completed_plans: 18
 ---
 
 # Project State
@@ -16,9 +16,9 @@ progress:
 ## Current Position
 
 Phase: 9 of 12 -- Tier C Collection (IN PROGRESS)
-Plan: 2 of N -- Plan 09-02 COMPLETE (government Tier C: RTA metro, CBUAE mortgages, DTCM tourism, DED licenses, FCSA demographics, Jebel Ali port)
-Status: Phase 9 Tier C Collection in progress. 09-02 complete: 6 government YAML missions + 6 Python normalizers + 6 pandera schemas. All missions load (31 total in Ninja Scraper). Requirements COLL-16, COLL-17, COLL-18, COLL-20, COLL-23, COLL-25 implemented.
-Last activity: 2026-03-16 — Plan 09-02 complete. 2 tasks. 18 files created (6 YAML missions, 6 normalizers, 6 schemas). All missions auto-discovered, all normalizers import OK. Ready for Plan 09-03 (remaining Tier C sources).
+Plan: 3 of N -- Plan 09-03 COMPLETE (alternative/commercial Tier C: InsideAirbnb STR, F&B closures, customs household imports, Google Maps foot traffic 50 locations, commercial office reports JLL/CBRE/Savills)
+Status: Phase 9 Tier C Collection in progress. 09-03 complete: 5 YAML missions + 5 Python normalizers + 5 pandera schemas. 31 total missions in Ninja Scraper. Requirements COLL-19, COLL-21, COLL-22, COLL-26, COLL-28 implemented. Mission model extended with proxy+user_agent_rotation fields.
+Last activity: 2026-03-16 — Plan 09-03 complete. 2 tasks. 16 files created/modified. All missions auto-discovered (31 total), all normalizers import OK. Auto-fix: Added proxy+user_agent_rotation fields to Mission Pydantic model (required for YAML fields to be accessible). Ready for Plan 09-04 (collector registry + daily timer deployment).
 
 ## Resume Instructions
 
@@ -149,6 +149,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 09-tier-c-collection]: DSC over FCSA for demographics: Dubai Statistics Centre URL for more granular Dubai-specific population data
 - [Phase 09-tier-c-collection]: Empty list valid for annual demographics: normalize_demographics returns [] on non-annual quarters — expected behavior, not an error
 - [Phase 09-tier-c-collection]: Construction material breakdown optional: Jebel Ali port warns + skips metric if press release lacks breakdown — not an error
+- [Phase 09]: proxy+user_agent_rotation optional fields added to Mission model for stealth scraping support
+- [Phase 09]: Google Maps traffic uses max_attempts=1 (no retry on block) to avoid accelerating bans
+- [Phase 09]: InsideAirbnb occupancy proxy = 1 - avg_availability_365/365; multihost_ratio uses calculated_host_listings_count>1
+- [Phase 09]: DirectPythonCollector uses pythonModule as PythonScriptName for type-safe compile-time validation of Python bridge calls
+- [Phase 09]: Mission proxy/user_agent_rotation default to False — all 20 existing Ninja Scraper missions load unchanged; NINJA_PROXY_URL no-op when absent
 
 ## Blockers
 
