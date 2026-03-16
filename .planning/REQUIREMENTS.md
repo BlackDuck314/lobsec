@@ -64,10 +64,10 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Statistical Analysis
 
-- [ ] **STAT-01**: Stationarity testing -- ADF test on all normalized series, hard gate before any Granger analysis; log results to `stationarity_results` table
-- [ ] **STAT-02**: KPSS cross-check -- run KPSS alongside ADF for confirmation; flag disagreements for manual review
-- [ ] **STAT-03**: Granger causality testing -- test all Tier A+B signals against DLD price/volume with Bonferroni correction (p < 0.05/N)
-- [ ] **STAT-04**: Cross-correlation lag detection -- find optimal lag (1-12 months) for each validated signal via `scipy.stats.pearsonr` loop
+- [x] **STAT-01**: Stationarity testing -- ADF test on all normalized series, hard gate before any Granger analysis; log results to `stationarity_results` table
+- [x] **STAT-02**: KPSS cross-check -- run KPSS alongside ADF for confirmation; flag disagreements for manual review
+- [x] **STAT-03**: Granger causality testing -- test all Tier A+B signals against DLD price/volume with Bonferroni correction (p < 0.05/N)
+- [x] **STAT-04**: Cross-correlation lag detection -- find optimal lag (1-12 months) for each validated signal via `scipy.stats.pearsonr` loop
 - [ ] **STAT-05**: Composite index construction -- z-score normalize validated signals, apply Granger-derived weights, scale to [-1, +1]
 - [ ] **STAT-06**: Anomaly detection -- EWMA-based outlier flagging (rolling mean +/- 2 std dev) for DEWA closures, visa cancellations, listing volume
 - [ ] **STAT-07**: Affordability model -- salary-to-rent ratio by income bracket and area, using median salaries from COLL-12
@@ -117,8 +117,8 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [ ] **SEC-03**: nftables egress rules -- whitelist domains for all 28 sources (Dubai Pulse, DARI, MOHRE, Apify, Google, Reddit, etc.)
 - [ ] **SEC-04**: Credential redaction -- extend existing redactor with new API key patterns
 - [ ] **SEC-05**: Audit logging -- all collection runs logged (source, timestamp, row count, success/failure) via existing audit infrastructure
-- [ ] **SEC-06**: SQL injection prevention -- parameterized queries for all user-supplied area names; validate against area allowlist
-- [ ] **SEC-07**: PII protection -- log only metadata (row count, status), never raw visa/employment data
+- [x] **SEC-06**: SQL injection prevention -- parameterized queries for all user-supplied area names; validate against area allowlist
+- [x] **SEC-07**: PII protection -- log only metadata (row count, status), never raw visa/employment data
 
 ### Data Quality & Validation
 
@@ -207,10 +207,10 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | NORM-03 | 7 | Complete (07-01) |
 | NORM-04 | 7 | Complete (07-01) |
 | NORM-05 | 7 | Complete (07-01) |
-| STAT-01 | 10 | Pending |
-| STAT-02 | 10 | Pending |
-| STAT-03 | 10 | Pending |
-| STAT-04 | 10 | Pending |
+| STAT-01 | 10 | Complete |
+| STAT-02 | 10 | Complete |
+| STAT-03 | 10 | Complete |
+| STAT-04 | 10 | Complete |
 | STAT-05 | 10 | Pending |
 | STAT-06 | 10 | Pending |
 | STAT-07 | 10 | Pending |
@@ -248,8 +248,8 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | SEC-03 | 12 | Pending |
 | SEC-04 | 12 | Pending |
 | SEC-05 | 12 | Pending |
-| SEC-06 | 10 | Pending |
-| SEC-07 | 10 | Pending |
+| SEC-06 | 10 | Complete |
+| SEC-07 | 10 | Complete |
 | QUAL-01 | 11 | Pending |
 | QUAL-02 | 12 | Pending |
 | QUAL-03 | 11 | Pending |

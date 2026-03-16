@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T07:19:18.917Z"
+last_updated: "2026-03-16T11:08:47Z"
 progress:
   total_phases: 5
   completed_phases: 5
@@ -15,10 +15,10 @@ progress:
 
 ## Current Position
 
-Phase: 9 of 12 -- Tier C Collection (COMPLETE)
-Plan: 4 of 4 -- COMPLETE. All Phase 9 tasks done; checkpoint:human-verify confirmed by user.
-Status: Phase 9 Tier C Collection COMPLETE. 33 COLLECTOR_DEFINITIONS (13 new), 33 SOURCE_MODULE_MAP entries, 34 PythonScriptName union members, daily timer enabled, all 4 frequency timers active. Production deployed: 31 missions loaded in Ninja Scraper, 28 normalizers + 2 collect scripts deployed. All 15 requirements addressed (COLL-14, COLL-16..28, SCHED-05).
-Last activity: 2026-03-16 — Plan 09-04 complete. Checkpoint:human-verify approved. 2/2 tasks done. Ready for Phase 10 (Statistical Analysis Pipeline).
+Phase: 10 of 12 -- Statistical Analysis Pipeline (IN PROGRESS)
+Plan: 1 of 4 -- COMPLETE. Schema extended to 10 tables, analyze_stationarity.py and analyze_granger.py built.
+Status: Phase 10 Plan 01 complete. 5 new SQLite analysis tables (stationarity_results, granger_results, composite_scores, anomaly_flags, analysis_log), batch stationarity/Granger Python modules, PythonScriptName extended with 6 batch analysis names. Requirements STAT-01..04, SEC-06..07 addressed.
+Last activity: 2026-03-16 — Plan 10-01 complete. 2/2 tasks done. Ready for Phase 10 Plan 02 (composite index + anomaly detection).
 
 ## Resume Instructions
 
@@ -157,6 +157,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 09]: 13 entries added to COLLECTOR_DEFINITIONS (not 14 as stated in must_haves.truths) — action section listed 13 distinct sources; action is authoritative
 - [Phase 09]: Daily timer uses After=lobsec.service + Wants= (not Requires=) — DirectPythonCollector bypasses Ninja Scraper, only needs environment not gateway uptime
 - [Phase 09-tier-c-collection]: 13 entries added to COLLECTOR_DEFINITIONS (not 14 as stated in must_haves.truths) — action section listed 13 distinct sources; action is authoritative. Total = 33 collectors.
+- [Phase 10-01]: Direct DB write pattern for batch analysis — analyze_stationarity.py and analyze_granger.py write directly to SQLite, bridge stdout carries summary JSON only (not full result sets)
+- [Phase 10-01]: Cross-correlation lag used as best_lag in granger_results — overrides Granger test best lag, more interpretable for downstream composite weighting
+- [Phase 10-01]: Bonferroni N = total (signal, target) pairs computed before test loop — correct scope for batch mode (existing granger.py used N = maxlag, incorrect for batch)
 
 ## Blockers
 
@@ -172,10 +175,10 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 09-04-PLAN.md — Phase 9 Tier C Collection fully complete. All 4 timers active, 31 missions loaded, checkpoint:human-verify approved.
-Resume file: .planning/phases/09-tier-c-collection/09-04-SUMMARY.md
-Next: Phase 10 (Statistical Analysis Pipeline) — all 28 data sources registered and collection infrastructure ready.
-Key context: Phase 9 Tier C Collection complete pending checkpoint confirmation. 33 collectors registered, 4 timers active (daily 19:00 UTC, weekly Mon 02:00, monthly Apr 1 02:00, quarterly Apr 15 05:00), 31 YAML missions in Ninja Scraper, 28 normalizers deployed. Requirements COLL-14/16-28 + SCHED-05 all addressed in registry.
+Stopped at: Completed 10-01-PLAN.md — Phase 10 Plan 01 complete. Schema extended to 10 tables, analyze_stationarity.py and analyze_granger.py built and import-verified.
+Resume file: .planning/phases/10-statistical-analysis/10-01-SUMMARY.md
+Next: Phase 10 Plan 02 — composite index (analyze_composite.py) + EWMA anomaly detection (analyze_anomalies.py).
+Key context: Phase 10 Plan 01 complete. 5 analysis tables in schema. Batch stationarity (ADF+KPSS, auto-diff) + Granger (Bonferroni, cross-corr lag) modules ready. Requirements STAT-01..04, SEC-06..07 addressed.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Store Reddit API credentials in HSM for collect_sentiment.py. Set up residential proxy service for Google Maps foot traffic (NINJA_PROXY_URL).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
