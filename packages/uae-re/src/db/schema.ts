@@ -3,7 +3,7 @@ import type Database from "better-sqlite3";
 /**
  * Initialize database schema with all tables and indices.
  *
- * Creates 10 tables:
+ * Creates 11 tables:
  * - raw_sources: Metadata for collected raw data files
  * - normalized_monthly: Monthly-normalized time-series data
  * - intelligence_cache: TTL-based cache for intelligence products
@@ -14,6 +14,7 @@ import type Database from "better-sqlite3";
  * - composite_scores: Composite index values per area
  * - anomaly_flags: EWMA anomaly detections
  * - analysis_log: Audit trail for pipeline runs (metadata only, no PII)
+ * - validation_results: Out-of-sample Granger validation outcomes (QUAL-01)
  *
  * @param db - Database instance
  */
@@ -192,5 +193,30 @@ export function initSchema(db: Database.Database): void {
       error TEXT,
       run_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
+  `);
+
+  // Table 11: Out-of-sample validation results (QUAL-01)
+  // Chronological 70/30 split of Granger-significant signals.
+  // downweight_factor = 0.5 for signals that fail out-of-sample validation;
+  // downweight_factor = 1.0 for validated signals (or signals with < 12 obs, skipped).
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS validation_results (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      signal_source TEXT NOT NULL,
+      signal_metric TEXT NOT NULL,
+      target TEXT NOT NULL,
+      train_obs INTEGER NOT NULL,
+      test_obs INTEGER NOT NULL,
+      train_significant INTEGER NOT NULL,
+      test_significant INTEGER NOT NULL,
+      validated INTEGER NOT NULL,
+      downweight_factor REAL NOT NULL DEFAULT 1.0,
+      tested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_validation_signal
+      ON validation_results(signal_source, signal_metric, target, tested_at)
   `);
 }

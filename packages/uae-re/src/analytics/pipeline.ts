@@ -7,6 +7,7 @@
  * Dependency graph:
  *   stationarity (always)
  *     → granger (only if stationarity succeeded)
+ *       → validation (only if granger succeeded — QUAL-01)
  *       → composite (only if granger succeeded)
  *   anomalies (always, independent)
  *   affordability (always, independent)
@@ -127,9 +128,10 @@ async function sendTelegramMessage(text: string): Promise<boolean> {
 /**
  * Execute the statistical analysis pipeline.
  *
- * Runs 6 Python analysis modules in dependency order:
+ * Runs 7 Python analysis modules in dependency order:
  * 1. analyze_stationarity (always)
  * 2. analyze_granger (only if step 1 succeeded)
+ * 2.5. analyze_validation (only if step 2 succeeded — QUAL-01)
  * 3. analyze_composite (only if step 2 succeeded)
  * 4. analyze_anomalies (always, independent)
  * 5. analyze_affordability (always, independent)
@@ -264,6 +266,9 @@ export async function runAnalysisPipeline(
   );
   const grangerFailed =
     grangerResult.status === "failed" || grangerResult.status === "skipped";
+
+  // ── Step 2.5: Validation (QUAL-01) — after Granger, before composite ──────
+  await runStep("validation", "analyze_validation", grangerFailed);
 
   // ── Step 3: Composite (requires granger success) ──────────────────────────
   await runStep("composite", "analyze_composite", grangerFailed);
