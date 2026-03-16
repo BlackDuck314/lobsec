@@ -13,6 +13,7 @@ import { checkPythonAvailable, checkDependencies } from "./analytics/bridge.js";
 import type { CollectionFrequency } from "./collectors/types.js";
 import { normalizeCollectionResult } from "./normalization/orchestrator.js";
 import { initAreaTable } from "./areas/mapping.js";
+import { runAnalysisPipeline } from "./analytics/pipeline.js";
 
 import type { ScraperApiConfig } from "./collectors/types.js";
 
@@ -46,6 +47,7 @@ Commands:
   run-all                Run all registered collectors
   run-frequency <freq>   Run collectors matching frequency (daily/weekly/monthly/quarterly/adhoc)
   run-one <source>       Run a specific collector by source name
+  analyze                Run statistical analysis pipeline (stationarity, Granger, composite, anomalies, affordability, expat funnel)
   check-deps             Check Python availability and package dependencies
   init-db                Initialize database schema
 
@@ -316,6 +318,35 @@ async function checkDeps(): Promise<void> {
 }
 
 /**
+ * Run the statistical analysis pipeline
+ */
+async function runAnalyze(): Promise<void> {
+  const db = initDatabase(dataDir);
+
+  // Handle graceful shutdown
+  let shutdownRequested = false;
+  process.on("SIGTERM", () => {
+    console.error("[analyze] SIGTERM received, will exit after current step completes");
+    shutdownRequested = true;
+  });
+
+  try {
+    const result = await runAnalysisPipeline(db);
+    console.log(JSON.stringify(result));
+
+    if (shutdownRequested || !result.success) {
+      process.exit(1);
+    }
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(`Analysis pipeline error: ${msg}`);
+    process.exit(1);
+  } finally {
+    closeDatabase(db);
+  }
+}
+
+/**
  * Initialize database
  */
 async function initDb(): Promise<void> {
@@ -357,6 +388,10 @@ async function main(): Promise<void> {
         await runOne(source);
         break;
       }
+
+      case "analyze":
+        await runAnalyze();
+        break;
 
       case "check-deps":
         await checkDeps();
