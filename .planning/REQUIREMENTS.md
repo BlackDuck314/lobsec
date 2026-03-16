@@ -43,16 +43,16 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [x] **COLL-16**: RTA metro ridership -- monthly from RTA open data, station-level ridership
 - [x] **COLL-17**: CBUAE mortgage rates -- quarterly PDF extraction, EIBOR + mortgage outstanding
 - [x] **COLL-18**: DTCM tourism stats -- monthly from dubaitourism.ae, hotel occupancy, visitor numbers
-- [ ] **COLL-19**: InsideAirbnb/STR data -- quarterly bulk download + Apify weekly, occupancy and ADR
+- [x] **COLL-19**: InsideAirbnb/STR data -- quarterly bulk download + Apify weekly, occupancy and ADR
 - [x] **COLL-20**: Jebel Ali port cargo -- monthly from DP World press releases, construction material volumes
-- [ ] **COLL-21**: F&B closures -- Zomato API + Google Maps permanently_closed tracking
-- [ ] **COLL-22**: Dubai customs household imports -- quarterly CBUAE foreign trade stats, furniture/household goods
+- [x] **COLL-21**: F&B closures -- Zomato API + Google Maps permanently_closed tracking
+- [x] **COLL-22**: Dubai customs household imports -- quarterly CBUAE foreign trade stats, furniture/household goods
 - [x] **COLL-23**: DED business licenses -- monthly from Dubai Pulse, new vs cancelled licenses by sector
 - [x] **COLL-24**: Social sentiment -- Reddit (r/dubai, r/dubairealestate) via PRAW + VADER compound score
 - [x] **COLL-25**: FCSA demographics -- annual population estimates, age/nationality breakdown
-- [ ] **COLL-26**: Google Maps foot traffic -- weekly Popular Times for 50 key locations (malls, metro stations)
+- [x] **COLL-26**: Google Maps foot traffic -- weekly Popular Times for 50 key locations (malls, metro stations)
 - [x] **COLL-27**: Moving company inquiries -- quarterly standardized quote requests, booking lead days
-- [ ] **COLL-28**: Commercial office reports -- quarterly JLL/CBRE/Savills PDFs, Grade A vacancy, absorption rates
+- [x] **COLL-28**: Commercial office reports -- quarterly JLL/CBRE/Savills PDFs, Grade A vacancy, absorption rates
 
 ### Data Normalization & Pipeline
 
@@ -192,16 +192,16 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | COLL-16 | 9 | Complete |
 | COLL-17 | 9 | Complete |
 | COLL-18 | 9 | Complete |
-| COLL-19 | 9 | Pending |
+| COLL-19 | 9 | Complete |
 | COLL-20 | 9 | Complete |
-| COLL-21 | 9 | Pending |
-| COLL-22 | 9 | Pending |
+| COLL-21 | 9 | Complete |
+| COLL-22 | 9 | Complete |
 | COLL-23 | 9 | Complete |
 | COLL-24 | 9 | Complete |
 | COLL-25 | 9 | Complete |
-| COLL-26 | 9 | Pending |
+| COLL-26 | 9 | Complete |
 | COLL-27 | 9 | Complete |
-| COLL-28 | 9 | Pending |
+| COLL-28 | 9 | Complete |
 | NORM-01 | 7 | Complete (07-01) |
 | NORM-02 | 7 | Complete (07-01) |
 | NORM-03 | 7 | Complete (07-01) |
