@@ -59,7 +59,13 @@ export type PythonScriptName =
   | "normalize_licenses"
   | "normalize_demographics"
   | "normalize_foot_traffic"
-  | "normalize_office";
+  | "normalize_office"
+  | "analyze_stationarity"
+  | "analyze_granger"
+  | "analyze_composite"
+  | "analyze_anomalies"
+  | "analyze_affordability"
+  | "analyze_expat_funnel";
 
 /**
  * Configuration for the Python subprocess bridge.

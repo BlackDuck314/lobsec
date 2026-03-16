@@ -3,12 +3,17 @@ import type Database from "better-sqlite3";
 /**
  * Initialize database schema with all tables and indices.
  *
- * Creates 5 tables:
+ * Creates 10 tables:
  * - raw_sources: Metadata for collected raw data files
  * - normalized_monthly: Monthly-normalized time-series data
  * - intelligence_cache: TTL-based cache for intelligence products
  * - collection_log: Audit log for collection runs
  * - area_names: Canonical area name mapping for normalization
+ * - stationarity_results: ADF+KPSS stationarity test results per source/metric
+ * - granger_results: Granger causality test results with Bonferroni correction
+ * - composite_scores: Composite index values per area
+ * - anomaly_flags: EWMA anomaly detections
+ * - analysis_log: Audit trail for pipeline runs (metadata only, no PII)
  *
  * @param db - Database instance
  */
@@ -95,5 +100,95 @@ export function initSchema(db: Database.Database): void {
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_collection_source_timestamp
       ON collection_log(source, timestamp)
+  `);
+
+  // Table 6: Stationarity test results
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS stationarity_results (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source TEXT NOT NULL,
+      metric_name TEXT NOT NULL,
+      adf_statistic REAL,
+      adf_pvalue REAL,
+      kpss_statistic REAL,
+      kpss_pvalue REAL,
+      verdict TEXT NOT NULL CHECK(verdict IN ('stationary', 'non-stationary', 'inconclusive')),
+      differenced INTEGER NOT NULL DEFAULT 0,
+      obs_count INTEGER,
+      tested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_stationarity_source
+      ON stationarity_results(source, metric_name, tested_at)
+  `);
+
+  // Table 7: Granger causality results
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS granger_results (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      signal_source TEXT NOT NULL,
+      signal_metric TEXT NOT NULL,
+      target TEXT NOT NULL CHECK(target IN ('dld_price', 'dld_volume')),
+      best_lag INTEGER,
+      f_statistic REAL,
+      pvalue REAL,
+      bonferroni_alpha REAL,
+      significant INTEGER NOT NULL DEFAULT 0,
+      weight REAL,
+      tested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_granger_signal_target
+      ON granger_results(signal_source, target, tested_at)
+  `);
+
+  // Table 8: Composite index scores
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS composite_scores (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      area TEXT NOT NULL,
+      score REAL NOT NULL,
+      zone TEXT NOT NULL CHECK(zone IN ('strong_sell', 'neutral', 'strong_buy')),
+      component_count INTEGER NOT NULL,
+      total_components INTEGER NOT NULL,
+      components_json TEXT,
+      computed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_composite_area_date
+      ON composite_scores(area, computed_at)
+  `);
+
+  // Table 9: Anomaly flags
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS anomaly_flags (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source TEXT NOT NULL,
+      metric_name TEXT NOT NULL,
+      measurement_date TEXT NOT NULL,
+      value REAL,
+      z_score REAL,
+      flagged_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Table 10: Analysis pipeline audit log (metadata only — no PII per SEC-07)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS analysis_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      pipeline_step TEXT NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('success', 'failed', 'skipped')),
+      signals_processed INTEGER,
+      signals_skipped INTEGER,
+      duration_ms INTEGER,
+      error TEXT,
+      run_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
   `);
 }
