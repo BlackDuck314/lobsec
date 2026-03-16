@@ -21,20 +21,22 @@ source:
 
 extraction:
   format: json
+  container_selector: '.base-search-card.job-search-card'
   selectors:
-    total_count: ".results-context-header__job-count, .jobs-search-results-list__subtitle"
-    job_cards: ".job-search-card, .base-card"
-    job_title: ".job-search-card__title, .base-search-card__title"
-    company: ".job-search-card__company-name, .base-search-card__subtitle"
-    location: ".job-search-card__location, .job-search-card-location"
-    salary: ".job-search-card__salary-info, [class*='salary']"
+    job_title: 'h3.base-search-card__title'
+    company: 'h4.base-search-card__subtitle'
+    location: 'span.job-search-card__location'
+    posted_date: 'time'
+    salary: '.job-search-card__salary-info, [class*="salary"]'
+  page_selectors:
+    total_count: '.results-context-header__job-count'
   fields:
     - total_count
     - job_title
     - company
-    - salary_min
-    - salary_max
     - location
+    - posted_date
+    - salary
 
 output:
   path: "/opt/lobsec/data/raw/linkedin-jobs/{date}.json"

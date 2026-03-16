@@ -19,7 +19,13 @@ from typing import Any
 
 import structlog
 
-from ninja_scraper.engine.crawler import MissionResult, run_browser_mission, run_http_mission
+from ninja_scraper.engine.crawler import (
+    MissionResult,
+    _extract_page_cards,
+    paginate_and_extract,
+    run_browser_mission,
+    run_http_mission,
+)
 from ninja_scraper.engine.mission import Mission, load_all_missions, load_mission
 from ninja_scraper.engine.storage import ensure_output_dir, get_output_path
 
@@ -217,20 +223,15 @@ async def _execute_area_browser_mission(
                 container_sel = mission.extraction.get("container_selector")
                 if container_sel:
                     # Per-card structured extraction
-                    containers = await page.query_selector_all(container_sel)
-                    cards = []
-                    for container in containers:
-                        record: dict[str, Any] = {}
-                        for field_name, selector in selectors.items():
-                            try:
-                                el = await container.query_selector(selector)
-                                record[field_name] = (await el.text_content()).strip() if el else None
-                            except Exception:
-                                record[field_name] = None
-                        cards.append(record)
+                    cards = await _extract_page_cards(page, container_sel, selectors)
+                    log.info("Container extraction", area=area, card_count=len(cards))
+
+                    # Follow pagination if configured
+                    if mission.pagination:
+                        cards = await paginate_and_extract(page, mission, cards, url, log)
+
                     page_data["cards"] = cards
                     page_data["card_count"] = len(cards)
-                    log.info("Container extraction", area=area, card_count=len(cards))
 
                     # Extract page-level selectors separately
                     for field_name, selector in mission.extraction.get("page_selectors", {}).items():
