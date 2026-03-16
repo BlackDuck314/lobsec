@@ -8,6 +8,8 @@
 
 import type Database from "better-sqlite3";
 import { SourceCollector } from "./base.js";
+import { DirectPythonCollector } from "./direct.js";
+import type { PythonScriptName } from "../analytics/types.js";
 import type {
   CollectionFrequency,
   CollectorInfo,
@@ -18,8 +20,8 @@ import type {
 } from "./types.js";
 
 /**
- * Collector definitions for 20 UAE RE sources.
- * Each entry maps to a Ninja Scraper YAML mission file.
+ * Collector definitions for 34 UAE RE sources.
+ * Each entry maps to a Ninja Scraper YAML mission file (or a DirectPythonCollector source).
  */
 const COLLECTOR_DEFINITIONS: Array<{
   missionName: string;
@@ -112,6 +114,66 @@ const COLLECTOR_DEFINITIONS: Array<{
     missionName: "roberthalf-salary",
     metadata: { source: "roberthalf-salary", frequency: "quarterly", priority: 2, timeout: 300_000 },
   },
+
+  // Phase 9 Tier C — Daily sources (DirectPythonCollector — no Ninja Scraper)
+  {
+    missionName: "google-trends",
+    metadata: { source: "google-trends", frequency: "daily", priority: 1, timeout: 120_000 },
+  },
+  {
+    missionName: "reddit-sentiment",
+    metadata: { source: "reddit-sentiment", frequency: "daily", priority: 1, timeout: 60_000 },
+  },
+
+  // Phase 9 Tier C — Weekly sources
+  {
+    missionName: "google-maps-traffic",
+    metadata: { source: "google-maps-traffic", frequency: "weekly", priority: 3, timeout: 3_600_000 },
+  },
+
+  // Phase 9 Tier C — Monthly sources
+  {
+    missionName: "rta-metro",
+    metadata: { source: "rta-metro", frequency: "monthly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "dtcm-tourism",
+    metadata: { source: "dtcm-tourism", frequency: "monthly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "ded-licenses",
+    metadata: { source: "ded-licenses", frequency: "monthly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "jebel-ali-port",
+    metadata: { source: "jebel-ali-port", frequency: "monthly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "fb-closures",
+    metadata: { source: "fb-closures", frequency: "monthly", priority: 3, timeout: 600_000 },
+  },
+
+  // Phase 9 Tier C — Quarterly sources
+  {
+    missionName: "cbuae-mortgages",
+    metadata: { source: "cbuae-mortgages", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "customs-imports",
+    metadata: { source: "customs-imports", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "fcsa-demographics",
+    metadata: { source: "fcsa-demographics", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "insideairbnb",
+    metadata: { source: "insideairbnb", frequency: "quarterly", priority: 2, timeout: 300_000 },
+  },
+  {
+    missionName: "commercial-office-reports",
+    metadata: { source: "commercial-office-reports", frequency: "quarterly", priority: 2, timeout: 600_000 },
+  },
 ];
 
 /**
@@ -128,22 +190,42 @@ export class CollectorRegistry {
   }
 
   /**
-   * Create and register all collectors via factory (Tier A + Tier B).
+   * Create and register all collectors via factory (Tier A + Tier B + Tier C).
    *
-   * Each collector is a SourceCollector instance differentiated by missionName.
-   * All delegate scraping to the Ninja Scraper HTTP API.
+   * Most collectors are SourceCollector instances that delegate scraping to the
+   * Ninja Scraper HTTP API. DirectPythonCollector instances are used for API-native
+   * sources (Google Trends, Reddit) that bypass the browser automation engine.
    *
    * @param db - Database instance for audit logging
    * @param scraperConfig - Ninja Scraper API connection config
    */
   createCollectors(db: Database.Database, scraperConfig: ScraperApiConfig): void {
+    // DirectPythonCollector sources: missionName → Python collect module name
+    const DIRECT_PYTHON_SOURCES: Record<string, string> = {
+      "google-trends": "collect_trends",
+      "reddit-sentiment": "collect_sentiment",
+    };
+
     for (const def of COLLECTOR_DEFINITIONS) {
-      const collector = new SourceCollector(
-        def.metadata,
-        db,
-        scraperConfig,
-        def.missionName
-      );
+      let collector: SourceCollector;
+      if (def.missionName in DIRECT_PYTHON_SOURCES) {
+        const pythonModule = DIRECT_PYTHON_SOURCES[
+          def.missionName
+        ] as PythonScriptName;
+        collector = new DirectPythonCollector(
+          def.metadata,
+          db,
+          scraperConfig,
+          pythonModule
+        );
+      } else {
+        collector = new SourceCollector(
+          def.metadata,
+          db,
+          scraperConfig,
+          def.missionName
+        );
+      }
       this.register(collector);
     }
   }
