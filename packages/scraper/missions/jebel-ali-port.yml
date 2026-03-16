@@ -1,0 +1,49 @@
+# Jebel Ali Port / DP World Cargo — Monthly Container & Cargo Throughput
+# Source (COLL-20): Container throughput (TEU), cargo tonnes, construction materials
+# Signal: LEADING (2-3 months) | Lifecycle: Construction Supply Chain
+
+schema_version: "1.0"
+name: jebel-ali-port
+description: >
+  DP World / Jebel Ali Port monthly cargo throughput from press releases.
+  Navigate to DP World news/media page and scrape latest press release data
+  for container throughput (TEU), total cargo volume, and construction material
+  imports (steel, cement, aggregates). Construction material subset may not
+  always be reported — handled gracefully with None value and warning.
+type: browser_scrape
+frequency: monthly
+priority: 2
+
+source:
+  url: "https://www.dpworld.com/en/news/releases"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: json
+  strategy: browser_table_extract
+  selectors:
+    data_table: "table, .data-table, [class*='table'], [class*='throughput'], [class*='cargo']"
+    press_releases: "[class*='release'], [class*='news'], article, .press-release"
+    latest_release: "[class*='latest'], [class*='recent'], article:first-child"
+  fields:
+    - container_throughput_teu
+    - cargo_volume_tonnes
+    - construction_material_imports
+
+output:
+  path: "/opt/lobsec/data/raw/jebel-ali-port/{date}.json"
+  format: json
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 3000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: true
+
+proxy: false
+user_agent_rotation: false
+timeout_ms: 300000

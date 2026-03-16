@@ -1,0 +1,50 @@
+# FCSA / Dubai Statistics Centre Demographics — Quarterly Check, Annual Data
+# Source (COLL-25): Population estimates by age, nationality, growth rate
+# Signal: STRUCTURAL (annual) | Lifecycle: Demand Fundamentals
+
+schema_version: "1.0"
+name: fcsa-demographics
+description: >
+  Dubai Statistics Centre (DSC) population and vital statistics. Quarterly timer
+  checks for new annual population bulletin. Data published annually (~Q1 for
+  prior year). Scrape population estimates by nationality (national vs expat)
+  and age group. Most quarterly runs will return empty — graceful handling.
+  DSC preferred over national FCSA for Dubai-specific granularity.
+type: browser_scrape
+frequency: quarterly
+priority: 2
+
+source:
+  url: "https://www.dsc.gov.ae/en-us/Themes/Pages/Population-and-Vital-Statistics.aspx"
+  browser: chromium
+  stealth: true
+  wait_until: networkidle
+
+extraction:
+  format: json
+  strategy: browser_table_extract
+  selectors:
+    data_table: "table, .data-table, [class*='table'], [class*='population'], [class*='stats']"
+    report_links: "a[href$='.pdf'], a[href*='bulletin'], a[href*='population']"
+    filter_controls: "[class*='filter'], [class*='year']"
+  fields:
+    - total_population
+    - population_by_nationality
+    - population_by_age_group
+    - population_growth_rate
+
+output:
+  path: "/opt/lobsec/data/raw/fcsa-demographics/{date}.json"
+  format: json
+
+retry:
+  max_attempts: 2
+  initial_delay_ms: 3000
+  max_delay_ms: 30000
+  backoff_multiplier: 2.0
+  jitter: true
+  skip_on_403: true
+
+proxy: false
+user_agent_rotation: false
+timeout_ms: 300000
