@@ -24,7 +24,7 @@ extraction:
   strategy: browser_pdf_download
   selectors:
     pdf_links: "a[href$='.pdf'], .report-link, [class*='download']"
-    mortgage_filter: "text*='Mortgage' | text*='Lending' | text*='EIBOR' | text*='Credit'"
+    mortgage_filter: "text*='Banking Indicators' | text*='Statistical Bulletin' | text*='Mortgage'"
   fields:
     - eibor_rate
     - mortgage_outstanding_aed

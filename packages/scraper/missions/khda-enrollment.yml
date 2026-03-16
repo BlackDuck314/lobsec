@@ -24,7 +24,7 @@ extraction:
   strategy: find_and_download
   selectors:
     pdf_links: "a[href$='.pdf']"
-    census_filter: "text*='Census' | text*='Enrollment' | text*='Schools' | text*='Annual'"
+    census_filter: "text*='school landscape' | text*='enrollment' | text*='census' | text*='education landscape'"
   fields:
     - pdf_url
     - academic_year

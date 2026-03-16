@@ -494,3 +494,189 @@ async def run_browser_mission(mission: Mission, output_dir: str | None = None) -
                 await playwright.stop()
             except Exception:
                 pass
+
+
+async def run_pdf_download_mission(mission: Mission, output_dir: str | None = None) -> MissionResult:
+    """Execute a browser mission that finds and downloads PDF files.
+
+    Navigates to the source page, finds PDF links matching selector and keyword
+    filter, downloads the first matching PDF via the browser download event.
+
+    Args:
+        mission: Validated Mission spec with extraction.format == "pdf".
+        output_dir: Override output directory.
+
+    Returns:
+        MissionResult with downloaded PDF path.
+    """
+    start_time = time.monotonic()
+    log = logger.bind(mission=mission.name, type=mission.type)
+    log.info("Starting PDF download mission")
+
+    browser = None
+    playwright_inst = None
+
+    try:
+        async with asyncio.timeout(mission.timeout_ms / 1000):
+            # Output path
+            if output_dir:
+                out_dir = Path(output_dir)
+            else:
+                out_dir = Path("/opt/lobsec/data/raw") / mission.name
+            out_dir.mkdir(parents=True, exist_ok=True)
+
+            browser, playwright_inst = await get_patchright_browser()
+            context = await create_stealth_context(browser, accept_downloads=True)
+            page = await context.new_page()
+            page.set_default_timeout(30_000)
+
+            url = mission.source.get("url", "")
+            wait_until = mission.source.get("wait_until", "networkidle")
+
+            await page.goto(url, wait_until=wait_until, timeout=30_000)
+
+            post_load_wait = mission.source.get("post_load_wait_ms", 0)
+            if post_load_wait > 0:
+                await asyncio.sleep(post_load_wait / 1000)
+
+            # Find PDF links
+            selectors = mission.extraction.get("selectors", {})
+            link_selector = selectors.get("pdf_links", "a[href$='.pdf']")
+            elements = await page.query_selector_all(link_selector)
+
+            # Build list of (text, href) tuples
+            pdf_links: list[tuple[str, str]] = []
+            for el in elements:
+                href = await el.get_attribute("href") or ""
+                text = (await el.text_content() or "").strip()
+                if href:
+                    pdf_links.append((text, href))
+
+            log.info("Found PDF links", count=len(pdf_links))
+
+            if not pdf_links:
+                duration_ms = int((time.monotonic() - start_time) * 1000)
+                return MissionResult(
+                    success=False,
+                    duration_ms=duration_ms,
+                    error="No PDF links found on page",
+                    mission_name=mission.name,
+                )
+
+            # Apply keyword filter if specified
+            filter_key = next(
+                (k for k in selectors if k.endswith("_filter") or k == "filter_text"),
+                None,
+            )
+            if filter_key:
+                filter_spec = selectors[filter_key]
+                # Parse keywords from either format:
+                #   "text*='Keyword1' | text*='Keyword2'" (structured)
+                #   "Keyword1|Keyword2" (simple pipe-separated)
+                keywords = []
+                if "text*='" in filter_spec:
+                    for part in filter_spec.split("|"):
+                        part = part.strip()
+                        if "text*='" in part:
+                            kw = part.split("text*='")[1].rstrip("'")
+                            keywords.append(kw.lower())
+                else:
+                    for part in filter_spec.split("|"):
+                        part = part.strip()
+                        if part:
+                            keywords.append(part.lower())
+
+                if keywords:
+                    filtered = [
+                        (t, h) for t, h in pdf_links
+                        if any(kw in t.lower() for kw in keywords)
+                    ]
+                    log.info(
+                        "Filtered PDF links",
+                        keywords=keywords,
+                        before=len(pdf_links),
+                        after=len(filtered),
+                    )
+                    if filtered:
+                        pdf_links = filtered
+
+            # Download the first matching PDF
+            target_text, target_href = pdf_links[0]
+            log.info("Downloading PDF", text=target_text, href=target_href[:100])
+
+            # Use httpx to download the PDF (simpler than browser download events)
+            import httpx
+
+            # Resolve relative URLs
+            from urllib.parse import urljoin
+            full_url = urljoin(url, target_href)
+
+            async with httpx.AsyncClient(
+                timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=10.0),
+                follow_redirects=True,
+            ) as client:
+                response = await client.get(full_url)
+                response.raise_for_status()
+
+            out_path = out_dir / f"{date.today().isoformat()}.pdf"
+            out_path.write_bytes(response.content)
+
+            # Save metadata alongside
+            meta_path = out_dir / f"{date.today().isoformat()}.meta.json"
+            meta = {
+                "source_url": url,
+                "pdf_url": full_url,
+                "pdf_title": target_text,
+                "pdf_size_bytes": len(response.content),
+                "all_pdf_links": [
+                    {"text": t, "href": h} for t, h in pdf_links
+                ],
+            }
+            with open(meta_path, "w") as f:
+                json.dump(meta, f, indent=2, ensure_ascii=False)
+
+            duration_ms = int((time.monotonic() - start_time) * 1000)
+            log.info(
+                "PDF download completed",
+                file_path=str(out_path),
+                size_bytes=len(response.content),
+                duration_ms=duration_ms,
+            )
+
+            return MissionResult(
+                success=True,
+                file_path=str(out_path),
+                row_count=1,
+                duration_ms=duration_ms,
+                mission_name=mission.name,
+            )
+
+    except asyncio.TimeoutError:
+        duration_ms = int((time.monotonic() - start_time) * 1000)
+        log.error("PDF download mission timeout", duration_ms=duration_ms)
+        return MissionResult(
+            success=False,
+            duration_ms=duration_ms,
+            error=f"Mission timed out after {mission.timeout_ms}ms",
+            mission_name=mission.name,
+        )
+    except Exception as e:
+        duration_ms = int((time.monotonic() - start_time) * 1000)
+        log.error("PDF download mission failed", error=str(e), duration_ms=duration_ms)
+        return MissionResult(
+            success=False,
+            duration_ms=duration_ms,
+            error=str(e),
+            mission_name=mission.name,
+        )
+    finally:
+        if browser:
+            try:
+                await browser.close()
+            except Exception:
+                pass
+        if playwright_inst:
+            try:
+                await playwright_inst.stop()
+            except Exception:
+                pass
