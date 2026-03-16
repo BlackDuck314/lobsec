@@ -159,7 +159,7 @@
 | 8. Tier B Collection | v1.3 | 4/4 | Complete ✅ | 2026-03-13 |
 | 9. Tier C Collection | 4/4 | Complete   | 2026-03-16 | - |
 | 10. Statistical Analysis | 4/4 | Complete    | 2026-03-16 | - |
-| 11. Intelligence Products | 4/4 | Complete   | 2026-03-16 | - |
+| 11. Intelligence Products | 4/4 | Complete    | 2026-03-16 | - |
 | 12. Plugin Tools & Hardening | v1.3 | 0/? | Pending | - |
 
 ---
