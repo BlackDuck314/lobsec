@@ -38,7 +38,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Data Collection -- Tier C (Alternative Economic Signals)
 
-- [ ] **COLL-14**: Google Trends -- pytrends API, 6 keyword groups (buy/rent/expat/distress/luxury/exit)
+- [x] **COLL-14**: Google Trends -- pytrends API, 6 keyword groups (buy/rent/expat/distress/luxury/exit)
 - [x] **COLL-15**: DEWA connections/closures -- press release scrape, new connections and disconnections per area
 - [x] **COLL-16**: RTA metro ridership -- monthly from RTA open data, station-level ridership
 - [x] **COLL-17**: CBUAE mortgage rates -- quarterly PDF extraction, EIBOR + mortgage outstanding
@@ -48,10 +48,10 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [ ] **COLL-21**: F&B closures -- Zomato API + Google Maps permanently_closed tracking
 - [ ] **COLL-22**: Dubai customs household imports -- quarterly CBUAE foreign trade stats, furniture/household goods
 - [x] **COLL-23**: DED business licenses -- monthly from Dubai Pulse, new vs cancelled licenses by sector
-- [ ] **COLL-24**: Social sentiment -- Reddit (r/dubai, r/dubairealestate) via PRAW + VADER compound score
+- [x] **COLL-24**: Social sentiment -- Reddit (r/dubai, r/dubairealestate) via PRAW + VADER compound score
 - [x] **COLL-25**: FCSA demographics -- annual population estimates, age/nationality breakdown
 - [ ] **COLL-26**: Google Maps foot traffic -- weekly Popular Times for 50 key locations (malls, metro stations)
-- [ ] **COLL-27**: Moving company inquiries -- quarterly standardized quote requests, booking lead days
+- [x] **COLL-27**: Moving company inquiries -- quarterly standardized quote requests, booking lead days
 - [ ] **COLL-28**: Commercial office reports -- quarterly JLL/CBRE/Savills PDFs, Grade A vacancy, absorption rates
 
 ### Data Normalization & Pipeline
@@ -187,7 +187,7 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | COLL-11 | 8 | Pending |
 | COLL-12 | 8 | Pending |
 | COLL-13 | 8 | Pending |
-| COLL-14 | 9 | Pending |
+| COLL-14 | 9 | Complete |
 | COLL-15 | 7 | Complete |
 | COLL-16 | 9 | Complete |
 | COLL-17 | 9 | Complete |
@@ -197,10 +197,10 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | COLL-21 | 9 | Pending |
 | COLL-22 | 9 | Pending |
 | COLL-23 | 9 | Complete |
-| COLL-24 | 9 | Pending |
+| COLL-24 | 9 | Complete |
 | COLL-25 | 9 | Complete |
 | COLL-26 | 9 | Pending |
-| COLL-27 | 9 | Pending |
+| COLL-27 | 9 | Complete |
 | COLL-28 | 9 | Pending |
 | NORM-01 | 7 | Complete (07-01) |
 | NORM-02 | 7 | Complete (07-01) |
