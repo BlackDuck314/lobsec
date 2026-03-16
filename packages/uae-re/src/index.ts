@@ -569,12 +569,57 @@ export default {
       },
     });
 
-    // Register uae_collection_status tool
+    // Helper: compute next scheduled run time based on frequency
+    function nextScheduledRun(frequency: string): string {
+      const now = new Date();
+      const nextDate = new Date(now);
+      switch (frequency) {
+        case "daily": {
+          // Tomorrow at 23:00 GST (19:00 UTC)
+          nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+          nextDate.setUTCHours(19, 0, 0, 0);
+          break;
+        }
+        case "weekly": {
+          // Next Monday at 02:00 UTC
+          const daysUntilMonday = (8 - nextDate.getUTCDay()) % 7 || 7;
+          nextDate.setUTCDate(nextDate.getUTCDate() + daysUntilMonday);
+          nextDate.setUTCHours(2, 0, 0, 0);
+          break;
+        }
+        case "monthly": {
+          // 1st of next month at 02:00 UTC
+          nextDate.setUTCMonth(nextDate.getUTCMonth() + 1, 1);
+          nextDate.setUTCHours(2, 0, 0, 0);
+          break;
+        }
+        case "quarterly": {
+          // Next 15th of Jan/Apr/Jul/Oct at 05:00 UTC
+          const quarterMonths = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct (0-indexed)
+          const currentMonth = nextDate.getUTCMonth();
+          const currentDay = nextDate.getUTCDate();
+          let nextQMonth = quarterMonths.find(
+            (m) => m > currentMonth || (m === currentMonth && currentDay < 15)
+          );
+          if (nextQMonth === undefined) nextQMonth = 0; // wrap to Jan next year
+          const nextYear =
+            nextQMonth <= currentMonth && currentDay >= 15
+              ? nextDate.getUTCFullYear() + 1
+              : nextDate.getUTCFullYear();
+          nextDate.setUTCFullYear(nextYear, nextQMonth, 15);
+          nextDate.setUTCHours(5, 0, 0, 0);
+          break;
+        }
+      }
+      return nextDate.toISOString();
+    }
+
+    // TOOL-10: uae_collection_status (enhanced with staleness, row counts, next run)
     api.registerTool({
       name: "uae_collection_status",
       label: "UAE Collection Status",
       description:
-        "Show collection status for all UAE RE data sources. Returns last run times, row counts, and staleness flags.",
+        "Show collection status for all UAE RE data sources. Returns last run times, staleness flags, normalized row counts, and next scheduled run.",
       parameters: Type.Object({}),
       execute: async (_id, _params) => {
         try {
@@ -586,47 +631,40 @@ export default {
             );
           }
 
-          // Query collection_log for each collector
-          const statuses = collectors.map((info) => {
-            const lastRun = getLatestCollection(db, info.metadata.source);
-            return {
-              source: info.metadata.source,
-              frequency: info.metadata.frequency,
-              priority: info.metadata.priority,
-              lastRun: lastRun
-                ? {
-                    timestamp: lastRun.timestamp,
-                    status: lastRun.status,
-                    rowCount: lastRun.rowCount,
-                    durationMs: lastRun.durationMs,
-                    error: lastRun.error,
-                  }
-                : null,
-            };
-          });
-
-          // Format as text table
           const lines = ["UAE Real Estate Collection Status", ""];
-          for (const s of statuses) {
-            lines.push(`Source: ${s.source}`);
+
+          for (const info of collectors) {
+            const lastRun = getLatestCollection(db, info.metadata.source);
+            const gaps = detectGaps(db, info.metadata.source, info.metadata.frequency);
+            const isStale = gaps.length > 0;
+
+            // Count normalized rows
+            const rowCountRow = db
+              .prepare(
+                "SELECT COUNT(*) as cnt FROM normalized_monthly WHERE source = ?"
+              )
+              .get(info.metadata.source) as { cnt: number } | undefined;
+            const normalizedRows = rowCountRow?.cnt ?? 0;
+
+            const staleMarker = isStale ? " [STALE]" : "";
+            lines.push(`Source: ${info.metadata.source}${staleMarker}`);
             lines.push(
-              `  Frequency: ${s.frequency} | Priority: ${s.priority}`
+              `  Frequency: ${info.metadata.frequency} | Priority: ${info.metadata.priority}`
             );
-            if (s.lastRun) {
-              lines.push(`  Last run: ${s.lastRun.timestamp}`);
-              lines.push(`  Status: ${s.lastRun.status}`);
-              if (s.lastRun.rowCount !== undefined) {
-                lines.push(`  Rows: ${s.lastRun.rowCount}`);
-              }
-              if (s.lastRun.durationMs !== undefined) {
-                lines.push(`  Duration: ${s.lastRun.durationMs}ms`);
-              }
-              if (s.lastRun.error) {
-                lines.push(`  Error: ${s.lastRun.error}`);
+
+            if (lastRun) {
+              lines.push(`  Last run: ${lastRun.timestamp} (${lastRun.status})`);
+              lines.push(`  Rows: ${normalizedRows} normalized`);
+              if (isStale && gaps[0] !== undefined) {
+                lines.push(`  Staleness: ${gaps[0].gapDays} days overdue`);
               }
             } else {
               lines.push(`  Last run: (never)`);
+              lines.push(`  Rows: ${normalizedRows} normalized`);
             }
+
+            const nextRun = nextScheduledRun(info.metadata.frequency);
+            lines.push(`  Next scheduled: ${nextRun}`);
             lines.push("");
           }
 
@@ -639,8 +677,303 @@ export default {
       },
     });
 
+    // TOOL-09: uae_raw_data
+    api.registerTool({
+      name: "uae_raw_data",
+      label: "UAE Raw Data",
+      description:
+        "Returns raw data rows for a source in CSV format. Specify date range or get last 12 months.",
+      parameters: Type.Object({
+        source: Type.String({
+          description:
+            "Data source name (e.g. dld-sales, ejari-rentals, bayut-listings)",
+        }),
+        start_date: Type.Optional(
+          Type.String({ description: "Start date YYYY-MM-DD (default: 12 months ago)" })
+        ),
+        end_date: Type.Optional(
+          Type.String({ description: "End date YYYY-MM-DD (default: today)" })
+        ),
+      }),
+      execute: async (_id, params) => {
+        try {
+          const source = String(params.source ?? "");
+          const collectorInfo = registry.get(source);
+          if (!collectorInfo) {
+            const allSources = registry
+              .getAll()
+              .map((c) => c.metadata.source)
+              .join(", ");
+            return textResult(
+              `Unknown source: "${source}". Valid sources: ${allSources}`
+            );
+          }
+
+          const now = new Date();
+          const defaultStart = new Date(now);
+          defaultStart.setFullYear(defaultStart.getFullYear() - 1);
+
+          const startDate = String(
+            params.start_date ?? defaultStart.toISOString().slice(0, 10)
+          );
+          const endDate = String(
+            params.end_date ?? now.toISOString().slice(0, 10)
+          );
+
+          const rows = db
+            .prepare(
+              `SELECT source, measurement_date, data_json
+               FROM raw_sources
+               WHERE source = ? AND measurement_date >= ? AND measurement_date <= ?
+               ORDER BY measurement_date`
+            )
+            .all(source, startDate, endDate) as Array<{
+            source: string;
+            measurement_date: string;
+            data_json: string;
+          }>;
+
+          if (rows.length === 0) {
+            return textResult(
+              `No raw data for "${source}" between ${startDate} and ${endDate}.`
+            );
+          }
+
+          // Build CSV from first row keys
+          const firstRow = rows[0];
+          if (!firstRow) {
+            return textResult(`No raw data for "${source}" between ${startDate} and ${endDate}.`);
+          }
+          const firstParsed = JSON.parse(firstRow.data_json) as Record<
+            string,
+            unknown
+          >;
+          const keys = Object.keys(firstParsed);
+          const csvLines: string[] = [
+            ["source", "measurement_date", ...keys].join(","),
+          ];
+
+          for (const row of rows) {
+            let parsed: Record<string, unknown> = {};
+            try {
+              parsed = JSON.parse(row.data_json) as Record<string, unknown>;
+            } catch {
+              // skip malformed rows
+            }
+            const values = [
+              row.source,
+              row.measurement_date,
+              ...keys.map((k) => String(parsed[k] ?? "")),
+            ].map((v) => (v.includes(",") ? `"${v}"` : v));
+            csvLines.push(values.join(","));
+          }
+
+          const csv = csvLines.join("\n");
+          const truncated =
+            csv.length > 4000
+              ? csv.slice(0, 4000) + "\n[truncated — use date range to narrow results]"
+              : csv;
+
+          return textResult(truncated);
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-11: uae_trigger_collection
+    api.registerTool({
+      name: "uae_trigger_collection",
+      label: "UAE Trigger Collection",
+      description:
+        "Manually trigger data collection for one source or all. Returns immediately; use uae_collection_status() to monitor.",
+      parameters: Type.Object({
+        source: Type.Optional(
+          Type.String({
+            description:
+              "Source to collect (e.g. dld-sales). Omit to trigger all sources.",
+          })
+        ),
+      }),
+      execute: async (_id, params) => {
+        try {
+          const source = params.source ? String(params.source) : undefined;
+
+          if (source) {
+            const collectorInfo = registry.get(source);
+            if (!collectorInfo) {
+              const allSources = registry
+                .getAll()
+                .map((c) => c.metadata.source)
+                .join(", ");
+              return textResult(
+                `Unknown source: "${source}". Valid sources: ${allSources}`
+              );
+            }
+            setImmediate(() => {
+              registry.runOne(source).catch((err: unknown) => {
+                const msg =
+                  err instanceof Error ? err.message : String(err);
+                log.error(
+                  `[lobsec-uae-re] trigger_collection error for ${source}: ${msg}`
+                );
+              });
+            });
+            return textResult(
+              `Collection triggered for: ${source}. Use uae_collection_status() to monitor progress.`
+            );
+          } else {
+            setImmediate(() => {
+              registry.runAll().catch((err: unknown) => {
+                const msg =
+                  err instanceof Error ? err.message : String(err);
+                log.error(
+                  `[lobsec-uae-re] trigger_collection error for all: ${msg}`
+                );
+              });
+            });
+            return textResult(
+              `Collection triggered for: all sources. Use uae_collection_status() to monitor progress.`
+            );
+          }
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-12: uae_granger_test
+    api.registerTool({
+      name: "uae_granger_test",
+      label: "UAE Granger Causality Test",
+      description:
+        "Run live Granger causality test between any two data series. Signal format: source|metric.",
+      parameters: Type.Object({
+        signal: Type.String({
+          description:
+            "Signal series as source|metric, e.g. 'bayut-listings|avg_asking_price'",
+        }),
+        target: Type.String({
+          description:
+            "Target series as source|metric, e.g. 'dld-sales|avg_price_per_sqft'",
+        }),
+        max_lag: Type.Optional(
+          Type.Number({ description: "Maximum lag in months (default: 6)" })
+        ),
+      }),
+      execute: async (_id, params) => {
+        try {
+          const signal = String(params.signal ?? "");
+          const target = String(params.target ?? "");
+          if (!signal.includes("|"))
+            return textResult(
+              `signal must be 'source|metric', e.g. 'bayut-listings|avg_asking_price'`
+            );
+          if (!target.includes("|"))
+            return textResult(
+              `target must be 'source|metric', e.g. 'dld-sales|avg_price_per_sqft'`
+            );
+
+          const dbPath = path.join(dataDir, "uae-re.db");
+          const result = await runPython("granger_ondemand", {
+            signal,
+            target,
+            db_path: dbPath,
+            max_lag: params.max_lag ?? 6,
+          });
+
+          if (!result.success) {
+            return textResult(
+              `Granger test failed: ${result.error ?? "unknown error"}`
+            );
+          }
+
+          const data = result.data as
+            | { output?: string; error?: string }
+            | undefined;
+          if (data?.error) {
+            return textResult(`Granger test failed: ${data.error}`);
+          }
+          return textResult(
+            data?.output ?? JSON.stringify(data)
+          );
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
+    // TOOL-13: uae_correlation
+    api.registerTool({
+      name: "uae_correlation",
+      label: "UAE Cross-Correlation",
+      description:
+        "Run live cross-correlation analysis between any two data series. Signal format: source|metric.",
+      parameters: Type.Object({
+        signal: Type.String({
+          description:
+            "Signal series as source|metric, e.g. 'bayut-listings|avg_asking_price'",
+        }),
+        target: Type.String({
+          description:
+            "Target series as source|metric, e.g. 'dld-sales|avg_price_per_sqft'",
+        }),
+        max_lag: Type.Optional(
+          Type.Number({ description: "Maximum lag in months (default: 12)" })
+        ),
+      }),
+      execute: async (_id, params) => {
+        try {
+          const signal = String(params.signal ?? "");
+          const target = String(params.target ?? "");
+          if (!signal.includes("|"))
+            return textResult(
+              `signal must be 'source|metric', e.g. 'bayut-listings|avg_asking_price'`
+            );
+          if (!target.includes("|"))
+            return textResult(
+              `target must be 'source|metric', e.g. 'dld-sales|avg_price_per_sqft'`
+            );
+
+          const dbPath = path.join(dataDir, "uae-re.db");
+          const result = await runPython("correlation_ondemand", {
+            signal,
+            target,
+            db_path: dbPath,
+            max_lag: params.max_lag ?? 12,
+          });
+
+          if (!result.success) {
+            return textResult(
+              `Correlation analysis failed: ${result.error ?? "unknown error"}`
+            );
+          }
+
+          const data = result.data as
+            | { output?: string; error?: string }
+            | undefined;
+          if (data?.error) {
+            return textResult(`Correlation analysis failed: ${data.error}`);
+          }
+          return textResult(
+            data?.output ?? JSON.stringify(data)
+          );
+        } catch (err) {
+          return textResult(
+            `Error: ${err instanceof Error ? err.message : String(err)}`
+          );
+        }
+      },
+    });
+
       log.info(
-        "[lobsec-uae-re] registered 34 collectors + 9 tools"
+        "[lobsec-uae-re] registered 34 collectors + 13 tools"
       );
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
