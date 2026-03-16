@@ -109,6 +109,31 @@ export const CREDENTIAL_PATTERNS: RedactionPattern[] = [
     replacement: "[API-KEY-REDACTED]",
     category: "credential",
   },
+  // UAE RE Phase 12 — Additional API key patterns
+  {
+    name: "google-maps-key",
+    pattern: /AIza[0-9A-Za-z_-]{35}/g,
+    replacement: "[GOOGLE-MAPS-KEY-REDACTED]",
+    category: "credential",
+  },
+  {
+    name: "apify-token",
+    pattern: /apify_api_[a-zA-Z0-9]{20,}/g,
+    replacement: "[APIFY-TOKEN-REDACTED]",
+    category: "credential",
+  },
+  {
+    name: "reddit-client-id",
+    pattern: /(?:client_id|REDDIT_CLIENT_ID)\s*[=:"']+\s*[a-zA-Z0-9_-]{14,22}/g,
+    replacement: "[REDDIT-CLIENT-ID-REDACTED]",
+    category: "credential",
+  },
+  {
+    name: "reddit-client-secret",
+    pattern: /(?:client_secret|REDDIT_CLIENT_SECRET)\s*[=:"']+\s*[a-zA-Z0-9_-]{20,30}/g,
+    replacement: "[REDDIT-SECRET-REDACTED]",
+    category: "credential",
+  },
   // Examy password: built from environment variable at load time (never hardcoded)
   ...(process.env.EXAMY_PASSWORD
     ? [
