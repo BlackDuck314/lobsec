@@ -125,13 +125,19 @@ def fetch_significant_signals(
     Fetch significant Granger results from the most recent test run.
 
     Takes the most recent run by grouping on (signal_source, signal_metric, target)
-    and taking latest tested_at.
+    and taking latest tested_at. Applies validation downweighting from validation_results
+    (QUAL-01): weight is multiplied by COALESCE(downweight_factor, 1.0).
+
+    The COALESCE ensures backward compatibility: if no validation results exist
+    (first run or validation not yet executed), behavior is unchanged.
 
     Returns list of {signal_source, signal_metric, target, weight, best_lag}.
     Parameterized SQL — SEC-06.
     """
     rows = db.execute(
-        "SELECT g.signal_source, g.signal_metric, g.target, g.weight, g.best_lag "
+        "SELECT g.signal_source, g.signal_metric, g.target, "
+        "       g.weight * COALESCE(v.downweight_factor, 1.0) AS weight, "
+        "       g.best_lag "
         "FROM granger_results g "
         "INNER JOIN ("
         "  SELECT signal_source, signal_metric, target, MAX(tested_at) AS max_at "
@@ -142,8 +148,20 @@ def fetch_significant_signals(
         "  AND g.signal_metric = latest.signal_metric "
         "  AND g.target = latest.target "
         "  AND g.tested_at = latest.max_at "
+        "LEFT JOIN ("
+        "  SELECT signal_source, signal_metric, target, downweight_factor "
+        "  FROM validation_results "
+        "  WHERE (signal_source || '|' || signal_metric || '|' || target) IN ("
+        "    SELECT signal_source || '|' || signal_metric || '|' || target "
+        "    FROM validation_results "
+        "    GROUP BY signal_source, signal_metric, target "
+        "    HAVING tested_at = MAX(tested_at)"
+        "  )"
+        ") v ON g.signal_source = v.signal_source "
+        "  AND g.signal_metric = v.signal_metric "
+        "  AND g.target = v.target "
         "WHERE g.significant = 1 "
-        "ORDER BY g.weight DESC",
+        "ORDER BY g.weight * COALESCE(v.downweight_factor, 1.0) DESC",
     ).fetchall()
 
     return [
