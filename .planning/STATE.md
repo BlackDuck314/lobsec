@@ -15,10 +15,10 @@ progress:
 
 ## Current Position
 
-Phase: 10 of 12 -- Statistical Analysis Pipeline (COMPLETE)
-Plan: 4 of 4 -- COMPLETE. analyze.sh, systemd timer, full production deployment.
-Status: Phase 10 complete. analyze.sh + lobsec-uae-analyze.timer deployed. All 6 Python analysis modules running. Pipeline verified end-to-end (26 analysis_log entries). SCHED-06, SEC-06, SEC-07 fulfilled. Next run: 2026-03-25 02:00 UTC.
-Last activity: 2026-03-16 — Plan 10-04 complete. 2/2 tasks done (1 auto + 1 human-verify checkpoint approved). Phase 10 fully complete. Ready for Phase 11 (Intelligence Products).
+Phase: 11 of 12 -- Intelligence Products (IN PROGRESS)
+Plan: 1 of 4 -- COMPLETE. validation_results table, analyze_validation.py, composite downweighting, format.ts utilities.
+Status: Phase 11 Plan 01 complete. QUAL-01 fulfilled (out-of-sample validation, 7-step pipeline). QUAL-03 verified (no unbounded ffill in any normalizer). format.ts created for Plans 02-04.
+Last activity: 2026-03-16 — Plan 11-01 complete. 3/3 tasks done (all auto). Ready for Plan 11-02 (intelligence product implementations).
 
 ## Resume Instructions
 
@@ -166,6 +166,10 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 10-statistical-analysis]: Area signal split for composite: bayut/propertyfinder/ejari = area-level signals; all other sources = city-wide signals contributing to both area and dubai composites
 - [Phase 10-02]: Affordability rent normalization: ejari avg_rent_per_sqft * 750 sqft / 12 months for monthly 1BR cost estimate (typical Dubai 1BR)
 - [Phase 10-statistical-analysis]: analyze.sh has no health check for Ninja Scraper — pipeline reads from SQLite not from scraper; no uptime dependency
+- [Phase 11-01]: Chronological 70/30 split only — series[:train_n] and series[train_n:], NO random split. Monthly time-series data is not IID; shuffling introduces look-ahead bias.
+- [Phase 11-01]: COALESCE(downweight_factor, 1.0) in composite LEFT JOIN ensures backward compatibility before validation has run
+- [Phase 11-01]: Signals with < 12 obs are skipped (validated=1, factor=1.0) — insufficient history makes out-of-sample testing meaningless, not penalized
+- [Phase 11-01]: SQLite multi-column IN workaround — used string concatenation key (a||'|'||b||'|'||c) since SQLite lacks tuple/row constructor IN syntax
 
 ## Blockers
 
@@ -181,10 +185,10 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 10-04-PLAN.md — analyze.sh, systemd timer, full production deployment. Phase 10 complete.
-Resume file: .planning/phases/10-statistical-analysis/10-04-SUMMARY.md
-Next: Phase 11 — Intelligence Products (PROD-01..08, QUAL-01, QUAL-03).
-Key context: Phase 10 fully complete. Statistical analysis pipeline deployed and verified. lobsec-uae-analyze.timer fires 25th 02:00 UTC. All 6 Python modules (stationarity, granger, composite, anomalies, affordability, expat_funnel) deployed. 5 new DB tables populated. 26 analysis_log entries confirmed. 3 bugs auto-fixed (CHECK constraint, area_name column x2).
+Stopped at: Completed 11-01-PLAN.md — validation_results table, analyze_validation.py, composite downweighting, format.ts. QUAL-01 + QUAL-03 fulfilled.
+Resume file: .planning/phases/11-intelligence-products/11-01-SUMMARY.md
+Next: Phase 11 Plan 02 — Intelligence product implementations (PROD-01..08).
+Key context: Phase 11 Plan 01 complete. Pipeline now runs 7 steps (added validation step 2.5 between granger and composite). validation_results table created (Table 11). analyze_validation.py does chronological 70/30 split, writes downweight_factor to DB. analyze_composite.py LEFT JOINs validation_results. 28 normalizers audited — only ffill is normalize.py:38 with limit=1 (QUAL-03 pass). format.ts in src/products/ has 5 shared Telegram utilities.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Store Reddit API credentials in HSM for collect_sentiment.py. Set up residential proxy service for Google Maps foot traffic (NINJA_PROXY_URL).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |

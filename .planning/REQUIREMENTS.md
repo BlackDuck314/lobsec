@@ -122,9 +122,9 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 ### Data Quality & Validation
 
-- [ ] **QUAL-01**: Out-of-sample validation -- split data into training/test sets, validate Granger results on held-out data
+- [x] **QUAL-01**: Out-of-sample validation -- split data into training/test sets, validate Granger results on held-out data
 - [ ] **QUAL-02**: Staleness surfacing -- Telegram responses include data freshness warnings when sources are >2x overdue
-- [ ] **QUAL-03**: Conditional forward-fill -- fill gaps up to 1 period only; leave NULL for extended outages instead of propagating stale data
+- [x] **QUAL-03**: Conditional forward-fill -- fill gaps up to 1 period only; leave NULL for extended outages instead of propagating stale data
 - [ ] **QUAL-04**: Area name normalization -- fuzzy matching for Telegram queries, support abbreviations (JVC, JBR, DIFC), show "Did you mean?" for ambiguous input
 - [ ] **QUAL-05**: Collection health dashboard -- `uae_collection_status()` shows all sources with last update, row count, staleness flag, next scheduled run
 
@@ -250,9 +250,9 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | SEC-05 | 12 | Pending |
 | SEC-06 | 10 | Complete |
 | SEC-07 | 10 | Complete |
-| QUAL-01 | 11 | Pending |
+| QUAL-01 | 11 | Complete |
 | QUAL-02 | 12 | Pending |
-| QUAL-03 | 11 | Pending |
+| QUAL-03 | 11 | Complete |
 | QUAL-04 | 12 | Pending |
 | QUAL-05 | 12 | Pending |
 
