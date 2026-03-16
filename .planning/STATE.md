@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T14:16:26.937Z"
+last_updated: "2026-03-16T14:16:30Z"
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 27
-  completed_plans: 25
+  completed_plans: 26
 ---
 
 # Project State
@@ -16,9 +16,9 @@ progress:
 ## Current Position
 
 Phase: 11 of 12 -- Intelligence Products (IN PROGRESS)
-Plan: 2 of 4 -- COMPLETE. PROD-01 (area signal), PROD-02 (distress detection). Both with SEC-06 area validation, Granger-derived weights, truncate4K Telegram formatting.
-Status: Phase 11 Plan 02 complete. PROD-01 + PROD-02 fulfilled. queryAreaSignal and queryDistress ready for Phase 12 plugin tools.
-Last activity: 2026-03-16 — Plan 11-02 complete. 2/2 tasks done (all auto). Ready for Plan 11-03 (additional intelligence products).
+Plan: 3 of 4 -- COMPLETE. PROD-03 (rental intelligence), PROD-04 (supply pipeline), PROD-07 (off-plan vs ready arbitrage). DLD normalizer extended with procedure_name_en segmentation.
+Status: Phase 11 Plan 03 complete. PROD-03 + PROD-04 + PROD-07 fulfilled. normalize_dld.py produces offplan_avg_price/ready_avg_price metrics. All 3 products: SEC-06 area validation, null handling, 4K truncation.
+Last activity: 2026-03-16 — Plan 11-03 complete. 2/2 tasks done (all auto). Ready for Plan 11-04 (remaining products PROD-05, PROD-06, PROD-08 + product index).
 
 ## Resume Instructions
 
@@ -172,6 +172,10 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 11-01]: SQLite multi-column IN workaround — used string concatenation key (a||'|'||b||'|'||c) since SQLite lacks tuple/row constructor IN syntax
 - [Phase 11]: PROD-02 alert threshold >= 0.6 at area level ONLY — no city-wide threshold; tanh(weighted_avg/2) distress scaling
 - [Phase 11]: Granger weight 1/pvalue for significant signals, equal weight 1.0 otherwise — same pattern for PROD-02 and future products
+- [Phase 11-03]: Off-plan classification: keywords ["off-plan", "offplan", "pre-registration"] from procedure_name_en; graceful skip when column absent
+- [Phase 11-03]: PROD-04 forward curve requires >= 3 points for linearSlope; projects 12 months; floors at 0 (negative extrapolation meaningless for unit counts)
+- [Phase 11-03]: PROD-04 city-wide fallback: permits/DEWA try area-prefixed metrics first, then bare metric name
+- [Phase 11-03]: PROD-03 gross yield: uses 750 sqft 1BR proxy constant (ejari avg_rent_per_sqft * 750 * 12 / sale_price * 100)
 
 ## Blockers
 
@@ -187,10 +191,10 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 11-02-PLAN.md — PROD-01 (queryAreaSignal), PROD-02 (queryDistress). PROD-01 + PROD-02 fulfilled.
-Resume file: .planning/phases/11-intelligence-products/11-02-SUMMARY.md
-Next: Phase 11 Plan 03 — Additional intelligence products (PROD-03..08).
-Key context: Phase 11 Plan 01 complete. Pipeline now runs 7 steps (added validation step 2.5 between granger and composite). validation_results table created (Table 11). analyze_validation.py does chronological 70/30 split, writes downweight_factor to DB. analyze_composite.py LEFT JOINs validation_results. 28 normalizers audited — only ffill is normalize.py:38 with limit=1 (QUAL-03 pass). format.ts in src/products/ has 5 shared Telegram utilities.
+Stopped at: Completed 11-03-PLAN.md — PROD-03 (rental intelligence), PROD-04 (supply pipeline), PROD-07 (arbitrage). DLD normalizer extended.
+Resume file: .planning/phases/11-intelligence-products/11-03-SUMMARY.md
+Next: Phase 11 Plan 04 — Remaining intelligence products (PROD-05, PROD-06, PROD-08) + product index.
+Key context: Phase 11 Plans 01-03 complete. Products dir has: format.ts, prod01-area-signal.ts, prod02-distress.ts, prod03-rental.ts, prod04-supply.ts, prod07-arbitrage.ts. normalize_dld.py now segments off-plan vs ready. All products: SEC-06 area validation, null handling, 4K truncation. 7-step analysis pipeline running.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Store Reddit API credentials in HSM for collect_sentiment.py. Set up residential proxy service for Google Maps foot traffic (NINJA_PROXY_URL).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
