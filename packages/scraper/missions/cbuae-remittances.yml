@@ -25,7 +25,7 @@ extraction:
   strategy: find_and_download
   selectors:
     pdf_links: "a[href$='.pdf'], .report-link"
-    bop_filter: "text*='Balance of Payments' | text*='Remittance' | text*='External' | text*='Quarterly'"
+    bop_filter: "text*='Statistical Bulletin' | text*='Balance of Payments' | text*='Remittance'"
   fields:
     - pdf_url
     - report_quarter

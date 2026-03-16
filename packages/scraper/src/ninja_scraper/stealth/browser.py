@@ -48,7 +48,9 @@ async def get_patchright_browser() -> tuple["Browser", "Playwright"]:
     return browser, playwright
 
 
-async def create_stealth_context(browser: "Browser") -> "BrowserContext":
+async def create_stealth_context(
+    browser: "Browser", accept_downloads: bool = False
+) -> "BrowserContext":
     """Create a new browser context with realistic fingerprint settings.
 
     Configures viewport, locale, timezone, and user agent to appear
@@ -56,6 +58,7 @@ async def create_stealth_context(browser: "Browser") -> "BrowserContext":
 
     Args:
         browser: Patchright Browser instance.
+        accept_downloads: Enable browser download events for PDF missions.
 
     Returns:
         BrowserContext configured for stealth operation.
@@ -74,6 +77,7 @@ async def create_stealth_context(browser: "Browser") -> "BrowserContext":
         has_touch=False,
         is_mobile=False,
         color_scheme="light",
+        accept_downloads=accept_downloads,
     )
     logger.debug("Stealth browser context created", locale="en-US", timezone="Asia/Dubai")
     return context

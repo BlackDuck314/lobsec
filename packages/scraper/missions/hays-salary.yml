@@ -15,7 +15,8 @@ source:
   url: "https://www.hays.ae/salary-guide"
   browser: chromium
   stealth: true
-  wait_until: networkidle
+  wait_until: domcontentloaded
+  post_load_wait_ms: 5000
 
 extraction:
   format: pdf

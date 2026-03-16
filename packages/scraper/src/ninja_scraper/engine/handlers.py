@@ -25,6 +25,7 @@ from ninja_scraper.engine.crawler import (
     paginate_and_extract,
     run_browser_mission,
     run_http_mission,
+    run_pdf_download_mission,
 )
 from ninja_scraper.engine.mission import Mission, load_all_missions, load_mission
 from ninja_scraper.engine.storage import ensure_output_dir, get_output_path
@@ -74,7 +75,10 @@ async def execute_mission(
             if mission.type in ("http_download", "api_call"):
                 result = await run_http_mission(mission, output_dir_str)
             elif mission.type == "browser_scrape":
-                if mission.areas:
+                # Route PDF download missions to dedicated handler
+                if mission.extraction.get("format") == "pdf":
+                    result = await run_pdf_download_mission(mission, output_dir_str)
+                elif mission.areas:
                     result = await _execute_area_browser_mission(
                         mission, output_dir_str, log
                     )
@@ -222,18 +226,7 @@ async def _execute_area_browser_mission(
 
                 container_sel = mission.extraction.get("container_selector")
                 if container_sel:
-                    # Per-card structured extraction
-                    cards = await _extract_page_cards(page, container_sel, selectors)
-                    log.info("Container extraction", area=area, card_count=len(cards))
-
-                    # Follow pagination if configured
-                    if mission.pagination:
-                        cards = await paginate_and_extract(page, mission, cards, url, log)
-
-                    page_data["cards"] = cards
-                    page_data["card_count"] = len(cards)
-
-                    # Extract page-level selectors separately
+                    # Extract page-level selectors BEFORE pagination (page 1 has totals)
                     for field_name, selector in mission.extraction.get("page_selectors", {}).items():
                         try:
                             elements = await page.query_selector_all(selector)
@@ -251,6 +244,17 @@ async def _execute_area_browser_mission(
                         except Exception as e:
                             log.warning("Page selector failed", field=field_name, error=str(e))
                             page_data[field_name] = None
+
+                    # Per-card structured extraction
+                    cards = await _extract_page_cards(page, container_sel, selectors)
+                    log.info("Container extraction", area=area, card_count=len(cards))
+
+                    # Follow pagination if configured
+                    if mission.pagination:
+                        cards = await paginate_and_extract(page, mission, cards, url, log)
+
+                    page_data["cards"] = cards
+                    page_data["card_count"] = len(cards)
                 else:
                     # Flat extraction (backward compatible)
                     for field_name, selector in selectors.items():
