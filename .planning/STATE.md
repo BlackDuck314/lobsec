@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T06:38:54.277Z"
+last_updated: "2026-03-16T07:11:00.598Z"
 progress:
   total_phases: 5
   completed_phases: 5
@@ -15,10 +15,10 @@ progress:
 
 ## Current Position
 
-Phase: 9 of 12 -- Tier C Collection (AWAITING CHECKPOINT)
-Plan: 4 of 4 -- Plan 09-04 Task 1 COMPLETE; awaiting checkpoint:human-verify for production deployment confirmation
-Status: Phase 9 Tier C Collection final wiring complete. 09-04 Task 1 complete: 33 COLLECTOR_DEFINITIONS (13 new), 33 SOURCE_MODULE_MAP entries, 34 PythonScriptName union members, daily timer enabled, all 4 frequency timers active. Production deployed: 31 missions loaded in Ninja Scraper, 28 normalizers + 2 collect scripts deployed.
-Last activity: 2026-03-16 — Plan 09-04 Task 1 complete. 7 files modified. Commit 8aeca7c. All 4 collection timers active. 31 Ninja Scraper missions loaded. Awaiting checkpoint:human-verify confirmation (Task 2).
+Phase: 9 of 12 -- Tier C Collection (COMPLETE)
+Plan: 4 of 4 -- COMPLETE. All Phase 9 tasks done; checkpoint:human-verify confirmed by user.
+Status: Phase 9 Tier C Collection COMPLETE. 33 COLLECTOR_DEFINITIONS (13 new), 33 SOURCE_MODULE_MAP entries, 34 PythonScriptName union members, daily timer enabled, all 4 frequency timers active. Production deployed: 31 missions loaded in Ninja Scraper, 28 normalizers + 2 collect scripts deployed. All 15 requirements addressed (COLL-14, COLL-16..28, SCHED-05).
+Last activity: 2026-03-16 — Plan 09-04 complete. Checkpoint:human-verify approved. 2/2 tasks done. Ready for Phase 10 (Statistical Analysis Pipeline).
 
 ## Resume Instructions
 
@@ -50,7 +50,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | Paused (3/4 plans, blocked) |
 | 7.1 | Ninja Scraper | 11 (same as Phase 7) | ✅ Complete (4/4 plans) |
 | 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | In Progress (3/4 plans, 10 reqs) |
-| 9 | Tier C Collection | 15 (COLL-14, COLL-16..28, SCHED-05) | Pending |
+| 9 | Tier C Collection | 15 (COLL-14, COLL-16..28, SCHED-05) | ✅ Complete (4/4 plans) |
 | 10 | Statistical Analysis Pipeline | 11 (STAT-01..08, SCHED-06, SEC-06..07) | Pending |
 | 11 | Intelligence Products | 10 (PROD-01..08, QUAL-01, QUAL-03) | Pending |
 | 12 | Plugin Tools & Hardening | 19 (TOOL-01..13, QUAL-02,04,05, SEC-03..05) | Pending |
@@ -156,6 +156,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 09]: Mission proxy/user_agent_rotation default to False — all 20 existing Ninja Scraper missions load unchanged; NINJA_PROXY_URL no-op when absent
 - [Phase 09]: 13 entries added to COLLECTOR_DEFINITIONS (not 14 as stated in must_haves.truths) — action section listed 13 distinct sources; action is authoritative
 - [Phase 09]: Daily timer uses After=lobsec.service + Wants= (not Requires=) — DirectPythonCollector bypasses Ninja Scraper, only needs environment not gateway uptime
+- [Phase 09-tier-c-collection]: 13 entries added to COLLECTOR_DEFINITIONS (not 14 as stated in must_haves.truths) — action section listed 13 distinct sources; action is authoritative. Total = 33 collectors.
 
 ## Blockers
 
@@ -171,9 +172,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 09-04-PLAN.md Task 1 — collector registry wiring + daily timer + production deployment. Awaiting checkpoint:human-verify (Task 2).
+Stopped at: Completed 09-04-PLAN.md — Phase 9 Tier C Collection fully complete. All 4 timers active, 31 missions loaded, checkpoint:human-verify approved.
 Resume file: .planning/phases/09-tier-c-collection/09-04-SUMMARY.md
-Next: Confirm checkpoint:human-verify in 09-04 (4 timers active, 31 missions loaded, normalizers deployed). Then execute Phase 10 (Statistical Analysis Pipeline).
+Next: Phase 10 (Statistical Analysis Pipeline) — all 28 data sources registered and collection infrastructure ready.
 Key context: Phase 9 Tier C Collection complete pending checkpoint confirmation. 33 collectors registered, 4 timers active (daily 19:00 UTC, weekly Mon 02:00, monthly Apr 1 02:00, quarterly Apr 15 05:00), 31 YAML missions in Ninja Scraper, 28 normalizers deployed. Requirements COLL-14/16-28 + SCHED-05 all addressed in registry.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Store Reddit API credentials in HSM for collect_sentiment.py. Set up residential proxy service for Google Maps foot traffic (NINJA_PROXY_URL).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
