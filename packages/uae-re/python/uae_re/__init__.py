@@ -6,6 +6,12 @@ Provides data science operations for time-series analysis:
 - Stationarity testing (ADF + KPSS)
 - Granger causality testing
 - Cross-correlation lag detection
+- Batch stationarity analysis (analyze_stationarity)
+- Batch Granger causality analysis (analyze_granger)
+- Composite index computation (analyze_composite)
+- EWMA anomaly detection (analyze_anomalies)
+- Affordability model (analyze_affordability)
+- Expat lifecycle funnel (analyze_expat_funnel)
 
 All modules follow the bridge pattern:
 - Read JSON from stdin
