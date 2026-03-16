@@ -54,6 +54,8 @@ class Mission(BaseModel):
     timeout_ms: int = Field(default=120000, ge=5000, le=3600000)
     concurrency: ConcurrencyConfig = Field(default_factory=ConcurrencyConfig)
     areas: list[str] | None = None
+    proxy: bool = False
+    user_agent_rotation: bool = False
     schema_version: str = "1.0"
 
     @model_validator(mode="before")
