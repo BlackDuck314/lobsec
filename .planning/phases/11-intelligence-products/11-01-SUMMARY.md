@@ -81,7 +81,7 @@ Each task was committed atomically:
 2. **Task 2: composite downweighting, ffill audit** - `2f2537b` (feat)
 3. **Task 3: shared format.ts utilities** - `56f75cd` (feat)
 
-**Plan metadata:** `[pending final commit]` (docs: complete plan)
+**Plan metadata:** `c0fed83` (docs: complete plan)
 
 ## Files Created/Modified
 
@@ -124,3 +124,16 @@ None - no external service configuration required.
 ---
 *Phase: 11-intelligence-products*
 *Completed: 2026-03-16*
+
+## Self-Check: PASSED
+
+Files verified:
+- FOUND: packages/uae-re/python/uae_re/analyze_validation.py
+- FOUND: packages/uae-re/src/products/format.ts
+- FOUND: .planning/phases/11-intelligence-products/11-01-SUMMARY.md
+
+Commits verified:
+- FOUND: 3cfb8eb (Task 1: validation table, module, pipeline)
+- FOUND: 2f2537b (Task 2: composite downweighting, ffill audit)
+- FOUND: 56f75cd (Task 3: format.ts utilities)
+- FOUND: c0fed83 (Plan metadata)
