@@ -79,10 +79,10 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [x] **PROD-02**: Distress Detection System -- 17-signal score (8 market + 9 lifecycle), alert threshold >=0.6
 - [x] **PROD-03**: Rental Intelligence Dashboard -- 10 metrics: gross yield, rental momentum, vacancy proxy, renewal rate, listing absorption, pipeline pressure, affordability ratio, STR premium, rent-to-income, DOM trend
 - [x] **PROD-04**: Supply Pipeline Tracker -- building permits, DEWA new connections, Jebel Ali cargo, customs household imports, 12-24mo forward curve
-- [ ] **PROD-05**: Expat Population Flow Dashboard -- 10-stage funnel visualization, awareness-to-exit with stage-level metrics
-- [ ] **PROD-06**: Macro Health Dashboard -- 6 signal groups (employment, housing, spending, mobility, sentiment, population), traffic light output (green/amber/red)
+- [x] **PROD-05**: Expat Population Flow Dashboard -- 10-stage funnel visualization, awareness-to-exit with stage-level metrics
+- [x] **PROD-06**: Macro Health Dashboard -- 6 signal groups (employment, housing, spending, mobility, sentiment, population), traffic light output (green/amber/red)
 - [x] **PROD-07**: Off-Plan vs Ready Arbitrage Tracker -- premium spread by area, developer incentive monitoring, DLD procedure_name_en filtering
-- [ ] **PROD-08**: Salary-Rent Pressure Map -- 5 income brackets, area segment mapping, migration prediction (flight risk by bracket)
+- [x] **PROD-08**: Salary-Rent Pressure Map -- 5 income brackets, area segment mapping, migration prediction (flight risk by bracket)
 
 ### Plugin Tools & Telegram Interface
 
@@ -219,10 +219,10 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | PROD-02 | 11 | Complete |
 | PROD-03 | 11 | Complete |
 | PROD-04 | 11 | Complete |
-| PROD-05 | 11 | Pending |
-| PROD-06 | 11 | Pending |
+| PROD-05 | 11 | Complete |
+| PROD-06 | 11 | Complete |
 | PROD-07 | 11 | Complete |
-| PROD-08 | 11 | Pending |
+| PROD-08 | 11 | Complete |
 | TOOL-01 | 12 | Pending |
 | TOOL-02 | 12 | Pending |
 | TOOL-03 | 12 | Pending |

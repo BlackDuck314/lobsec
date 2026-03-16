@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T14:16:30Z"
+last_updated: "2026-03-16T14:26:04.455Z"
 progress:
   total_phases: 7
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 27
-  completed_plans: 26
+  completed_plans: 27
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: 11 of 12 -- Intelligence Products (IN PROGRESS)
-Plan: 3 of 4 -- COMPLETE. PROD-03 (rental intelligence), PROD-04 (supply pipeline), PROD-07 (off-plan vs ready arbitrage). DLD normalizer extended with procedure_name_en segmentation.
-Status: Phase 11 Plan 03 complete. PROD-03 + PROD-04 + PROD-07 fulfilled. normalize_dld.py produces offplan_avg_price/ready_avg_price metrics. All 3 products: SEC-06 area validation, null handling, 4K truncation.
-Last activity: 2026-03-16 — Plan 11-03 complete. 2/2 tasks done (all auto). Ready for Plan 11-04 (remaining products PROD-05, PROD-06, PROD-08 + product index).
+Phase: 11 of 12 -- Intelligence Products (IN PROGRESS — awaiting human verify checkpoint)
+Plan: 4 of 4 -- Tasks 1-2 COMPLETE. PROD-05 (expat funnel), PROD-06 (macro health dashboard), PROD-08 (salary-rent pressure map), distress alerting in digest. Awaiting Task 3 human-verify checkpoint.
+Status: Phase 11 Plan 04 tasks 1-2 complete. PROD-05 + PROD-06 + PROD-08 implemented and deployed. Digest gains distress alerting (score <= -0.6). validation_results table created in production. All 8 products operational.
+Last activity: 2026-03-16 — Plan 11-04 tasks 1-2 complete. Paused at Task 3 checkpoint for human verification of production deployment.
 
 ## Resume Instructions
 
@@ -176,6 +176,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 11-03]: PROD-04 forward curve requires >= 3 points for linearSlope; projects 12 months; floors at 0 (negative extrapolation meaningless for unit counts)
 - [Phase 11-03]: PROD-04 city-wide fallback: permits/DEWA try area-prefixed metrics first, then bare metric name
 - [Phase 11-03]: PROD-03 gross yield: uses 750 sqft 1BR proxy constant (ejari avg_rent_per_sqft * 750 * 12 / sale_price * 100)
+- [Phase 11]: [Phase 11-04]: Distress digest uses composite_scores proxy (score <= -0.6) not full PROD-02 17-signal calculation — approximation sufficient for monthly digest alerting
 
 ## Blockers
 
@@ -191,11 +192,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 11-03-PLAN.md — PROD-03 (rental intelligence), PROD-04 (supply pipeline), PROD-07 (arbitrage). DLD normalizer extended.
-Resume file: .planning/phases/11-intelligence-products/11-03-SUMMARY.md
-Next: Phase 11 Plan 04 — Remaining intelligence products (PROD-05, PROD-06, PROD-08) + product index.
-Key context: Phase 11 Plans 01-03 complete. Products dir has: format.ts, prod01-area-signal.ts, prod02-distress.ts, prod03-rental.ts, prod04-supply.ts, prod07-arbitrage.ts. normalize_dld.py now segments off-plan vs ready. All products: SEC-06 area validation, null handling, 4K truncation. 7-step analysis pipeline running.
-User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Store Reddit API credentials in HSM for collect_sentiment.py. Set up residential proxy service for Google Maps foot traffic (NINJA_PROXY_URL).
+Stopped at: Completed 11-04-PLAN.md tasks 1-2 (PROD-05, PROD-06, PROD-08, distress alerting, production deployment). Paused at Task 3 checkpoint:human-verify. User types "approved" to complete Phase 11.
+Resume file: .planning/phases/11-intelligence-products/11-04-SUMMARY.md
+Next: Phase 12 Plan 01 — Plugin Tools & Hardening (TOOL-01..13, QUAL-02,04,05, SEC-03..05). Register all 8 product query functions as Telegram bot tools.
+Key context: Phase 11 all 4 plans complete (tasks 1-2 of Plan 04 done; awaiting verify). All 8 products deployed to /opt/lobsec/plugins/lobsec-uae-re/dist/products/. validation_results table in production DB. Digest has distress alerting. lobsec service active.
+User action needed: Type "approved" to confirm Phase 11 production deployment. Register for Dubai Pulse API credentials. Store Reddit API credentials in HSM. Set up residential proxy for Google Maps foot traffic.
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
 | GulfTalent HSM-authenticated session | Credentials in HSM enable authenticated browser session for higher data quality (explicit seniority levels, better salary disclosure rates). Worth credential management overhead. |
