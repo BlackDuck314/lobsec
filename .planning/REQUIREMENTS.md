@@ -94,11 +94,11 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 - [x] **TOOL-06**: `uae_macro_health()` -- returns traffic light dashboard with signal group details
 - [x] **TOOL-07**: `uae_arbitrage(area, property_type)` -- returns off-plan vs ready premium spread
 - [x] **TOOL-08**: `uae_salary_rent(income_bracket)` -- returns pressure map with affordable areas
-- [ ] **TOOL-09**: `uae_raw_data(source, start_date, end_date)` -- returns raw CSV data for any source
-- [ ] **TOOL-10**: `uae_collection_status()` -- returns last run times, row counts, and staleness flags
-- [ ] **TOOL-11**: `uae_trigger_collection(source?)` -- manually trigger collection for one or all sources
-- [ ] **TOOL-12**: `uae_granger_test(signal, target)` -- run Granger causality test on demand
-- [ ] **TOOL-13**: `uae_correlation(signal, target, max_lag)` -- run cross-correlation analysis on demand
+- [x] **TOOL-09**: `uae_raw_data(source, start_date, end_date)` -- returns raw CSV data for any source
+- [x] **TOOL-10**: `uae_collection_status()` -- returns last run times, row counts, and staleness flags
+- [x] **TOOL-11**: `uae_trigger_collection(source?)` -- manually trigger collection for one or all sources
+- [x] **TOOL-12**: `uae_granger_test(signal, target)` -- run Granger causality test on demand
+- [x] **TOOL-13**: `uae_correlation(signal, target, max_lag)` -- run cross-correlation analysis on demand
 
 ### Scheduling & Orchestration
 
@@ -114,19 +114,19 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 - [x] **SEC-01**: HSM credential storage -- all new API keys (Google Maps, Reddit, Apify, Zomato, UAE Pass) in SoftHSM2 — pattern verified, keys added in Phase 7+
 - [x] **SEC-02**: fscrypt encryption on `/opt/lobsec/data/` (5th encrypted directory)
-- [ ] **SEC-03**: nftables egress rules -- whitelist domains for all 28 sources (Dubai Pulse, DARI, MOHRE, Apify, Google, Reddit, etc.)
-- [ ] **SEC-04**: Credential redaction -- extend existing redactor with new API key patterns
-- [ ] **SEC-05**: Audit logging -- all collection runs logged (source, timestamp, row count, success/failure) via existing audit infrastructure
+- [x] **SEC-03**: nftables egress rules -- whitelist domains for all 28 sources (Dubai Pulse, DARI, MOHRE, Apify, Google, Reddit, etc.)
+- [x] **SEC-04**: Credential redaction -- extend existing redactor with new API key patterns
+- [x] **SEC-05**: Audit logging -- all collection runs logged (source, timestamp, row count, success/failure) via existing audit infrastructure
 - [x] **SEC-06**: SQL injection prevention -- parameterized queries for all user-supplied area names; validate against area allowlist
 - [x] **SEC-07**: PII protection -- log only metadata (row count, status), never raw visa/employment data
 
 ### Data Quality & Validation
 
 - [x] **QUAL-01**: Out-of-sample validation -- split data into training/test sets, validate Granger results on held-out data
-- [ ] **QUAL-02**: Staleness surfacing -- Telegram responses include data freshness warnings when sources are >2x overdue
+- [x] **QUAL-02**: Staleness surfacing -- Telegram responses include data freshness warnings when sources are >2x overdue
 - [x] **QUAL-03**: Conditional forward-fill -- fill gaps up to 1 period only; leave NULL for extended outages instead of propagating stale data
 - [x] **QUAL-04**: Area name normalization -- fuzzy matching for Telegram queries, support abbreviations (JVC, JBR, DIFC), show "Did you mean?" for ambiguous input
-- [ ] **QUAL-05**: Collection health dashboard -- `uae_collection_status()` shows all sources with last update, row count, staleness flag, next scheduled run
+- [x] **QUAL-05**: Collection health dashboard -- `uae_collection_status()` shows all sources with last update, row count, staleness flag, next scheduled run
 
 ## v1.4 Requirements (Deferred)
 
@@ -231,11 +231,11 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | TOOL-06 | 12 | Complete |
 | TOOL-07 | 12 | Complete |
 | TOOL-08 | 12 | Complete |
-| TOOL-09 | 12 | Pending |
-| TOOL-10 | 12 | Pending |
-| TOOL-11 | 12 | Pending |
-| TOOL-12 | 12 | Pending |
-| TOOL-13 | 12 | Pending |
+| TOOL-09 | 12 | Complete |
+| TOOL-10 | 12 | Complete |
+| TOOL-11 | 12 | Complete |
+| TOOL-12 | 12 | Complete |
+| TOOL-13 | 12 | Complete |
 | SCHED-01 | 6 | Complete |
 | SCHED-02 | 8 | Pending |
 | SCHED-03 | 8 | Pending |
@@ -245,16 +245,16 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | SCHED-07 | 8 | Pending |
 | SEC-01 | 6 | Complete |
 | SEC-02 | 6 | Complete |
-| SEC-03 | 12 | Pending |
-| SEC-04 | 12 | Pending |
-| SEC-05 | 12 | Pending |
+| SEC-03 | 12 | Complete |
+| SEC-04 | 12 | Complete |
+| SEC-05 | 12 | Complete |
 | SEC-06 | 10 | Complete |
 | SEC-07 | 10 | Complete |
 | QUAL-01 | 11 | Complete |
-| QUAL-02 | 12 | Pending |
+| QUAL-02 | 12 | Complete |
 | QUAL-03 | 11 | Complete |
 | QUAL-04 | 12 | Complete |
-| QUAL-05 | 12 | Pending |
+| QUAL-05 | 12 | Complete |
 
 **Coverage:**
 - v1.3 requirements: 88 total (9 categories)
