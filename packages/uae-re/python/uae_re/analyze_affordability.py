@@ -134,29 +134,23 @@ def fetch_latest_ejari_rent(
     area_name: Optional[str] = None,
 ) -> Optional[float]:
     """
-    Fetch the average rent per sqft from Ejari for a given area and date.
+    Fetch the average rent per sqft from Ejari for a given date.
 
-    If area_name provided, fetch area-level data; otherwise city-wide.
+    The normalized_monthly table stores city-wide aggregates without an area_name
+    column — area-level granularity is encoded in metric_name (e.g. avg_rent_per_sqft).
+    The area_name parameter is accepted for interface compatibility but is not used
+    as a filter condition; city-wide rent is returned regardless.
+
     Parameterized SQL — SEC-06.
     """
-    if area_name is not None:
-        row = db.execute(
-            "SELECT value FROM normalized_monthly "
-            "WHERE source = ? AND metric_name = ? "
-            "AND area_name = ? AND measurement_date = ? "
-            "AND value IS NOT NULL "
-            "LIMIT 1",
-            ("ejari", "avg_rent_per_sqft", area_name, measurement_date),
-        ).fetchone()
-    else:
-        row = db.execute(
-            "SELECT value FROM normalized_monthly "
-            "WHERE source = ? AND metric_name = ? "
-            "AND measurement_date = ? "
-            "AND value IS NOT NULL "
-            "LIMIT 1",
-            ("ejari", "avg_rent_per_sqft", measurement_date),
-        ).fetchone()
+    row = db.execute(
+        "SELECT value FROM normalized_monthly "
+        "WHERE source = ? AND metric_name = ? "
+        "AND measurement_date = ? "
+        "AND value IS NOT NULL "
+        "LIMIT 1",
+        ("ejari", "avg_rent_per_sqft", measurement_date),
+    ).fetchone()
 
     if row is not None and row[0] is not None:
         return float(row[0])
