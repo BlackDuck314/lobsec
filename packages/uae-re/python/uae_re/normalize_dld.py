@@ -155,6 +155,50 @@ def normalize_dld(file_path: str, source: str, collected_at: str) -> list[dict]:
                     }
                 )
 
+    # Off-plan vs ready segmentation (PROD-07 prerequisite)
+    # Gracefully skips if procedure_name_en column is absent (Dubai Pulse WAF may block it)
+    if "procedure_name_en" in sales.columns:
+        offplan_keywords = ["off-plan", "offplan", "pre-registration"]
+
+        sales_seg = sales.copy()
+        sales_seg["segment"] = sales_seg["procedure_name_en"].str.lower().apply(
+            lambda x: "offplan" if any(kw in str(x) for kw in offplan_keywords) else "ready"
+        )
+
+        for area in sales_seg["area_name_en"].dropna().unique():
+            area_data = sales_seg[sales_seg["area_name_en"] == area]
+            for segment in ["offplan", "ready"]:
+                seg_data = area_data[area_data["segment"] == segment]
+                if seg_data.empty:
+                    continue
+                monthly_seg = seg_data.resample("ME")
+                for month_end, month_data in monthly_seg:
+                    if month_data.empty:
+                        continue
+                    measurement_date = month_end.strftime("%Y-%m-%d")
+                    # Volume for this segment
+                    metrics.append(
+                        {
+                            "source": source,
+                            "measurement_date": measurement_date,
+                            "metric_name": f"{area}|{segment}_volume",
+                            "value": float(len(month_data)),
+                            "available_date": collected_at,
+                        }
+                    )
+                    # Average price for this segment
+                    prices = month_data["actual_worth"].dropna()
+                    if not prices.empty:
+                        metrics.append(
+                            {
+                                "source": source,
+                                "measurement_date": measurement_date,
+                                "metric_name": f"{area}|{segment}_avg_price",
+                                "value": float(prices.mean()),
+                                "available_date": collected_at,
+                            }
+                        )
+
     # Compute YoY and MoM changes
     # Group metrics by metric_name (area|prop_type|metric) and compute deltas
     metrics_df = pd.DataFrame(metrics)
