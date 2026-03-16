@@ -77,11 +77,11 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 
 - [x] **PROD-01**: Area Buy/Sell Signal Score -- 9-component composite, scale -1 to +1, monthly update per area/property type
 - [x] **PROD-02**: Distress Detection System -- 17-signal score (8 market + 9 lifecycle), alert threshold >=0.6
-- [ ] **PROD-03**: Rental Intelligence Dashboard -- 10 metrics: gross yield, rental momentum, vacancy proxy, renewal rate, listing absorption, pipeline pressure, affordability ratio, STR premium, rent-to-income, DOM trend
-- [ ] **PROD-04**: Supply Pipeline Tracker -- building permits, DEWA new connections, Jebel Ali cargo, customs household imports, 12-24mo forward curve
+- [x] **PROD-03**: Rental Intelligence Dashboard -- 10 metrics: gross yield, rental momentum, vacancy proxy, renewal rate, listing absorption, pipeline pressure, affordability ratio, STR premium, rent-to-income, DOM trend
+- [x] **PROD-04**: Supply Pipeline Tracker -- building permits, DEWA new connections, Jebel Ali cargo, customs household imports, 12-24mo forward curve
 - [ ] **PROD-05**: Expat Population Flow Dashboard -- 10-stage funnel visualization, awareness-to-exit with stage-level metrics
 - [ ] **PROD-06**: Macro Health Dashboard -- 6 signal groups (employment, housing, spending, mobility, sentiment, population), traffic light output (green/amber/red)
-- [ ] **PROD-07**: Off-Plan vs Ready Arbitrage Tracker -- premium spread by area, developer incentive monitoring, DLD procedure_name_en filtering
+- [x] **PROD-07**: Off-Plan vs Ready Arbitrage Tracker -- premium spread by area, developer incentive monitoring, DLD procedure_name_en filtering
 - [ ] **PROD-08**: Salary-Rent Pressure Map -- 5 income brackets, area segment mapping, migration prediction (flight risk by bracket)
 
 ### Plugin Tools & Telegram Interface
@@ -217,11 +217,11 @@ Requirements for the UAE RE intelligence system. All 28 sources, 8 intelligence 
 | STAT-08 | 10 | Complete |
 | PROD-01 | 11 | Complete |
 | PROD-02 | 11 | Complete |
-| PROD-03 | 11 | Pending |
-| PROD-04 | 11 | Pending |
+| PROD-03 | 11 | Complete |
+| PROD-04 | 11 | Complete |
 | PROD-05 | 11 | Pending |
 | PROD-06 | 11 | Pending |
-| PROD-07 | 11 | Pending |
+| PROD-07 | 11 | Complete |
 | PROD-08 | 11 | Pending |
 | TOOL-01 | 12 | Pending |
 | TOOL-02 | 12 | Pending |
