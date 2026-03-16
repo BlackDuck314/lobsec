@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T11:08:47Z"
+last_updated: "2026-03-16T11:17:37.283Z"
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 5
-  total_plans: 19
-  completed_plans: 19
+  total_plans: 23
+  completed_plans: 22
 ---
 
 # Project State
@@ -163,6 +163,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 10-03]: runStep() helper centralizes runPython call, analysis_log writes, and error handling — called 6 times for 6 pipeline steps (single call site, not duplicated)
 - [Phase 10-03]: Digest gated on >= 3 Granger signals from last 24h — ensures digest only sent after a fresh pipeline run with validated signals (not stale historical results)
 - [Phase 10-03]: Digest skip logged to analysis_log with reason — audit trail shows why digest was not dispatched when insufficient signals
+- [Phase 10-statistical-analysis]: Area signal split for composite: bayut/propertyfinder/ejari = area-level signals; all other sources = city-wide signals contributing to both area and dubai composites
+- [Phase 10-02]: Affordability rent normalization: ejari avg_rent_per_sqft * 750 sqft / 12 months for monthly 1BR cost estimate (typical Dubai 1BR)
 
 ## Blockers
 
