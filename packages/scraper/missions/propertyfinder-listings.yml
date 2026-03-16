@@ -1,6 +1,7 @@
 # PropertyFinder Listings — Browser Scrape with Area Iteration
 # Source 5b (COLL-05): Cross-validation source for Bayut listings data
 # Signal: LEADING (2-6 weeks) | Lifecycle: Housing Search
+# Selectors verified via DOM inspection 2026-03-16
 
 schema_version: "1.0"
 name: propertyfinder-listings
@@ -19,7 +20,9 @@ source:
   url: "https://www.propertyfinder.ae/en/buy/dubai/properties-for-sale-{area}.html"
   browser: chromium
   stealth: true
-  wait_until: networkidle
+  wait_until: domcontentloaded
+  post_load_wait_ms: 5000
+  wait_for_selector: '[data-testid="property-card"]'
 
 areas:
   - palm-jumeirah
@@ -27,16 +30,16 @@ areas:
   - dubai-marina
   - jumeirah-village-circle
   - business-bay
-  - dubai-hills
+  - dubai-hills-estate
   - jumeirah-beach-residence
   - jumeirah-lake-towers
   - dubai-silicon-oasis
-  - sports-city
+  - dubai-sports-city
   - international-city
   - discovery-gardens
   - al-quoz
   - arabian-ranches
-  - dubailand
+  - dubai-land
   - motor-city
   - meydan
   - dubai-south
@@ -45,20 +48,29 @@ areas:
 
 extraction:
   format: json
+  container_selector: '[data-testid="property-card"]'
   selectors:
-    listing_count: "[data-testid='property-count'], .property-count, h1 span"
-    property_cards: "[data-testid='property-card'], .property-card"
-    price: "[data-testid='property-card-price'], .property-card-price"
-    bedrooms: "[data-testid='property-card-spec'], .property-card-spec"
-    area_sqft: "[data-testid='property-card-area'], .property-card-area"
-    reduced_badge: "[class*='reduced'], [class*='Reduced'], .price-drop"
+    property_type: '[data-testid="property-card-type"]'
+    price: '[data-testid="property-card-price"]'
+    bedrooms: '[data-testid="property-card-spec-bedroom"]'
+    bathrooms: '[data-testid="property-card-spec-bathroom"]'
+    area_sqft: '[data-testid="property-card-spec-area"]'
+    price_per_sqft: '[data-testid="property-card-spec-price-per-area"]'
+    location: '[data-testid="property-card-location"]'
+    title: 'h3'
+  page_selectors:
+    listing_count: '[data-testid="property-search-h1-content-title"]'
   fields:
     - area
     - listing_count
+    - property_type
     - price
     - bedrooms
+    - bathrooms
     - area_sqft
-    - reduced
+    - price_per_sqft
+    - location
+    - title
 
 output:
   path: "/opt/lobsec/data/raw/propertyfinder-listings/{date}.json"
