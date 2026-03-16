@@ -6,6 +6,7 @@
  * for all data collection operations.
  */
 
+import fs from "node:fs";
 import type Database from "better-sqlite3";
 import {
   retryWithBackoff,
@@ -225,6 +226,25 @@ export class SourceCollector {
       this.status = "idle";
       this.lastRun = new Date().toISOString();
 
+      // Audit log — collection run result (SEC-05)
+      try {
+        const auditEntry = {
+          type: "collection_run",
+          timestamp: new Date().toISOString(),
+          source: this.metadata.source,
+          status: "success",
+          rowCount: result.rowCount,
+          durationMs: duration,
+          error: null,
+        };
+        fs.appendFileSync(
+          "/opt/lobsec/logs/audit.jsonl",
+          JSON.stringify(auditEntry) + "\n"
+        );
+      } catch {
+        // Audit logging failure must not crash collection
+      }
+
       return {
         success: true,
         rowCount: result.rowCount,
@@ -246,6 +266,25 @@ export class SourceCollector {
       // Track consecutive failures
       this.consecutiveFailures++;
       this.status = this.consecutiveFailures >= 2 ? "stale" : "failed";
+
+      // Audit log — collection run failure (SEC-05)
+      try {
+        const auditEntry = {
+          type: "collection_run",
+          timestamp: new Date().toISOString(),
+          source: this.metadata.source,
+          status: "failure",
+          rowCount: 0,
+          durationMs: duration,
+          error: errorMsg,
+        };
+        fs.appendFileSync(
+          "/opt/lobsec/logs/audit.jsonl",
+          JSON.stringify(auditEntry) + "\n"
+        );
+      } catch {
+        // Audit logging failure must not crash collection
+      }
 
       return {
         success: false,
