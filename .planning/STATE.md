@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-16T12:04:29.915Z"
+last_updated: "2026-03-16T14:16:26.937Z"
 progress:
-  total_phases: 6
+  total_phases: 7
   completed_phases: 6
-  total_plans: 23
-  completed_plans: 23
+  total_plans: 27
+  completed_plans: 25
 ---
 
 # Project State
@@ -16,9 +16,9 @@ progress:
 ## Current Position
 
 Phase: 11 of 12 -- Intelligence Products (IN PROGRESS)
-Plan: 1 of 4 -- COMPLETE. validation_results table, analyze_validation.py, composite downweighting, format.ts utilities.
-Status: Phase 11 Plan 01 complete. QUAL-01 fulfilled (out-of-sample validation, 7-step pipeline). QUAL-03 verified (no unbounded ffill in any normalizer). format.ts created for Plans 02-04.
-Last activity: 2026-03-16 — Plan 11-01 complete. 3/3 tasks done (all auto). Ready for Plan 11-02 (intelligence product implementations).
+Plan: 2 of 4 -- COMPLETE. PROD-01 (area signal), PROD-02 (distress detection). Both with SEC-06 area validation, Granger-derived weights, truncate4K Telegram formatting.
+Status: Phase 11 Plan 02 complete. PROD-01 + PROD-02 fulfilled. queryAreaSignal and queryDistress ready for Phase 12 plugin tools.
+Last activity: 2026-03-16 — Plan 11-02 complete. 2/2 tasks done (all auto). Ready for Plan 11-03 (additional intelligence products).
 
 ## Resume Instructions
 
@@ -170,6 +170,8 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 - [Phase 11-01]: COALESCE(downweight_factor, 1.0) in composite LEFT JOIN ensures backward compatibility before validation has run
 - [Phase 11-01]: Signals with < 12 obs are skipped (validated=1, factor=1.0) — insufficient history makes out-of-sample testing meaningless, not penalized
 - [Phase 11-01]: SQLite multi-column IN workaround — used string concatenation key (a||'|'||b||'|'||c) since SQLite lacks tuple/row constructor IN syntax
+- [Phase 11]: PROD-02 alert threshold >= 0.6 at area level ONLY — no city-wide threshold; tanh(weighted_avg/2) distress scaling
+- [Phase 11]: Granger weight 1/pvalue for significant signals, equal weight 1.0 otherwise — same pattern for PROD-02 and future products
 
 ## Blockers
 
@@ -185,9 +187,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 11-01-PLAN.md — validation_results table, analyze_validation.py, composite downweighting, format.ts. QUAL-01 + QUAL-03 fulfilled.
-Resume file: .planning/phases/11-intelligence-products/11-01-SUMMARY.md
-Next: Phase 11 Plan 02 — Intelligence product implementations (PROD-01..08).
+Stopped at: Completed 11-02-PLAN.md — PROD-01 (queryAreaSignal), PROD-02 (queryDistress). PROD-01 + PROD-02 fulfilled.
+Resume file: .planning/phases/11-intelligence-products/11-02-SUMMARY.md
+Next: Phase 11 Plan 03 — Additional intelligence products (PROD-03..08).
 Key context: Phase 11 Plan 01 complete. Pipeline now runs 7 steps (added validation step 2.5 between granger and composite). validation_results table created (Table 11). analyze_validation.py does chronological 70/30 split, writes downweight_factor to DB. analyze_composite.py LEFT JOINs validation_results. 28 normalizers audited — only ffill is normalize.py:38 with limit=1 (QUAL-03 pass). format.ts in src/products/ has 5 shared Telegram utilities.
 User action needed: Register for Dubai Pulse API credentials (enables DLD, Ejari, Building Permits, DEWA — 4 of 7 Tier A collectors). Store Reddit API credentials in HSM for collect_sentiment.py. Set up residential proxy service for Google Maps foot traffic (NINJA_PROXY_URL).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
