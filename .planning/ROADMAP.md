@@ -245,8 +245,8 @@ Plans:
 | 13. Normalizer Fixes | v1.4 | 4/4 | Complete | 2026-03-17 |
 | 14. Historical Backfill | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
-| 16. Pipeline Automation | v1.4 | 2/2 | Complete (awaiting checkpoint) | 2026-03-17 |
+| 16. Pipeline Automation | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 17. End-to-End Verification | v1.4 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 16-02 execution (pipeline verified end-to-end)*
+*Roadmap updated: 2026-03-17 after Phase 16-02 checkpoint approved (pipeline automation complete, AUTO-01/02/03 verified)*

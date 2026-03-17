@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: UAE RE Intelligence Activation
 status: in_progress
-last_updated: "2026-03-17T11:35:00Z"
+last_updated: "2026-03-17T12:00:00Z"
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 6
   completed_plans: 8
 ---
@@ -15,9 +15,9 @@ progress:
 
 ## Current Position
 
-Phase: Phase 16 in progress (Plan 02 of 3 complete, awaiting checkpoint approval). Phase 15 blocked on user registration.
-Status: Phase 16-02 complete (awaiting human-verify). Verified full pipeline: collection auto-normalizes (linkedin=+8, bayt=+17, indeed=+4 records), analysis runs via systemd (7 steps, 41s), all 4 timers active. Fixed analyze.log permissions.
-Last activity: 2026-03-17 — Plan 16-02 executed: End-to-end pipeline verification. Collection->normalization chain works for 3 sources. Analysis pipeline runs via systemd service with exit 0.
+Phase: Phase 16 COMPLETE. Phase 15 blocked on user registration. Phase 17 next.
+Status: Phase 16 complete (2/2 plans). All 3 AUTO requirements verified: collection auto-normalizes (AUTO-01), analysis runs via systemd timer (AUTO-02), all collection timers active (AUTO-03). Checkpoint approved.
+Last activity: 2026-03-17 — Phase 16 complete. Pipeline automation verified end-to-end. Next: Phase 17 (End-to-End Verification).
 
 ### v1.4 Phase Status
 | Phase | Name | Requirements | Status |
@@ -25,7 +25,7 @@ Last activity: 2026-03-17 — Plan 16-02 executed: End-to-end pipeline verificat
 | 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | Complete (4/4 plans) |
 | 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | Complete (2/2 plans) |
 | 15 | Dubai Pulse Integration | DATA-01, DATA-02, DATA-03, DATA-04 | Not started (blocked on user registration) |
-| 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | In progress (2/3 plans, awaiting checkpoint) |
+| 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | Complete (2/2 plans) |
 | 17 | End-to-End Verification | VERIF-01, VERIF-02, VERIF-03 | Not started |
 
 ### Scraper Tuning Progress (outside GSD phases)
@@ -99,7 +99,7 @@ This work fills the gap between "missions written" (Phases 7.1-9) and "missions 
 See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** No credential or sensitive data ever reaches an LLM provider
-**Current focus:** v1.4 UAE RE Intelligence Activation — Phase 13 (Normalizer Fixes) next
+**Current focus:** v1.4 UAE RE Intelligence Activation — Phase 17 (End-to-End Verification) next
 
 ## v1.4 Phase Summary
 
@@ -108,7 +108,7 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 | 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | Complete (4/4 plans) |
 | 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | Complete (2/2 plans) |
 | 15 | Dubai Pulse Integration | DATA-01, DATA-02, DATA-03, DATA-04 | Not started |
-| 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | In progress (2/3 plans, awaiting checkpoint) |
+| 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | Complete (2/2 plans) |
 | 17 | End-to-End Verification | VERIF-01, VERIF-02, VERIF-03 | Not started |
 
 **Total: 17 requirements across 5 phases**
@@ -269,11 +269,11 @@ Phase 15 (Dubai Pulse) requires user to register at dubaidata.ae before DATA-01 
 ## Session Continuity
 
 Last session: 2026-03-17
-Stopped at: Completed 16-02-PLAN.md Tasks 1-2 (pipeline verification). Awaiting human-verify checkpoint (Task 3).
+Stopped at: Phase 16 complete. Checkpoint approved. Phase 17 (End-to-End Verification) next.
 Resume file: N/A
-Next: Plan 16-02 Task 3 checkpoint approval, then Plan 16-03. Phase 15 still blocked on user registration.
-Key context: Pipeline verified end-to-end. Collection auto-normalizes for 3 job sources. Analysis runs via systemd (7 steps, exit 0). All 4 timers active. PropertyFinder poll timeout is pre-existing config issue (maxWaitMs too low for 20-area scrape).
-User action needed: 1) Approve 16-02 checkpoint. 2) Register for Dubai Pulse API credentials at dubaidata.ae (Phase 15).
+Next: Phase 17 (End-to-End Verification) — verify intelligence tools return real data via Telegram. Phase 15 still blocked on user registration.
+Key context: Phase 16 complete. Pipeline fully automated: collection auto-normalizes, analysis runs on 25th via systemd, all timers active. 11 sources in normalized_monthly, analysis pipeline runs all 7 steps successfully.
+User action needed: Register for Dubai Pulse API credentials at dubaidata.ae (required for Phase 15).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
 | GulfTalent HSM-authenticated session | Credentials in HSM enable authenticated browser session for higher data quality (explicit seniority levels, better salary disclosure rates). Worth credential management overhead. |
