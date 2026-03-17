@@ -151,7 +151,7 @@
 Normalize captured data, backfill history, register Dubai Pulse, automate the full pipeline, and verify the system produces real intelligence answers via Telegram.
 
 - [x] **Phase 13: Normalizer Fixes** - All captured raw data correctly transformed into normalized_monthly rows ✅ 2026-03-17
-- [ ] **Phase 14: Historical Backfill** - 3+ years of time-series depth unlocked for statistical analysis
+- [x] **Phase 14: Historical Backfill** - 3+ years of time-series depth unlocked for statistical analysis ✅ 2026-03-17
 - [ ] **Phase 15: Dubai Pulse Integration** - DLD/Ejari/Permits flowing from official API (requires user registration)
 - [ ] **Phase 16: Pipeline Automation** - Full scrape→ingest→normalize→analyze chain runs on schedule without manual intervention
 - [ ] **Phase 17: End-to-End Verification** - At least 3 intelligence products return real data via Telegram
@@ -189,7 +189,7 @@ Plans:
 **Plans:** 2 plans
 Plans:
 - [x] 01-PLAN.md — Backfill DSC + MOHRE + DP World + DXB (standalone Python scripts parsing existing raw data + press releases) ✅ 2026-03-17
-- [ ] 02-PLAN.md — Backfill CBUAE (cumulative YTD de-accumulation from Statistical Bulletin PDF) + final verification
+- [x] 02-PLAN.md — Backfill CBUAE (cumulative YTD de-accumulation from Statistical Bulletin PDF) + final verification ✅ 2026-03-17
 
 ### Phase 15: Dubai Pulse Integration
 **Goal**: Official DLD/Ejari/Permits data flows from Dubai Pulse API into the collection pipeline
@@ -240,10 +240,10 @@ Plans:
 | 11. Intelligence Products | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 12. Plugin Tools & Hardening | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 13. Normalizer Fixes | v1.4 | 4/4 | Complete | 2026-03-17 |
-| 14. Historical Backfill | v1.4 | 1/2 | In progress | - |
+| 14. Historical Backfill | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 0/TBD | Not started | - |
 | 17. End-to-End Verification | v1.4 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 14 Plan 01 execution (DSC + MOHRE + DP World + DXB backfilled)*
+*Roadmap updated: 2026-03-17 after Phase 14 Plan 02 execution (CBUAE backfilled, all 5 sources verified, Phase 14 complete)*

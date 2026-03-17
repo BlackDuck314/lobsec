@@ -3,27 +3,27 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: UAE RE Intelligence Activation
 status: in_progress
-last_updated: "2026-03-17T08:35:40Z"
+last_updated: "2026-03-17T08:42:18Z"
 progress:
   total_phases: 5
-  completed_phases: 1
-  total_plans: 5
-  completed_plans: 5
+  completed_phases: 2
+  total_plans: 6
+  completed_plans: 6
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: Phase 14 in progress — Plan 01 complete (DSC + MOHRE + DP World + DXB backfill). Plan 02 (CBUAE) next.
-Status: Phase 14 Plan 01 complete. 42 new rows across 4 sources (DSC 5, MOHRE 21, DP World 5, DXB 11). Total 62 rows for these 4 sources.
-Last activity: 2026-03-17 — Plan 01 executed: Historical backfill for DSC, MOHRE, DP World, DXB. 5 scripts created in packages/uae-re/python/uae_re/backfill/.
+Phase: Phase 14 COMPLETE. All 5 backfill sources verified. Phase 15 next (blocked on user registration).
+Status: Phase 14 complete. 90 new rows across 5 sources. 116 total backfill rows, 394 total in normalized_monthly across 11 sources.
+Last activity: 2026-03-17 — Plan 02 executed: CBUAE backfill (48 rows, cumulative YTD de-accumulation) + final verification of all 5 sources.
 
 ### v1.4 Phase Status
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
 | 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | Complete (4/4 plans) |
-| 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | In progress (1/2 plans) |
+| 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | Complete (2/2 plans) |
 | 15 | Dubai Pulse Integration | DATA-01, DATA-02, DATA-03, DATA-04 | Not started (blocked on user registration) |
 | 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | Not started |
 | 17 | End-to-End Verification | VERIF-01, VERIF-02, VERIF-03 | Not started |
@@ -106,7 +106,7 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 | Phase | Name | Requirements | Status |
 |-------|------|-------------|--------|
 | 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | Complete (4/4 plans) |
-| 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | In progress (1/2 plans) |
+| 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | Complete (2/2 plans) |
 | 15 | Dubai Pulse Integration | DATA-01, DATA-02, DATA-03, DATA-04 | Not started |
 | 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | Not started |
 | 17 | End-to-End Verification | VERIF-01, VERIF-02, VERIF-03 | Not started |
@@ -251,6 +251,10 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 - [Phase 13-02]: Only extract Emiratisation chart (chart 8) — other Chart.js configs have no identifying label text, indices may change between scrapes
 - [Phase 13-02]: De-duplicate stat cards by metric label — dashboard HTML repeats same cards across tab sections (12 cards but only 6 unique metrics)
 - [Phase 13-02]: Removed pandas dependency for ref_year fallback — int(collected_at[:4]) sufficient, avoids heavy import for trivial operation
+- [Phase 14-02]: Hardcoded verified values over PDF parsing for CBUAE Table 48 — complex multi-line headers and merged cells make pdfplumber fragile; research-verified values used with PDF sanity check
+- [Phase 14-02]: CBUAE annual measurement dates use YYYY-01-01 convention (consistent with other annual sources)
+- [Phase 14-02]: CBUAE quarterly measurement dates use start-of-quarter (Q1=Jan 1, Q2=Apr 1, Q3=Jul 1, Q4=Oct 1)
+- [Phase 14-02]: DXB BACK-02 borderline: strict 2022-2024 filter yields 11 rows (not 12), but 17 total rows spanning 2022-2025 satisfies requirement intent per plan note
 
 ## Blockers
 
@@ -260,10 +264,10 @@ Phase 15 (Dubai Pulse) requires user to register at dubaidata.ae before DATA-01 
 ## Session Continuity
 
 Last session: 2026-03-17
-Stopped at: Completed 14-01-PLAN.md (DSC + MOHRE + DP World + DXB backfill)
-Resume file: .planning/phases/14-historical-backfill/02-PLAN.md
-Next: Execute Phase 14 Plan 02 (CBUAE quarterly banking data backfill)
-Key context: 4 sources backfilled with 42 new rows. fcsa-demographics=6, mohre-permits=32, dpworld=7, dxb-passengers=17 rows. CBUAE still needs backfill (Plan 02).
+Stopped at: Completed 14-02-PLAN.md (CBUAE backfill + final verification). Phase 14 COMPLETE.
+Resume file: N/A (Phase 15 blocked on user registration)
+Next: Phase 15 (Dubai Pulse) requires user to register at dubaidata.ae. Phase 16 (Pipeline Automation) can proceed independently.
+Key context: All 5 backfill sources verified. 394 total rows in normalized_monthly across 11 sources. cbuae=54, dpworld=7, dxb-passengers=17, fcsa-demographics=6, mohre-permits=32 (116 backfill source rows).
 User action needed: Register for Dubai Pulse API credentials at dubaidata.ae (required for Phase 15).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
