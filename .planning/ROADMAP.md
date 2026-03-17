@@ -153,7 +153,7 @@ Normalize captured data, backfill history, register Dubai Pulse, automate the fu
 - [x] **Phase 13: Normalizer Fixes** - All captured raw data correctly transformed into normalized_monthly rows ✅ 2026-03-17
 - [x] **Phase 14: Historical Backfill** - 3+ years of time-series depth unlocked for statistical analysis ✅ 2026-03-17
 - [ ] **Phase 15: Dubai Pulse Integration** - DLD/Ejari/Permits flowing from official API (requires user registration)
-- [ ] **Phase 16: Pipeline Automation** - Full scrape→ingest→normalize→analyze chain runs on schedule without manual intervention
+- [x] **Phase 16: Pipeline Automation** - Full scrape→ingest→normalize→analyze chain runs on schedule without manual intervention ✅ 2026-03-17
 - [ ] **Phase 17: End-to-End Verification** - At least 3 intelligence products return real data via Telegram
 
 </details>
@@ -223,7 +223,10 @@ Plans:
   1. At least 3 of the 13 plugin tools (e.g. uae_area_signal, uae_rental_intel, uae_macro_health) return non-null intelligence data when queried via Telegram — not placeholder or "no data" responses
   2. uae_macro_health returns a traffic-light breakdown covering at least 2 of the 6 signal groups with green/amber/red status based on real normalized data
   3. uae_collection_status shows all active sources with a last_successful_run timestamp within the past 7 days
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 17-01-PLAN.md — Fix macro health source/metric mapping + fix raw_data tool query
+- [ ] 17-02-PLAN.md — Verify all 3 VERIF requirements via Telegram (human-verify checkpoint)
 
 ## Progress
 
@@ -246,7 +249,7 @@ Plans:
 | 14. Historical Backfill | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 2/2 | Complete | 2026-03-17 |
-| 17. End-to-End Verification | v1.4 | 0/TBD | Not started | - |
+| 17. End-to-End Verification | v1.4 | 0/2 | Planned | - |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 16-02 checkpoint approved (pipeline automation complete, AUTO-01/02/03 verified)*
+*Roadmap updated: 2026-03-17 after Phase 17 planning (2 plans created for end-to-end verification)*
