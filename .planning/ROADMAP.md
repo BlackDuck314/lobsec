@@ -212,7 +212,7 @@ Plans:
   3. All three collection timer schedules (weekly Mon 02:00 UTC, monthly 1st 02:00 UTC, quarterly 15th Jan/Apr/Jul/Oct 05:00 UTC) are confirmed active via systemctl list-timers and have a successful last-run entry
 **Plans:** 2 plans
 Plans:
-- [ ] 16-01-PLAN.md — Fix 5 failing normalizers (jobs dict format, listings scrapedAt) + deploy to production
+- [x] 16-01-PLAN.md — Fix 5 failing normalizers (jobs dict format, listings scrapedAt) + deploy to production ✅ 2026-03-17
 - [ ] 16-02-PLAN.md — Verify full pipeline: trigger collection, confirm normalization, trigger analysis, confirm timers
 
 ### Phase 17: End-to-End Verification
@@ -245,8 +245,8 @@ Plans:
 | 13. Normalizer Fixes | v1.4 | 4/4 | Complete | 2026-03-17 |
 | 14. Historical Backfill | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
-| 16. Pipeline Automation | v1.4 | 0/2 | Not started | - |
+| 16. Pipeline Automation | v1.4 | 1/2 | In progress | - |
 | 17. End-to-End Verification | v1.4 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 16 planning (2 plans created)*
+*Roadmap updated: 2026-03-17 after Phase 16-01 execution (normalizer fixes deployed)*
