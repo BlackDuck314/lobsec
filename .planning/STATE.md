@@ -15,9 +15,9 @@ progress:
 
 ## Current Position
 
-Phase: POST v1.3 — Scraper Tuning (unplanned maintenance)
-Status: 5 sources producing real data. Pagination engine added. Continuing tuning.
-Last activity: 2026-03-16 — DP World RSS + Indeed + DEWA mission fixes. 9 sources → 287 metrics → SQLite.
+Phase: POST v1.3 — Scraper Tuning + Pipeline Verification
+Status: 9 sources producing 286 metrics. Analysis pipeline verified (smoke test passed). Needs 12+ months of data accumulation for statistical analysis.
+Last activity: 2026-03-17 — Analysis pipeline smoke test passed. 3 blocked sources recovered (DXB, MOHRE, DSC). Now 11 sources. SQLite WAL blocker RESOLVED.
 
 ### Scraper Tuning Progress (outside GSD phases)
 This work fills the gap between "missions written" (Phases 7.1-9) and "missions producing data".
@@ -38,16 +38,21 @@ This work fills the gap between "missions written" (Phases 7.1-9) and "missions 
 - DP World / Jebel Ali: RSS feed from __NEXT_DATA__ → 15.5M TEU + 5.4M breakbulk tonnes (2024)
 - Indeed Jobs: 16 cards (domcontentloaded fix, page 2 blocked by anti-bot)
 - Ingest pipeline: 9 sources → 287 metrics → SQLite (was 7→280)
+- DXB Airport: HTML fact file scrape working (95.2M pax 2025, top markets, quarterly data)
+- MOHRE Observatory: Dashboard scrape working (12.4% workforce growth, 176K nationals in private sector)
+- DSC Demographics: PDF download working (4,248,200 population, 12-page 2024 bulletin)
 - DEWA: Found new stats page (/en/about-us/strategy-excellence/annual-statistics) with annual PDFs
 - pdfplumber installed in scraper-venv
 
+**RECOVERED (2026-03-17) — URLs found, missions updated:**
+- DXB Airport: media.dubaiairports.ae/fact-files (HTML text, 95.2M pax data captured)
+- MOHRE Permits: observatory.mohre.gov.ae (dashboard, workforce growth data captured)
+- DSC Demographics: dsc.gov.ae/Publication/ (direct PDF, 12-page 2024 bulletin downloaded)
+
 **BLOCKED (confirmed via inspection):**
 - RTA Statistics: WAF "Request Rejected" (headless detected)
-- DTCM Tourism: 403 Access Denied (CDN block)
-- DXB Airport: 404 (page moved/removed)
-- DEWA Connections: 404 (site restructured, all URLs return "Not Found")
-- MOHRE Permits: 404 (statistical-report.aspx moved)
-- DSC Demographics: 404 (page not found)
+- DTCM/DET Tourism: 403 Access Denied (dubaidet.gov.ae WAF blocks server IP)
+- DEWA Connections: 403 (dewa.gov.ae WAF blocks all pages from server)
 - GulfTalent: 403 Access Denied
 - Bayut: CAPTCHA ("Please verify your identity" — anti-bot detection)
 - Indeed: Timeout (networkidle never fires)
@@ -58,28 +63,24 @@ This work fills the gap between "missions written" (Phases 7.1-9) and "missions 
 
 **TODO (next):**
 - DEWA PDF download via browser session (not httpx — Akamai WAF blocks)
-- SQLite WAL blocker investigation (blocks plugin integration)
+- Continue weekly/monthly scraper runs to accumulate time-series data (need 12+ obs per metric)
 - Bayut requires residential proxy to bypass CAPTCHA
 - Indeed pagination blocked by anti-bot (16 cards only)
 - InsideAirbnb: Dubai not available (0 UAE listings)
+- Fix more blocked sources (RTA, DTCM, DXB, MOHRE, DSC) or find alternative data paths
 
 ### v1.3 Phase Status (actual, not aspirational)
 | Phase | Status | Notes |
 |-------|--------|-------|
 | 6 | ✅ Complete | Foundation infrastructure |
-| 7 | ⏸ Blocked | Plan 4 blocked by SQLite WAL pragma failure |
+| 7 | ✅ Complete | WAL blocker resolved, collectors verified |
 | 7.1 | ✅ Complete | Ninja Scraper engine |
 | 8 | ✅ Code complete | Missions written, selectors were placeholders |
 | 9 | ✅ Code complete | Missions written, selectors were placeholders |
-| 10 | ✅ Code complete | Analysis pipeline, needs data to run |
-| 11 | ✅ Code complete | Intelligence products, needs data to run |
+| 10 | ✅ Verified | Analysis pipeline smoke tested — all 7 steps pass, needs 12+ months data |
+| 11 | ✅ Verified | Intelligence products wired, 13 tools registered, needs analysis data |
 | 12 | ✅ Complete | Plugin tools + Telegram + hardening |
 | POST | 🔧 In progress | Scraper tuning — making missions actually work |
-
-### Key blocker: SQLite WAL pragma failure (Phase 7 Plan 4)
-- better-sqlite3 WAL pragma fails during OpenClaw plugin registration
-- Blocks: collector verification, end-to-end pipeline, Phases 10-11 actual execution
-- Carried since 2026-03-11
 
 ## Resume Instructions
 
@@ -108,13 +109,13 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 | Phase | Name | Requirements | Status |
 |-------|------|-------------|--------|
 | 6 | Foundation & Infrastructure | 10 (INFRA-01..07, SEC-01..02, SCHED-01) | ✅ Complete |
-| 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | Paused (3/4 plans, blocked) |
+| 7 | MVP Data Collection (Tier A + DEWA) | 11 (COLL-01..05, COLL-15, NORM-01..05) | ✅ Complete (WAL resolved) |
 | 7.1 | Ninja Scraper | 11 (same as Phase 7) | ✅ Complete (4/4 plans) |
 | 8 | Tier B Collection | 12 (COLL-06..13, SCHED-02..04, SCHED-07) | In Progress (3/4 plans, 10 reqs) |
 | 9 | Tier C Collection | 15 (COLL-14, COLL-16..28, SCHED-05) | ✅ Complete (4/4 plans) |
-| 10 | Statistical Analysis Pipeline | 11 (STAT-01..08, SCHED-06, SEC-06..07) | Pending |
-| 11 | Intelligence Products | 10 (PROD-01..08, QUAL-01, QUAL-03) | Pending |
-| 12 | Plugin Tools & Hardening | 19 (TOOL-01..13, QUAL-02,04,05, SEC-03..05) | Pending |
+| 10 | Statistical Analysis Pipeline | 11 (STAT-01..08, SCHED-06, SEC-06..07) | ✅ Verified (smoke test passed) |
+| 11 | Intelligence Products | 10 (PROD-01..08, QUAL-01, QUAL-03) | ✅ Verified (13 tools registered) |
+| 12 | Plugin Tools & Hardening | 19 (TOOL-01..13, QUAL-02,04,05, SEC-03..05) | ✅ Complete |
 
 **Total: 88 requirements across 7 phases**
 
@@ -249,22 +250,15 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 
 ## Blockers
 
-**CRITICAL: UAE RE Plugin Load Failure (Plan 07-04 Task 2)**
-- better-sqlite3 WAL pragma fails during OpenClaw plugin registration
-- Error: "SqliteError: unable to open database file" at `db.pragma("journal_mode = WAL")`
-- Database opens successfully, but WAL mode setup fails
-- Same code works when executed directly as lobsec user
-- Issue specific to OpenClaw plugin loading context
-- Blocking: Cannot verify 7 collectors, cannot test end-to-end collection, cannot proceed to Task 3 checkpoint
-- Investigation needed: OpenClaw plugin loader filesystem permissions/context
+None active. Previous SQLite WAL blocker resolved (2026-03-17).
 
 ## Session Continuity
 
-Last session: 2026-03-16
-Stopped at: Scraper tuning — 9 sources producing 287 metrics. DP World RSS, Indeed, DEWA mission fixes. Full ingest pipeline verified.
+Last session: 2026-03-17
+Stopped at: Analysis pipeline smoke test passed. All 7 steps verified. Plugin loads 13 tools, database operational with WAL mode.
 Resume file: N/A (post-phase tuning work)
-Next: DEWA browser PDF download, SQLite WAL blocker fix, more source tuning.
-Key context: 9 sources ingested (PF, ADREC, Bayt, LinkedIn, Indeed, KHDA, CBUAE×2, DP World). pdfplumber in scraper-venv. Bayut CAPTCHA blocked. Indeed anti-bot blocks page 2+. DEWA PDFs behind Akamai WAF.
+Next: Accumulate data over time (12+ months needed for statistical analysis). DEWA browser PDF download. More source tuning.
+Key context: 8 sources in normalized_monthly (PF 206, KHDA 37, ADREC 18, Bayt 6, CBUAE 6, LinkedIn 6, Indeed 5, DP World 2 = 286 metrics total). Each metric has exactly 1 observation — statistical analysis mathematically impossible until 12+ obs accumulated.
 User action needed: Register for Dubai Pulse API credentials. Set up residential proxy for Bayut/Google Maps.
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
