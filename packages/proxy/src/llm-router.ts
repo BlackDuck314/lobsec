@@ -73,13 +73,13 @@ const PROVIDERS: ProviderConfig[] = [
   {
     name: "ollama",
     credentialLabel: "ollama-api-key",
-    baseUrl: process.env["OLLAMA_BACKEND_URL"] ?? "http://<SOVEREIGN_GPU_HOST>:11435",
+    baseUrl: process.env["OLLAMA_BACKEND_URL"] ?? "http://localhost:11434",
     authPrefix: "Bearer",
   },
   {
     name: "jetson",
     credentialLabel: "ollama-api-key",
-    baseUrl: "https://<JETSON_HOSTNAME>",
+    baseUrl: process.env["JETSON_BACKEND_URL"] ?? "https://localhost:11434",
     authPrefix: "Bearer",
     extraHeaders: (): Record<string, string> => {
       const id = process.env["JETSON_CF_CLIENT_ID"];

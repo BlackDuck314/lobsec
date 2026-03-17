@@ -303,7 +303,7 @@ export default {
     api.registerTool({
       name: 'examy_test',
       label: 'Examy Test',
-      description: 'Run automated QA test of dev.examy.app with LLM-driven student personas (Grades 4, 8, 11). Includes visual regression check against baseline screenshots. Set update_baselines to "true" to refresh baselines after intentional design changes. Test runs asynchronously — returns immediately with result file path.',
+      description: 'Run automated QA test with LLM-driven student personas (Grades 4, 8, 11). Includes visual regression check against baseline screenshots. Set update_baselines to "true" to refresh baselines after intentional design changes. Test runs asynchronously — returns immediately with result file path.',
       parameters: Type.Object({
         persona: Type.Optional(Type.String({
           description: 'Specific persona to test: "grade4", "grade8", "grade11". Omit to run all three.',

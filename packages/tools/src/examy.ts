@@ -1,8 +1,8 @@
-// ── Examy QA Test Automation ──────────────────────────────────────────────────
-// Automated login and study session testing of dev.examy.app using Playwright.
-// Three student personas (Grades 4, 8, 11) driven by Claude Haiku interact with
-// Examy's AI tutor as real students. Captures JS exceptions, network errors,
-// screenshots on failure, conversation transcripts, and structured JSON results.
+// ── QA Test Automation ───────────────────────────────────────────────────────
+// Automated login and session testing using Playwright.
+// Student personas driven by Claude Haiku interact with an AI tutor.
+// Captures JS exceptions, network errors, screenshots on failure,
+// conversation transcripts, and structured JSON results.
 
 import { chromium, type Page, type Browser } from "playwright";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from "node:fs";
@@ -76,9 +76,9 @@ export interface TestResult {
 
 const DEFAULT_PERSONA_CONFIG_PATH = "/opt/lobsec/config/examy-personas.json";
 const SCREENSHOT_DIR = "/opt/lobsec/logs/examy";
-const TARGET_URL = "https://dev.examy.app";
+const TARGET_URL = process.env["EXAMY_TARGET_URL"] ?? "https://localhost:3000";
 const TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
-const EXAMY_REPO = "kromo77/examy.app";
+const EXAMY_REPO = process.env["EXAMY_GITHUB_REPO"] ?? "";
 const RECIPIENTS_PATH = "/opt/lobsec/config/examy-report-recipients.json";
 
 const IGNORE_PATTERNS = [

@@ -1,7 +1,7 @@
 # lobsec -- Project Status & Decision Log
 
 > ADR decisions, open questions, project state.
-> Updated 2026-02-24.
+> Updated 2026-03-17.
 >
 > **Start here instead:** [`docs/DESIGN.md`](DESIGN.md) is the master design document.
 
@@ -167,9 +167,10 @@ lobsec does NOT fork OpenClaw. It wraps it via:
    - PII tokenization for AMBER data (future)
    - Budget tracking and rate limit detection
 
-**Status:** DEPLOYED. All three components running in production:
+**Status:** DEPLOYED. All components running in production:
 - **lobsec-plugin**: 9 security hooks active (tool gate, credential redaction, sovereign routing, config drift, audit)
-- **lobsec-proxy**: HTTPS on 127.0.0.1:18790, credential injection for Anthropic, egress firewall
+- **lobsec-proxy**: HTTPS on loopback, credential injection for Anthropic + Ollama, egress firewall
+- **lobsec-tools**: Plugin tools (weather, email, calendar, contacts, github)
 - **lobsec-cli**: Replaced by systemd service units + HSM extraction scripts (no standalone CLI needed)
 
 ---
@@ -224,7 +225,7 @@ lobsec does NOT fork OpenClaw. It wraps it via:
 
 **Status:** DEPLOYED (fscrypt + HSM + mTLS). LUKS deferred.
 - fscrypt: 4 directories encrypted (AES-256-XTS, policy_version 2)
-- HSM: SoftHSM2 with 8 data objects + RSA-2048 signing key
+- HSM: SoftHSM2 with data objects + RSA-2048 signing key
 - mTLS: TLS 1.3 on gateway (wss://) and proxy (https://), self-signed P-256/ECDSA
 - LUKS assessment (2026-02-25): Root partition (`/dev/sda3`) is unencrypted LVM → ext4.
   LUKS cannot be retrofitted in-place on a running root partition (requires reinstall or
