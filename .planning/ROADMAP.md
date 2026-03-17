@@ -186,7 +186,10 @@ Plans:
   3. MOHRE normalized_monthly contains at least 16 monthly workforce observations spanning 2021-2025
   4. CBUAE normalized_monthly contains at least 4 quarterly remittance/transfer rows covering consecutive quarters
   5. DP World normalized_monthly contains at least 3 annual throughput rows covering 2022, 2023, 2024
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 01-PLAN.md — Backfill DSC + MOHRE + DP World + DXB (standalone Python scripts parsing existing raw data + press releases)
+- [ ] 02-PLAN.md — Backfill CBUAE (cumulative YTD de-accumulation from Statistical Bulletin PDF) + final verification
 
 ### Phase 15: Dubai Pulse Integration
 **Goal**: Official DLD/Ejari/Permits data flows from Dubai Pulse API into the collection pipeline
@@ -230,17 +233,17 @@ Plans:
 | 5. Scheduling & Hardening | v1.2 | 2/2 | Complete | 2026-03-05 |
 | 6. Foundation & Infrastructure | v1.3 | 3/3 | Complete | 2026-03-11 |
 | 7. MVP Data Collection | v1.3 | 1/4 | Paused | - |
-| 7.1 Ninja Scraper | v1.3 | 4/4 | Complete ✅ VERIFIED | 2026-03-12 |
-| 8. Tier B Collection | v1.3 | 4/4 | Complete ✅ | 2026-03-13 |
+| 7.1 Ninja Scraper | v1.3 | 4/4 | Complete VERIFIED | 2026-03-12 |
+| 8. Tier B Collection | v1.3 | 4/4 | Complete | 2026-03-13 |
 | 9. Tier C Collection | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 10. Statistical Analysis | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 11. Intelligence Products | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 12. Plugin Tools & Hardening | v1.3 | 4/4 | Complete | 2026-03-16 |
-| 13. Normalizer Fixes | v1.4 | 4/4 | Complete ✅ | 2026-03-17 |
-| 14. Historical Backfill | v1.4 | 0/TBD | Not started | - |
+| 13. Normalizer Fixes | v1.4 | 4/4 | Complete | 2026-03-17 |
+| 14. Historical Backfill | v1.4 | 0/2 | Planned | - |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 0/TBD | Not started | - |
 | 17. End-to-End Verification | v1.4 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 13 completion (4/4 plans complete, all normalizers deployed)*
+*Roadmap updated: 2026-03-17 after Phase 14 planning (2 plans created)*
