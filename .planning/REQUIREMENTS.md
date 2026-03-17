@@ -11,7 +11,7 @@ Requirements for v1.4 UAE RE Intelligence Activation. Make the intelligence syst
 
 - [x] **NORM-06**: DXB normalizer handles HTML fact file JSON (extracts passenger counts, top markets, quarterly data)
 - [ ] **NORM-07**: MOHRE normalizer handles observatory dashboard JSON (workforce growth, establishment growth, Emiratisation counts)
-- [ ] **NORM-08**: DSC normalizer extracts population data from PDF via pdfplumber (total population, expat/national split, age groups, growth rate)
+- [x] **NORM-08**: DSC normalizer extracts population data from PDF via pdfplumber (total population, expat/national split, age groups, growth rate)
 - [ ] **NORM-09**: All 8 existing sources (PropertyFinder, ADREC, Bayt, LinkedIn, Indeed, KHDA, CBUAE, DP World) verified producing normalized_monthly rows after collection
 
 ### Backfill
@@ -75,7 +75,7 @@ Categories: INFRA (7), COLL (28), NORM (5), STAT (8), PROD (8), TOOL (13), SCHED
 |-------------|-------|--------|
 | NORM-06 | Phase 13 | Complete |
 | NORM-07 | Phase 13 | Pending |
-| NORM-08 | Phase 13 | Pending |
+| NORM-08 | Phase 13 | Complete |
 | NORM-09 | Phase 13 | Pending |
 | BACK-01 | Phase 14 | Pending |
 | BACK-02 | Phase 14 | Pending |

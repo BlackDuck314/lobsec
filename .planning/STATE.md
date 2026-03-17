@@ -22,7 +22,7 @@ Last activity: 2026-03-17 — Plan 03 executed: DSC demographics normalizer rewr
 ### v1.4 Phase Status
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
-| 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | In progress (1/4 plans complete) |
+| 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | In progress (2/4 plans complete) |
 | 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | Not started |
 | 15 | Dubai Pulse Integration | DATA-01, DATA-02, DATA-03, DATA-04 | Not started (blocked on user registration) |
 | 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | Not started |
@@ -106,7 +106,7 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 
 | Phase | Name | Requirements | Status |
 |-------|------|-------------|--------|
-| 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | In progress (1/4 plans complete) |
+| 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | In progress (2/4 plans complete) |
 | 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | Not started |
 | 15 | Dubai Pulse Integration | DATA-01, DATA-02, DATA-03, DATA-04 | Not started |
 | 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | Not started |
@@ -246,6 +246,8 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 - [Phase 12]: Task 2 human-verify checkpoint approved by user — Telegram end-to-end verified for 13 UAE RE plugin tools
 - [Phase 13-01]: DXB normalizer uses annual measurement_date (YYYY-01-01) — DXB fact file reports annual data, not monthly. Q4 uses Oct 1, busiest month uses Dec 1.
 - [Phase 13-01]: Sanity check threshold 10M for annual DXB passengers — DXB handles tens of millions per year, anything below 10M indicates wrong data extraction
+- [Phase 13-03]: 69.2% working age (25-54) is correct for Dubai's expat-heavy economy — higher than typical 56-60% estimate but accurate per PDF age group table
+- [Phase 13-03]: No expat/national metrics in 2024 Population Bulletin — omitted (not zeroed) from normalizer output
 
 ## Blockers
 
@@ -255,9 +257,9 @@ Phase 15 (Dubai Pulse) requires user to register at dubaidata.ae before DATA-01 
 ## Session Continuity
 
 Last session: 2026-03-17
-Stopped at: Completed 13-01-PLAN.md (DXB normalizer rewrite)
+Stopped at: Completed 13-03-PLAN.md (DSC demographics normalizer rewrite)
 Resume file: .planning/phases/13-normalizer-fixes/02-PLAN.md
-Next: Execute Plan 02 (MOHRE normalizer), then Plan 03 (DSC normalizer), then Plan 04 (verification)
+Next: Execute Plan 02 (MOHRE normalizer), then Plan 04 (verification)
 Key context: 8 sources in normalized_monthly (PF 206, KHDA 37, ADREC 18, Bayt 6, CBUAE 6, LinkedIn 6, Indeed 5, DP World 2 = 286 metrics total). Each metric has exactly 1 observation — statistical analysis mathematically impossible until 12+ obs accumulated.
 User action needed: Register for Dubai Pulse API credentials at dubaidata.ae (required for Phase 15).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |

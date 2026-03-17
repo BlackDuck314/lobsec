@@ -236,7 +236,7 @@ Plans:
 | 10. Statistical Analysis | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 11. Intelligence Products | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 12. Plugin Tools & Hardening | v1.3 | 4/4 | Complete | 2026-03-16 |
-| 13. Normalizer Fixes | v1.4 | 0/4 | Planned | - |
+| 13. Normalizer Fixes | v1.4 | 2/4 | In progress | - |
 | 14. Historical Backfill | v1.4 | 0/TBD | Not started | - |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 0/TBD | Not started | - |
