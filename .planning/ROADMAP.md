@@ -213,7 +213,7 @@ Plans:
 **Plans:** 2 plans
 Plans:
 - [x] 16-01-PLAN.md — Fix 5 failing normalizers (jobs dict format, listings scrapedAt) + deploy to production ✅ 2026-03-17
-- [ ] 16-02-PLAN.md — Verify full pipeline: trigger collection, confirm normalization, trigger analysis, confirm timers
+- [x] 16-02-PLAN.md — Verify full pipeline: trigger collection, confirm normalization, trigger analysis, confirm timers ✅ 2026-03-17
 
 ### Phase 17: End-to-End Verification
 **Goal**: The intelligence system produces real, data-backed answers to Telegram queries
@@ -245,8 +245,8 @@ Plans:
 | 13. Normalizer Fixes | v1.4 | 4/4 | Complete | 2026-03-17 |
 | 14. Historical Backfill | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
-| 16. Pipeline Automation | v1.4 | 1/2 | In progress | - |
+| 16. Pipeline Automation | v1.4 | 2/2 | Complete (awaiting checkpoint) | 2026-03-17 |
 | 17. End-to-End Verification | v1.4 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 16-01 execution (normalizer fixes deployed)*
+*Roadmap updated: 2026-03-17 after Phase 16-02 execution (pipeline verified end-to-end)*

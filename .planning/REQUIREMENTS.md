@@ -31,9 +31,9 @@ Requirements for v1.4 UAE RE Intelligence Activation. Make the intelligence syst
 
 ### Automation
 
-- [ ] **AUTO-01**: Scraper -> ingest -> normalize pipeline runs automatically after each collection
-- [ ] **AUTO-02**: Analysis pipeline (stationarity, Granger, composites, anomalies) runs monthly on 25th
-- [ ] **AUTO-03**: Collection timers verified operational: weekly, monthly, quarterly schedules active
+- [x] **AUTO-01**: Scraper -> ingest -> normalize pipeline runs automatically after each collection
+- [x] **AUTO-02**: Analysis pipeline (stationarity, Granger, composites, anomalies) runs monthly on 25th
+- [x] **AUTO-03**: Collection timers verified operational: weekly, monthly, quarterly schedules active
 
 ### Verification
 
@@ -86,9 +86,9 @@ Categories: INFRA (7), COLL (28), NORM (5), STAT (8), PROD (8), TOOL (13), SCHED
 | DATA-02 | Phase 15 | Pending |
 | DATA-03 | Phase 15 | Pending |
 | DATA-04 | Phase 15 | Pending |
-| AUTO-01 | Phase 16 | Pending |
-| AUTO-02 | Phase 16 | Pending |
-| AUTO-03 | Phase 16 | Pending |
+| AUTO-01 | Phase 16 | Complete |
+| AUTO-02 | Phase 16 | Complete |
+| AUTO-03 | Phase 16 | Complete |
 | VERIF-01 | Phase 17 | Pending |
 | VERIF-02 | Phase 17 | Pending |
 | VERIF-03 | Phase 17 | Pending |
@@ -100,4 +100,4 @@ Categories: INFRA (7), COLL (28), NORM (5), STAT (8), PROD (8), TOOL (13), SCHED
 
 ---
 *Requirements defined: 2026-03-17*
-*Last updated: 2026-03-17 after Phase 14 Plan 02 execution (BACK-04 complete, all backfill requirements met)*
+*Last updated: 2026-03-17 after Phase 16 Plan 02 execution (AUTO-01/02/03 verified, pipeline automation complete)*
