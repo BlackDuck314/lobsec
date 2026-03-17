@@ -171,9 +171,9 @@ Normalize captured data, backfill history, register Dubai Pulse, automate the fu
   4. All 8 existing sources (PropertyFinder, ADREC, Bayt, LinkedIn, Indeed, KHDA, CBUAE, DP World) have at least 1 row each in normalized_monthly after a triggered collection run
 **Plans:** 4 plans
 Plans:
-- [ ] 01-PLAN.md — Rewrite DXB normalizer for HTML fact file JSON (NORM-06)
-- [ ] 02-PLAN.md — Rewrite MOHRE normalizer for observatory dashboard JSON (NORM-07)
-- [ ] 03-PLAN.md — Rewrite DSC normalizer for PDF extraction via pdfplumber (NORM-08)
+- [x] 01-PLAN.md — Rewrite DXB normalizer for HTML fact file JSON (NORM-06)
+- [x] 02-PLAN.md — Rewrite MOHRE normalizer for observatory dashboard JSON (NORM-07)
+- [x] 03-PLAN.md — Rewrite DSC normalizer for PDF extraction via pdfplumber (NORM-08)
 - [ ] 04-PLAN.md — Verify all 8 sources + deploy normalizer fixes to production (NORM-09)
 
 ### Phase 14: Historical Backfill

@@ -8,21 +8,21 @@ progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: Phase 13 — Plans 01+03 complete, Plan 02 next
-Status: Phase 13 in progress. Plans 01 (DXB) and 03 (DSC demographics) complete.
-Last activity: 2026-03-17 — Plan 03 executed: DSC demographics normalizer rewritten for PDF extraction (3 metrics verified).
+Phase: Phase 13 — Plans 01+02+03 complete, Plan 04 next
+Status: Phase 13 in progress. Plans 01 (DXB), 02 (MOHRE), and 03 (DSC demographics) complete.
+Last activity: 2026-03-17 — Plan 02 executed: MOHRE normalizer rewritten for dashboard JSON (11 metrics verified: 6 stat cards + 5 yearly emiratisation).
 
 ### v1.4 Phase Status
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
-| 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | In progress (2/4 plans complete) |
+| 13 | Normalizer Fixes | NORM-06, NORM-07, NORM-08, NORM-09 | In progress (3/4 plans complete) |
 | 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | Not started |
 | 15 | Dubai Pulse Integration | DATA-01, DATA-02, DATA-03, DATA-04 | Not started (blocked on user registration) |
 | 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | Not started |
@@ -248,6 +248,10 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 - [Phase 13-01]: Sanity check threshold 10M for annual DXB passengers — DXB handles tens of millions per year, anything below 10M indicates wrong data extraction
 - [Phase 13-03]: 69.2% working age (25-54) is correct for Dubai's expat-heavy economy — higher than typical 56-60% estimate but accurate per PDF age group table
 - [Phase 13-03]: No expat/national metrics in 2024 Population Bulletin — omitted (not zeroed) from normalizer output
+- [Phase 13-02]: uae| prefix for MOHRE metrics — MOHRE is a federal ministry, data is UAE-level not Dubai-specific
+- [Phase 13-02]: Only extract Emiratisation chart (chart 8) — other Chart.js configs have no identifying label text, indices may change between scrapes
+- [Phase 13-02]: De-duplicate stat cards by metric label — dashboard HTML repeats same cards across tab sections (12 cards but only 6 unique metrics)
+- [Phase 13-02]: Removed pandas dependency for ref_year fallback — int(collected_at[:4]) sufficient, avoids heavy import for trivial operation
 
 ## Blockers
 
@@ -257,9 +261,9 @@ Phase 15 (Dubai Pulse) requires user to register at dubaidata.ae before DATA-01 
 ## Session Continuity
 
 Last session: 2026-03-17
-Stopped at: Completed 13-03-PLAN.md (DSC demographics normalizer rewrite)
-Resume file: .planning/phases/13-normalizer-fixes/02-PLAN.md
-Next: Execute Plan 02 (MOHRE normalizer), then Plan 04 (verification)
+Stopped at: Completed 13-02-PLAN.md (MOHRE normalizer rewrite)
+Resume file: .planning/phases/13-normalizer-fixes/04-PLAN.md
+Next: Execute Plan 04 (verify all 8 sources + deploy normalizer fixes)
 Key context: 8 sources in normalized_monthly (PF 206, KHDA 37, ADREC 18, Bayt 6, CBUAE 6, LinkedIn 6, Indeed 5, DP World 2 = 286 metrics total). Each metric has exactly 1 observation — statistical analysis mathematically impossible until 12+ obs accumulated.
 User action needed: Register for Dubai Pulse API credentials at dubaidata.ae (required for Phase 15).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
