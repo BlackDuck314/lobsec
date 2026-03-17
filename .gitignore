@@ -42,6 +42,10 @@ tmp/
 # Planning and project management (contains deployment-specific data)
 .planning/
 
+# Separate projects (not part of lobsec)
+packages/uae-re/
+packages/scraper/
+
 # Security-sensitive files
 *.pem
 *.key
