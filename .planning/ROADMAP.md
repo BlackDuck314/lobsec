@@ -154,7 +154,7 @@ Normalize captured data, backfill history, register Dubai Pulse, automate the fu
 - [x] **Phase 14: Historical Backfill** - 3+ years of time-series depth unlocked for statistical analysis ✅ 2026-03-17
 - [ ] **Phase 15: Dubai Pulse Integration** - DLD/Ejari/Permits flowing from official API (requires user registration)
 - [x] **Phase 16: Pipeline Automation** - Full scrape→ingest→normalize→analyze chain runs on schedule without manual intervention ✅ 2026-03-17
-- [ ] **Phase 17: End-to-End Verification** - At least 3 intelligence products return real data via Telegram
+- [x] **Phase 17: End-to-End Verification** - At least 3 intelligence products return real data via Telegram ✅ 2026-03-17
 
 </details>
 
@@ -225,8 +225,8 @@ Plans:
   3. uae_collection_status shows all active sources with a last_successful_run timestamp within the past 7 days
 **Plans:** 2 plans
 Plans:
-- [x] 17-01-PLAN.md — Fix macro health source/metric mapping + fix raw_data tool query
-- [ ] 17-02-PLAN.md — Verify all 3 VERIF requirements via Telegram (human-verify checkpoint)
+- [x] 17-01-PLAN.md — Fix macro health source/metric mapping + fix raw_data tool query ✅ 2026-03-17
+- [x] 17-02-PLAN.md — Verify all 3 VERIF requirements via Telegram (human-verify checkpoint) ✅ 2026-03-17
 
 ## Progress
 
@@ -249,7 +249,7 @@ Plans:
 | 14. Historical Backfill | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 2/2 | Complete | 2026-03-17 |
-| 17. End-to-End Verification | v1.4 | 1/2 | In progress | - |
+| 17. End-to-End Verification | v1.4 | 2/2 | Complete | 2026-03-17 |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 17-01 complete (macro health + raw_data fixes deployed and verified)*
+*Roadmap updated: 2026-03-17 after Phase 17 complete -- all 3 VERIF requirements verified via Telegram, v1.4 milestone effectively shipped*

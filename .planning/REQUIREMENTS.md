@@ -39,7 +39,7 @@ Requirements for v1.4 UAE RE Intelligence Activation. Make the intelligence syst
 
 - [x] **VERIF-01**: At least 3 intelligence products return non-null data when queried via Telegram
 - [x] **VERIF-02**: uae_macro_health returns traffic lights for at least 2 of 6 signal groups
-- [ ] **VERIF-03**: uae_collection_status shows all active sources with last successful run < 7 days old
+- [x] **VERIF-03**: uae_collection_status shows all active sources with last successful run < 7 days old
 
 ## v1.3 Requirements (Shipped)
 
@@ -91,7 +91,7 @@ Categories: INFRA (7), COLL (28), NORM (5), STAT (8), PROD (8), TOOL (13), SCHED
 | AUTO-03 | Phase 16 | Complete |
 | VERIF-01 | Phase 17 | Complete |
 | VERIF-02 | Phase 17 | Complete |
-| VERIF-03 | Phase 17 | Pending |
+| VERIF-03 | Phase 17 | Complete |
 
 **Coverage:**
 - v1.4 requirements: 19 total (17 active + 2 in Verification mapped to Phase 17)
@@ -100,4 +100,4 @@ Categories: INFRA (7), COLL (28), NORM (5), STAT (8), PROD (8), TOOL (13), SCHED
 
 ---
 *Requirements defined: 2026-03-17*
-*Last updated: 2026-03-17 after Phase 16 Plan 02 execution (AUTO-01/02/03 verified, pipeline automation complete)*
+*Last updated: 2026-03-17 after Phase 17 Plan 02 execution (VERIF-01/02/03 verified via Telegram, v1.4 milestone complete)*
