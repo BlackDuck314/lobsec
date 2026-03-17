@@ -150,7 +150,7 @@
 
 Normalize captured data, backfill history, register Dubai Pulse, automate the full pipeline, and verify the system produces real intelligence answers via Telegram.
 
-- [ ] **Phase 13: Normalizer Fixes** - All captured raw data correctly transformed into normalized_monthly rows
+- [x] **Phase 13: Normalizer Fixes** - All captured raw data correctly transformed into normalized_monthly rows ✅ 2026-03-17
 - [ ] **Phase 14: Historical Backfill** - 3+ years of time-series depth unlocked for statistical analysis
 - [ ] **Phase 15: Dubai Pulse Integration** - DLD/Ejari/Permits flowing from official API (requires user registration)
 - [ ] **Phase 16: Pipeline Automation** - Full scrape→ingest→normalize→analyze chain runs on schedule without manual intervention
@@ -174,7 +174,7 @@ Plans:
 - [x] 01-PLAN.md — Rewrite DXB normalizer for HTML fact file JSON (NORM-06)
 - [x] 02-PLAN.md — Rewrite MOHRE normalizer for observatory dashboard JSON (NORM-07)
 - [x] 03-PLAN.md — Rewrite DSC normalizer for PDF extraction via pdfplumber (NORM-08)
-- [ ] 04-PLAN.md — Verify all 8 sources + deploy normalizer fixes to production (NORM-09)
+- [x] 04-PLAN.md — Verify all 8 sources + deploy normalizer fixes to production (NORM-09) ✅ 2026-03-17
 
 ### Phase 14: Historical Backfill
 **Goal**: 3+ years of time-series depth available in normalized_monthly to unlock statistical analysis
@@ -236,11 +236,11 @@ Plans:
 | 10. Statistical Analysis | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 11. Intelligence Products | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 12. Plugin Tools & Hardening | v1.3 | 4/4 | Complete | 2026-03-16 |
-| 13. Normalizer Fixes | v1.4 | 2/4 | In progress | - |
+| 13. Normalizer Fixes | v1.4 | 4/4 | Complete ✅ | 2026-03-17 |
 | 14. Historical Backfill | v1.4 | 0/TBD | Not started | - |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 0/TBD | Not started | - |
 | 17. End-to-End Verification | v1.4 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 13 planning (4 plans created)*
+*Roadmap updated: 2026-03-17 after Phase 13 completion (4/4 plans complete, all normalizers deployed)*
