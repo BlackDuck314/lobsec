@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: UAE RE Intelligence Activation
 status: in_progress
-last_updated: "2026-03-17T12:00:00Z"
+last_updated: "2026-03-17T14:12:00Z"
 progress:
   total_phases: 5
   completed_phases: 3
@@ -15,9 +15,9 @@ progress:
 
 ## Current Position
 
-Phase: Phase 16 COMPLETE. Phase 15 blocked on user registration. Phase 17 next.
-Status: Phase 16 complete (2/2 plans). All 3 AUTO requirements verified: collection auto-normalizes (AUTO-01), analysis runs via systemd timer (AUTO-02), all collection timers active (AUTO-03). Checkpoint approved.
-Last activity: 2026-03-17 — Phase 16 complete. Pipeline automation verified end-to-end. Next: Phase 17 (End-to-End Verification).
+Phase: Phase 17 Plan 01 COMPLETE. Phase 15 blocked on user registration.
+Status: Phase 17-01 complete (2/2 tasks). SIGNAL_GROUPS fixed, raw_data tool fixed, all 3 tools verified returning real data via gateway-chat.sh. VERIF-01 and VERIF-02 satisfied.
+Last activity: 2026-03-17 — Phase 17-01 complete. Macro health returns 3 groups with real z-scores (Employment 1.46, Mobility 0.88, Population 1.24). Raw data returns CSV from normalized_monthly. Collection status shows 34 sources.
 
 ### v1.4 Phase Status
 | Phase | Name | Requirements | Status |
@@ -26,7 +26,7 @@ Last activity: 2026-03-17 — Phase 16 complete. Pipeline automation verified en
 | 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | Complete (2/2 plans) |
 | 15 | Dubai Pulse Integration | DATA-01, DATA-02, DATA-03, DATA-04 | Not started (blocked on user registration) |
 | 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | Complete (2/2 plans) |
-| 17 | End-to-End Verification | VERIF-01, VERIF-02, VERIF-03 | Not started |
+| 17 | End-to-End Verification | VERIF-01, VERIF-02, VERIF-03 | In progress (1/1 plans done, VERIF-01+02 satisfied) |
 
 ### Scraper Tuning Progress (outside GSD phases)
 This work fills the gap between "missions written" (Phases 7.1-9) and "missions producing data".
@@ -109,7 +109,7 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 | 14 | Historical Backfill | BACK-01, BACK-02, BACK-03, BACK-04, BACK-05 | Complete (2/2 plans) |
 | 15 | Dubai Pulse Integration | DATA-01, DATA-02, DATA-03, DATA-04 | Not started |
 | 16 | Pipeline Automation | AUTO-01, AUTO-02, AUTO-03 | Complete (2/2 plans) |
-| 17 | End-to-End Verification | VERIF-01, VERIF-02, VERIF-03 | Not started |
+| 17 | End-to-End Verification | VERIF-01, VERIF-02, VERIF-03 | In progress (1/1 plans done, VERIF-01+02 satisfied) |
 
 **Total: 17 requirements across 5 phases**
 
@@ -269,10 +269,10 @@ Phase 15 (Dubai Pulse) requires user to register at dubaidata.ae before DATA-01 
 ## Session Continuity
 
 Last session: 2026-03-17
-Stopped at: Phase 16 complete. Checkpoint approved. Phase 17 (End-to-End Verification) next.
+Stopped at: Phase 17-01 complete. VERIF-01 and VERIF-02 satisfied. VERIF-03 needs separate plan or is already satisfied by collection_status tool.
 Resume file: N/A
-Next: Phase 17 (End-to-End Verification) — verify intelligence tools return real data via Telegram. Phase 15 still blocked on user registration.
-Key context: Phase 16 complete. Pipeline fully automated: collection auto-normalizes, analysis runs on 25th via systemd, all timers active. 11 sources in normalized_monthly, analysis pipeline runs all 7 steps successfully.
+Next: VERIF-03 verification (collection_status already shows 7 active sources within 7 days -- may already be satisfied). Phase 15 still blocked on user registration.
+Key context: Phase 17-01 complete. Macro health returns Employment (z=1.46), Mobility (z=0.88), Population (z=1.24) with real z-scores. Raw data returns CSV from normalized_monthly. Collection status shows 34 sources with 7 active within 7 days.
 User action needed: Register for Dubai Pulse API credentials at dubaidata.ae (required for Phase 15).
 | Job posting aggregation not listings | Store weekly counts per sector/seniority (total_postings, postings_by_sector, postings_by_seniority, median_salary), not individual listings. Thousands/week would be too large and mostly noise. |
 | Graceful failure on job platforms | skip_on_403 + skip_on_captcha, no retry on block. Aggressive retry accelerates bans. Weekly cycle allows temporary blocks to clear. Bayt/Indeed/GulfTalent provide coverage when LinkedIn blocks. |
@@ -282,3 +282,5 @@ User action needed: Register for Dubai Pulse API credentials at dubaidata.ae (re
 | Non-overlapping timer schedules | Weekly/monthly at 02:00 UTC, quarterly at 05:00 UTC spreads load. Persistent=true ensures missed runs execute on boot. |
 | Timeout by frequency | Weekly 30min (8 sources), monthly/quarterly 60min (6-7 sources). Accommodates browser automation overhead. |
 | Deployment via cp not pip | Matches lobsec service pattern. YAML missions cp to /opt/lobsec/scraper/missions/, Python normalizers to /opt/lobsec/plugins/lobsec-uae-re/, restart service to hotload. |
+| Employment signal: mohre_chart_0_index not mohre_workforce_growth_pct | chart_0_index has 5 annual observations (2021-2025) vs workforce_growth_pct (only 2 obs). Z-score needs 3+ observations. |
+| uae_raw_data queries normalized_monthly | raw_sources table has no data_json column and no measurement_date column. normalized_monthly has the actual data in (source, measurement_date, metric_name, value) format. |

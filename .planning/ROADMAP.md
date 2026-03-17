@@ -225,7 +225,7 @@ Plans:
   3. uae_collection_status shows all active sources with a last_successful_run timestamp within the past 7 days
 **Plans:** 2 plans
 Plans:
-- [ ] 17-01-PLAN.md — Fix macro health source/metric mapping + fix raw_data tool query
+- [x] 17-01-PLAN.md — Fix macro health source/metric mapping + fix raw_data tool query
 - [ ] 17-02-PLAN.md — Verify all 3 VERIF requirements via Telegram (human-verify checkpoint)
 
 ## Progress
@@ -249,7 +249,7 @@ Plans:
 | 14. Historical Backfill | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 2/2 | Complete | 2026-03-17 |
-| 17. End-to-End Verification | v1.4 | 0/2 | Planned | - |
+| 17. End-to-End Verification | v1.4 | 1/2 | In progress | - |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 17 planning (2 plans created for end-to-end verification)*
+*Roadmap updated: 2026-03-17 after Phase 17-01 complete (macro health + raw_data fixes deployed and verified)*
