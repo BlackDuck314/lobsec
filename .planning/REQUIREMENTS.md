@@ -16,11 +16,11 @@ Requirements for v1.4 UAE RE Intelligence Activation. Make the intelligence syst
 
 ### Backfill
 
-- [ ] **BACK-01**: DSC population bulletins backfilled (2022, 2023, 2024) — 3 years of annual demographic data
-- [ ] **BACK-02**: DXB passenger data backfilled from press archive — at least 12 months of quarterly/annual figures
-- [ ] **BACK-03**: MOHRE workforce time series backfilled (2021-2025) from observatory dashboard data already captured
+- [x] **BACK-01**: DSC population bulletins backfilled (2022, 2023, 2024) — 3 years of annual demographic data
+- [x] **BACK-02**: DXB passenger data backfilled from press archive — at least 12 months of quarterly/annual figures
+- [x] **BACK-03**: MOHRE workforce time series backfilled (2021-2025) from observatory dashboard data already captured
 - [ ] **BACK-04**: CBUAE quarterly banking data backfilled — at least 4 quarters of remittance/transfer data
-- [ ] **BACK-05**: DP World annual throughput backfilled — at least 3 years of container/cargo data
+- [x] **BACK-05**: DP World annual throughput backfilled — at least 3 years of container/cargo data
 
 ### Data Sources
 
@@ -76,12 +76,12 @@ Categories: INFRA (7), COLL (28), NORM (5), STAT (8), PROD (8), TOOL (13), SCHED
 | NORM-06 | Phase 13 | Complete |
 | NORM-07 | Phase 13 | Complete |
 | NORM-08 | Phase 13 | Complete |
-| NORM-09 | Phase 13 | Pending |
-| BACK-01 | Phase 14 | Pending |
-| BACK-02 | Phase 14 | Pending |
-| BACK-03 | Phase 14 | Pending |
+| NORM-09 | Phase 13 | Complete |
+| BACK-01 | Phase 14 | Complete |
+| BACK-02 | Phase 14 | Complete |
+| BACK-03 | Phase 14 | Complete |
 | BACK-04 | Phase 14 | Pending |
-| BACK-05 | Phase 14 | Pending |
+| BACK-05 | Phase 14 | Complete |
 | DATA-01 | Phase 15 | Pending (user action required) |
 | DATA-02 | Phase 15 | Pending |
 | DATA-03 | Phase 15 | Pending |
@@ -100,4 +100,4 @@ Categories: INFRA (7), COLL (28), NORM (5), STAT (8), PROD (8), TOOL (13), SCHED
 
 ---
 *Requirements defined: 2026-03-17*
-*Last updated: 2026-03-17 after v1.4 roadmap creation (all 17 requirements mapped)*
+*Last updated: 2026-03-17 after Phase 14 Plan 01 execution (BACK-01, BACK-02, BACK-03, BACK-05 complete)*

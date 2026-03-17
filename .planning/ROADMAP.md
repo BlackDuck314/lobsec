@@ -188,7 +188,7 @@ Plans:
   5. DP World normalized_monthly contains at least 3 annual throughput rows covering 2022, 2023, 2024
 **Plans:** 2 plans
 Plans:
-- [ ] 01-PLAN.md — Backfill DSC + MOHRE + DP World + DXB (standalone Python scripts parsing existing raw data + press releases)
+- [x] 01-PLAN.md — Backfill DSC + MOHRE + DP World + DXB (standalone Python scripts parsing existing raw data + press releases) ✅ 2026-03-17
 - [ ] 02-PLAN.md — Backfill CBUAE (cumulative YTD de-accumulation from Statistical Bulletin PDF) + final verification
 
 ### Phase 15: Dubai Pulse Integration
@@ -240,10 +240,10 @@ Plans:
 | 11. Intelligence Products | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 12. Plugin Tools & Hardening | v1.3 | 4/4 | Complete | 2026-03-16 |
 | 13. Normalizer Fixes | v1.4 | 4/4 | Complete | 2026-03-17 |
-| 14. Historical Backfill | v1.4 | 0/2 | Planned | - |
+| 14. Historical Backfill | v1.4 | 1/2 | In progress | - |
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 0/TBD | Not started | - |
 | 17. End-to-End Verification | v1.4 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 14 planning (2 plans created)*
+*Roadmap updated: 2026-03-17 after Phase 14 Plan 01 execution (DSC + MOHRE + DP World + DXB backfilled)*
