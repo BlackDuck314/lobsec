@@ -138,4 +138,5 @@ export const SOURCE_MODULE_MAP: Record<string, string> = {
   // Phase 19 — Commodity, Sentiment & CoL
   "commodities": "normalize_commodities",
   "news-sentiment": "normalize_news_sentiment",
+  "cbuae-expanded": "normalize_cbuae_expanded",
 };

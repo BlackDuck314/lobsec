@@ -299,9 +299,9 @@ def extract_tables_from_pdf(pdf_bytes: bytes, quarter_label: str) -> dict[str, d
 
     pdf.close()
 
-    # Also try text-based extraction for interest rates if not found in tables
-    if "base_rate" not in found_metrics or "eibor_3m" not in found_metrics:
-        _extract_rates_from_text(pdf_bytes, quarter_label, result, found_metrics)
+    # Text-based extraction for money supply and interest rates
+    # (these are typically in prose text, not tables, in CBUAE QER PDFs)
+    _extract_from_text(pdf_bytes, quarter_label, result, found_metrics)
 
     print(
         f"  {quarter_label}: extracted {len(found_metrics)}/8 metrics across "
@@ -311,17 +311,83 @@ def extract_tables_from_pdf(pdf_bytes: bytes, quarter_label: str) -> dict[str, d
     return result
 
 
-def _extract_rates_from_text(
+def _extract_money_supply(
+    full_text: str, m_label: str, m_min: float, m_max: float
+) -> Optional[float]:
+    """Extract a money supply value (M1, M2, or M3) from PDF prose text.
+
+    The CBUAE QER text has multi-column layout that causes pdfplumber to
+    interleave chart labels and adjacent column text. For example:
+      "M2 grew by 15.1% Y-o-Y to AED 2,589 %3 EA\\nD\\nbillion"
+    Here "2,589" is the M2 value but "%3 EA\\nD" is chart noise.
+
+    Strategy: Find "MN increased/grew..." then find "AED" nearby, then
+    extract the first number-like sequence immediately after AED.
+
+    Args:
+        full_text: Full text of the PDF.
+        m_label: "M1", "M2", or "M3".
+        m_min: Minimum valid value.
+        m_max: Maximum valid value.
+
+    Returns:
+        Extracted value as float, or None.
+    """
+    # Find the start of MN description
+    # Note: pdfplumber multi-column extraction inserts chart noise between
+    # the label and verb. Examples from real PDFs:
+    #   "M1 5\n160\nrose by 14.1%" (noise: "5\n160\n")
+    #   "M2 140\nincreased by 17.9%" (noise: "140\n")
+    #   "M1rose by 12.7%" (no space at all)
+    #   "M38 grew by 15.7%" (footnote "8" merged with "M3")
+    # Allow up to 20 chars of noise between label and verb.
+    pattern_start = rf"{m_label}\d?\s*.{{0,20}}?(?:increased|grew|expanded|rose|declined|fell|reached)"
+
+    # Try all matches (summary boxes don't contain AED, actual text does)
+    for match_start in re.finditer(pattern_start, full_text, re.DOTALL | re.IGNORECASE):
+        # Look within the next 300 characters for "AED X,XXX"
+        search_region = full_text[match_start.start():match_start.start() + 300]
+
+        # Find "AED" followed by a number (possibly on next line with noise)
+        aed_match = re.search(r"AED\s*", search_region)
+        if not aed_match:
+            continue  # Try next match
+
+        # From the position right after "AED ", find numbers.
+        # Chart labels and multi-column noise can insert small numbers
+        # (like "0", "80", "130") between AED and the actual value.
+        # Iterate through all number candidates within 80 chars.
+        after_aed = search_region[aed_match.end():]
+        scan_region = after_aed[:80]
+
+        for num_match in re.finditer(r"([\d,]+(?:\.\d+)?)", scan_region):
+            val_str = num_match.group(1).replace(",", "")
+            try:
+                val = float(val_str)
+            except ValueError:
+                continue
+            if m_min <= val <= m_max:
+                return val
+
+    return None
+
+
+def _extract_from_text(
     pdf_bytes: bytes,
     quarter_label: str,
     result: dict[str, dict[str, Optional[float]]],
     found_metrics: set[str],
 ) -> None:
-    """Fallback: extract interest rates from PDF text when table extraction fails.
+    """Extract money supply, interest rates from PDF prose text.
 
-    Interest rate data is sometimes presented as inline text rather than tables.
-    Look for patterns like "Base Rate was lowered to 3.90 percent" or
-    "EIBOR (3-month) averaged 4.28 percent".
+    The CBUAE QER PDFs present M1/M2/M3 values and interest rates
+    as inline text in Chapter 3 rather than in structured tables.
+    Examples:
+      "M1 increased by 15.2% Y-o-Y, reaching AED 1,033 billion"
+      "M2 grew by 15.1% Y-o-Y to AED 2,589 billion"
+      "M3 expanded by 14.8% Y-o-Y, reaching AED 3,123 billion"
+      "lowered its key policy rate (Base Rate) to 4.15%"
+      "3-month EIBOR ... down 26 bps"
     """
     try:
         pdf = pdfplumber.open(io.BytesIO(pdf_bytes))
@@ -337,19 +403,51 @@ def _extract_rates_from_text(
     if not full_text:
         return
 
-    # Try to find base rate
+    # --- Money Supply: M1, M2, M3 ---
+    # These appear as prose: "M1 ... reaching AED X,XXX billion"
+    # Only for the QER's own quarter (not historical).
+    #
+    # IMPORTANT: pdfplumber multi-column extraction interleaves text from
+    # adjacent columns and charts. "AED" and the number may be separated
+    # by noise (e.g., "AED Banking System\n1,033 billion" or
+    # "AED 2,589 %3 EA\nD\nbillion"). Use re.DOTALL and allow noise
+    # between AED and the number.
+
+    for m_key, m_label, m_min, m_max in [
+        ("m1", "M1", 200.0, 3000.0),
+        ("m2", "M2", 500.0, 5000.0),
+        ("m3", "M3", 600.0, 6000.0),
+    ]:
+        if m_key in found_metrics:
+            continue
+
+        val = _extract_money_supply(full_text, m_label, m_min, m_max)
+        if val is not None:
+            if quarter_label not in result:
+                result[quarter_label] = {}
+            result[quarter_label][f"{m_key}_aed_bn"] = val
+            found_metrics.add(m_key)
+            print(f"  Found {m_label} from text: AED {val} bn", file=sys.stderr)
+
+    # --- Interest Rates ---
+    # Base Rate: "lowered its key policy rate (Base Rate) to 4.15%"
+    # or "Base Rate to X.XX%" in summary boxes
     if "base_rate" not in found_metrics:
-        # Pattern: "Base Rate" ... "X.XX" or "X.XX per cent"
         base_patterns = [
-            r"[Bb]ase\s+[Rr]ate\s+(?:was\s+)?(?:lowered|raised|maintained|kept|set)?\s*(?:to|at)?\s*(\d+\.?\d*)\s*(?:per\s*cent|percent|%)",
-            r"[Bb]ase\s+[Rr]ate\s+(?:of|at)\s+(\d+\.?\d*)\s*(?:per\s*cent|percent|%)",
+            # Pattern: "Base Rate) to X.XX%" or "(Base Rate) to X.XX%"
+            r"\(Base\s+Rate\)\s+to\s+(\d+\.?\d*)%",
+            # Pattern: "Base Rate was lowered/raised/maintained to X.XX%"
+            r"[Bb]ase\s+[Rr]ate\s+(?:was\s+)?(?:lowered|raised|maintained|kept|set|adjusted)?\s*(?:to|at)\s+(\d+\.?\d*)%",
+            # Pattern: "Base Rate to X.XX% in QN"
+            r"[Bb]ase\s*\n?\s*[Rr]ate\s+to\s+(\d+\.?\d*)%",
+            # Broader: any "Base Rate" near a percentage
+            r"[Bb]ase\s+[Rr]ate[^.]{0,40}?(\d+\.\d+)%",
         ]
         for pattern in base_patterns:
             m = re.search(pattern, full_text)
             if m:
                 val = float(m.group(1))
                 if 0.0 <= val <= 10.0:
-                    # Assign to the QER's own quarter
                     if quarter_label not in result:
                         result[quarter_label] = {}
                     result[quarter_label]["base_rate_pct"] = val
@@ -357,12 +455,14 @@ def _extract_rates_from_text(
                     print(f"  Found base_rate from text: {val}%", file=sys.stderr)
                     break
 
-    # Try to find EIBOR 3-month
+    # EIBOR 3-month: "3-month EIBOR ... also drifted lower, down 26 bps"
+    # This is harder since specific value isn't always stated directly
     if "eibor_3m" not in found_metrics:
         eibor_patterns = [
             r"(?:3-month|3\s*month|three\s*month)\s+EIBOR\s+(?:averaged?|was|stood\s+at|at)\s+(\d+\.?\d*)\s*(?:per\s*cent|percent|%)",
             r"EIBOR\s*\(3[- ]month\)\s+(?:averaged?|was|stood\s+at|at)\s+(\d+\.?\d*)\s*(?:per\s*cent|percent|%)",
-            r"EIBOR\b[^.]{0,60}?(\d+\.?\d*)\s*(?:per\s*cent|percent|%)",
+            r"EIBOR\s*\(3[- ]?month\)[^.]{0,80}?(\d+\.\d+)\s*(?:per\s*cent|percent|%)",
+            r"EIBOR[^.]{0,60}?(\d+\.\d+)\s*(?:per\s*cent|percent|%)",
         ]
         for pattern in eibor_patterns:
             m = re.search(pattern, full_text, re.IGNORECASE)

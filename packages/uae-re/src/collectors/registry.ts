@@ -202,6 +202,12 @@ const COLLECTOR_DEFINITIONS: Array<{
     missionName: "news-sentiment",
     metadata: { source: "news-sentiment", frequency: "daily", priority: 1, timeout: 60_000 },
   },
+
+  // Phase 19 — CBUAE Expanded (QER PDF extraction)
+  {
+    missionName: "cbuae-expanded",
+    metadata: { source: "cbuae-expanded", frequency: "quarterly", priority: 2, timeout: 120_000 },
+  },
 ];
 
 /**
@@ -240,6 +246,7 @@ export class CollectorRegistry {
       // Phase 19
       "commodities": "collect_commodities",
       "news-sentiment": "collect_news_sentiment",
+      "cbuae-expanded": "collect_cbuae_expanded",
     };
 
     for (const def of COLLECTOR_DEFINITIONS) {

@@ -82,7 +82,10 @@ export type PythonScriptName =
   | "collect_commodities"
   | "normalize_commodities"
   | "collect_news_sentiment"
-  | "normalize_news_sentiment";
+  | "normalize_news_sentiment"
+  // Phase 19 — CBUAE Expanded
+  | "collect_cbuae_expanded"
+  | "normalize_cbuae_expanded";
 
 /**
  * Configuration for the Python subprocess bridge.
