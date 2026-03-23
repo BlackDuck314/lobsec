@@ -74,7 +74,21 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 
 <!-- Current scope. Defined in REQUIREMENTS.md when next milestone starts. -->
 
-(No active milestone — run `/gsd:new-milestone` to start v1.5)
+- MACRO-01: World Bank API collector (GDP, inflation, FDI, trade, population) — v1.5
+- MACRO-02: IMF Data API collector (WEO forecasts, IFS indicators) — v1.5
+- MACRO-03: S&P Global PMI collector (monthly press release extraction) — v1.5
+- MACRO-04: DFM stock market collector (RE sector stocks CSV) — v1.5
+- COMM-01: Brent crude oil price collector — v1.5
+- COMM-02: Gold price collector — v1.5
+- SENT-01: Reddit sentiment collector (r/dubai + r/UAE, VADER) — v1.5
+- SENT-02: News API headline sentiment collector — v1.5
+- COST-01: Numbeo cost of living collector — v1.5
+- CBUAE-01: CBUAE Open Data expanded (interest rates, money supply) — v1.5
+- DORM-01: Audit all 31 deployed missions — v1.5
+- DORM-02: Add normalization for 5+ working but unhandled missions — v1.5
+- DORM-03: Fix or retire permanently blocked missions — v1.5
+- INTEG-01 through INTEG-04: Registry, egress, HSM, normalization integration — v1.5
+- VERIF-01 through VERIF-03: 20+ sources, 12+ obs metrics, enhanced macro health — v1.5
 
 ### Out of Scope
 
@@ -144,7 +158,7 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 ## Current State
 
 **Latest shipped:** v1.4 UAE RE Intelligence Activation (2026-03-18)
-**Next milestone:** TBD — run `/gsd:new-milestone` to start v1.5
+**Current milestone:** v1.5 Data Expansion (started 2026-03-23)
 
 **What's live:**
 - 13 UAE RE plugin tools accessible via Telegram (@lobsec_bot)
@@ -160,4 +174,4 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 - Statistical analysis (Granger, composites) — needs 12+ months of data accumulation
 
 ---
-*Last updated: 2026-03-23 after v1.4 milestone archived*
+*Last updated: 2026-03-23 — v1.5 milestone started*

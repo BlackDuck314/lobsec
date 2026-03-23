@@ -7,6 +7,7 @@
 - v1.2 Examy QA Automation — Phases 1-5 (shipped 2026-03-06)
 - v1.3 UAE Real Estate Intelligence System — Phases 6-12 (shipped 2026-03-16)
 - **v1.4 UAE RE Intelligence Activation** — Phases 13-17 (shipped 2026-03-18)
+- **v1.5 Data Expansion** — Phases 18-21 (in progress)
 
 ## Phases
 
@@ -154,7 +155,51 @@
 
 </details>
 
-## Phase Details
+## v1.5 Data Expansion — Phases 18-21
+
+Add API-based data sources with historical backfill to accelerate statistical analysis. Activate dormant scraper missions. Target: 20+ sources producing normalized data.
+
+- [ ] Phase 18: Macro Economic APIs — World Bank, IMF, PMI, DFM stock data
+  Requirements: MACRO-01, MACRO-02, MACRO-03, MACRO-04
+  Goal: 4 new API collectors producing historical macro data (GDP, inflation, PMI, RE stocks). These provide years of backfill, immediately enabling statistical analysis on macro signals.
+  Success criteria:
+  1. World Bank collector fetches UAE GDP growth, CPI inflation, FDI, trade balance, population via REST API (country=ARE); historical data back to 2010+ normalized into monthly rows
+  2. IMF collector fetches WEO forecasts and IFS indicators for UAE; quarterly/annual data normalized
+  3. PMI collector extracts UAE monthly PMI value from S&P Global press release text; stored as monthly metric
+  4. DFM collector downloads RE sector stock prices (Emaar, DAMAC, Deyaar, Union Properties) from dfm.ae CSV; weekly closing prices normalized
+
+- [ ] Phase 19: Commodity, Sentiment & Cost of Living — Oil, gold, Reddit, News API, Numbeo, CBUAE expanded
+  Requirements: COMM-01, COMM-02, SENT-01, SENT-02, COST-01, CBUAE-01
+  Goal: 6 new sources covering commodities (Brent, gold), public sentiment (Reddit, news), cost of living (Numbeo), and expanded central bank data.
+  Success criteria:
+  1. Brent crude and gold price collectors fetch daily/weekly historical prices via free APIs; normalized to monthly averages
+  2. Reddit sentiment collector scrapes r/dubai + r/UAE JSON feeds weekly, runs VADER on RE-related posts; stores sentiment score per week
+  3. News API collector fetches UAE business headlines daily, filters RE/economy keywords, computes VADER sentiment; stores daily score
+  4. Numbeo collector fetches Dubai/Abu Dhabi cost of living and rent indices monthly via API
+  5. CBUAE open data collector fetches interest rates, money supply from centralbank.ae CSV/JSON portal
+  6. All API keys stored in HSM; all domains in nftables egress allowlist
+
+- [ ] Phase 20: Dormant Mission Activation — Audit and activate existing scraper missions
+  Requirements: DORM-01, DORM-02, DORM-03
+  Goal: Maximize value from existing 31 YAML missions. Audit which produce data, add normalization for working ones, retire dead ones.
+  Success criteria:
+  1. Audit report: all 31 missions tested, categorized as working/blocked/dead with evidence
+  2. Normalization handlers added for 5+ missions currently producing raw data but lacking ingest logic
+  3. Permanently blocked missions marked as inactive in CollectorRegistry; removed from collection timers
+  4. Collection status tool updated to reflect accurate source inventory
+
+- [ ] Phase 21: Integration & Verification — Wire everything, verify enhanced intelligence
+  Requirements: INTEG-01, INTEG-02, INTEG-03, INTEG-04, VERIF-01, VERIF-02, VERIF-03
+  Goal: All new sources integrated into pipeline, macro health product enhanced, 20+ sources live.
+  Success criteria:
+  1. All new collectors registered in CollectorRegistry with correct frequencies and timeouts
+  2. nftables egress updated; API keys in HSM; credential redactor patterns added
+  3. 20+ sources producing rows in normalized_monthly (up from 11)
+  4. At least 3 metrics with 12+ observations (World Bank/IMF/CBUAE historical data)
+  5. Macro health product shows Commodities and/or Sentiment signal groups with traffic lights
+  6. Collection status tool shows accurate inventory of all active/blocked/dead sources
+
+## Phase Details (Archived)
 
 *v1.4 phase details archived to [milestones/v1.4-ROADMAP.md](milestones/v1.4-ROADMAP.md)*
 
@@ -180,6 +225,10 @@
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 17. End-to-End Verification | v1.4 | 2/2 | Complete | 2026-03-17 |
+| 18. Macro Economic APIs | v1.5 | 0/TBD | Not started | - |
+| 19. Commodity, Sentiment & CoL | v1.5 | 0/TBD | Not started | - |
+| 20. Dormant Mission Activation | v1.5 | 0/TBD | Not started | - |
+| 21. Integration & Verification | v1.5 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-23 — v1.4 milestone archived*
+*Roadmap updated: 2026-03-23 — v1.5 milestone started*
