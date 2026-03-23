@@ -172,16 +172,20 @@ Add API-based data sources with historical backfill to accelerate statistical an
   3. PMI collector extracts UAE monthly PMI value from S&P Global press release PDF; stored as monthly metric
   4. DFM stock collector fetches RE sector prices (Emaar, Emaar Development, Deyaar, Union Properties) via Yahoo Finance API; monthly OHLCV normalized
 
-- [ ] Phase 19: Commodity, Sentiment & Cost of Living — Oil, gold, Reddit, News API, Numbeo, CBUAE expanded
+- [ ] Phase 19: Commodity, Sentiment & Cost of Living — Oil, gold, Reddit, News API, CBUAE expanded
   Requirements: COMM-01, COMM-02, SENT-01, SENT-02, COST-01, CBUAE-01
-  Goal: 6 new sources covering commodities (Brent, gold), public sentiment (Reddit, news), cost of living (Numbeo), and expanded central bank data.
+  Goal: Add commodities (Brent crude, gold via Yahoo Finance), enhance Reddit sentiment with r/UAE, add NewsAPI headline sentiment, extract CBUAE monetary data from QER PDFs. COST-01 satisfied by existing World Bank CPI (Numbeo has no free tier).
+  **Plans:** 2 plans
+  Plans:
+  - [ ] 19-01-PLAN.md — Commodities collector + Reddit enhancement + NewsAPI collector + TS registration + deploy + verify
+  - [ ] 19-02-PLAN.md — CBUAE expanded QER PDF extraction + TS registration + deploy + verify
   Success criteria:
-  1. Brent crude and gold price collectors fetch daily/weekly historical prices via free APIs; normalized to monthly averages
-  2. Reddit sentiment collector scrapes r/dubai + r/UAE JSON feeds weekly, runs VADER on RE-related posts; stores sentiment score per week
-  3. News API collector fetches UAE business headlines daily, filters RE/economy keywords, computes VADER sentiment; stores daily score
-  4. Numbeo collector fetches Dubai/Abu Dhabi cost of living and rent indices monthly via API
-  5. CBUAE open data collector fetches interest rates, money supply from centralbank.ae CSV/JSON portal
-  6. All API keys stored in HSM; all domains in nftables egress allowlist
+  1. Brent crude and gold price collectors fetch monthly OHLCV via Yahoo Finance API (BZ=F, GC=F); normalized to 4 monthly metrics
+  2. Reddit sentiment collector includes r/UAE alongside r/dubai and r/dubairealestate
+  3. News API collector fetches UAE business headlines daily, VADER-scores them; stores 4 daily metrics
+  4. CBUAE expanded collector extracts M1/M2/M3, base rate, EIBOR, banking data from QER PDFs; 8 quarterly metrics
+  5. COST-01 satisfied by existing World Bank CPI data (no new collector needed)
+  6. NewsAPI key stored in HSM when available
 
 - [ ] Phase 20: Dormant Mission Activation — Audit and activate existing scraper missions
   Requirements: DORM-01, DORM-02, DORM-03
@@ -230,9 +234,9 @@ Add API-based data sources with historical backfill to accelerate statistical an
 | 16. Pipeline Automation | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 17. End-to-End Verification | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 18. Macro Economic APIs | v1.5 | 2/2 | Complete | 2026-03-23 |
-| 19. Commodity, Sentiment & CoL | v1.5 | 0/TBD | Not started | - |
+| 19. Commodity, Sentiment & CoL | v1.5 | 0/2 | Planned | - |
 | 20. Dormant Mission Activation | v1.5 | 0/TBD | Not started | - |
 | 21. Integration & Verification | v1.5 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-23 — Phase 18 COMPLETE (4 macro API sources live, 24 metrics, 859 rows, macro health 8 groups)*
+*Roadmap updated: 2026-03-23 — Phase 19 planned (2 plans: commodities/sentiment + CBUAE expanded)*
