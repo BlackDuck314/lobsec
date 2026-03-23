@@ -12,11 +12,11 @@
 
 ## Tier 2: Commodity, Sentiment & Cost of Living (free API keys)
 
-- [ ] **COMM-01**: Brent crude oil price collector — monthly OHLCV via Yahoo Finance API (BZ=F symbol). No auth required. Same pattern as DFM stocks.
-- [ ] **COMM-02**: Gold price collector — monthly OHLCV via Yahoo Finance API (GC=F symbol). No auth required. Dubai = gold hub, correlates with capital flows.
-- [ ] **SENT-01**: Reddit sentiment collector — r/dubai + r/UAE via existing PRAW collector or .json endpoint. VADER sentiment scoring on RE-related posts. Weekly frequency.
-- [ ] **SENT-02**: News API headline sentiment — UAE business news from newsapi.org (free key, 100 req/day). Keyword filtering for RE/economy terms. VADER scoring. Daily frequency.
-- [ ] **COST-01**: Cost of living proxy — use existing World Bank CPI data (Phase 18) + rental data as cost-of-living signals. Numbeo has no free tier ($260/mo). No new collector needed.
+- [x] **COMM-01**: Brent crude oil price collector — monthly OHLCV via Yahoo Finance API (BZ=F symbol). No auth required. Same pattern as DFM stocks. [52 monthly records, $103/bbl Mar 2026]
+- [x] **COMM-02**: Gold price collector — monthly OHLCV via Yahoo Finance API (GC=F symbol). No auth required. Dubai = gold hub, correlates with capital flows. [52 monthly records, $4367/oz Mar 2026]
+- [x] **SENT-01**: Reddit sentiment collector — r/dubai + r/UAE via existing PRAW collector. VADER sentiment scoring on RE-related posts. Weekly frequency. [r/UAE added to SUBREDDITS]
+- [x] **SENT-02**: News API headline sentiment — UAE business news from newsapi.org (free key, 100 req/day). Keyword filtering for RE/economy terms. VADER scoring. Daily frequency. [Registered, awaiting API key]
+- [x] **COST-01**: Cost of living proxy — use existing World Bank CPI data (Phase 18) + rental data as cost-of-living signals. Numbeo has no free tier ($260/mo). No new collector needed. [Satisfied by uae|wb_cpi_inflation_pct]
 - [ ] **CBUAE-01**: CBUAE expanded monetary data — M1/M2/M3, base rate, EIBOR, banking assets/credit/deposits from QER PDF reports via pdfplumber. Quarterly frequency.
 
 ## Tier 3: Dormant Mission Activation
