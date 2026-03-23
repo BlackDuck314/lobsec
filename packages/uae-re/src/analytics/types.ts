@@ -77,7 +77,12 @@ export type PythonScriptName =
   | "normalize_worldbank"
   | "normalize_imf"
   | "normalize_dfm_stocks"
-  | "normalize_pmi";
+  | "normalize_pmi"
+  // Phase 19 — Commodity, Sentiment & Cost of Living
+  | "collect_commodities"
+  | "normalize_commodities"
+  | "collect_news_sentiment"
+  | "normalize_news_sentiment";
 
 /**
  * Configuration for the Python subprocess bridge.

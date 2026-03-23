@@ -192,6 +192,16 @@ const COLLECTOR_DEFINITIONS: Array<{
     missionName: "spglobal-pmi",
     metadata: { source: "spglobal-pmi", frequency: "monthly", priority: 2, timeout: 120_000 },
   },
+
+  // Phase 19 — Commodity, Sentiment & Cost of Living
+  {
+    missionName: "commodities",
+    metadata: { source: "commodities", frequency: "monthly", priority: 2, timeout: 60_000 },
+  },
+  {
+    missionName: "news-sentiment",
+    metadata: { source: "news-sentiment", frequency: "daily", priority: 1, timeout: 60_000 },
+  },
 ];
 
 /**
@@ -227,6 +237,9 @@ export class CollectorRegistry {
       "imf-weo": "collect_imf",
       "dfm-stocks": "collect_dfm_stocks",
       "spglobal-pmi": "collect_pmi",
+      // Phase 19
+      "commodities": "collect_commodities",
+      "news-sentiment": "collect_news_sentiment",
     };
 
     for (const def of COLLECTOR_DEFINITIONS) {

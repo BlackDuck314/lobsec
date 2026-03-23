@@ -134,4 +134,8 @@ export const SOURCE_MODULE_MAP: Record<string, string> = {
   "imf-weo": "normalize_imf",
   "dfm-stocks": "normalize_dfm_stocks",
   "spglobal-pmi": "normalize_pmi",
+
+  // Phase 19 — Commodity, Sentiment & CoL
+  "commodities": "normalize_commodities",
+  "news-sentiment": "normalize_news_sentiment",
 };
