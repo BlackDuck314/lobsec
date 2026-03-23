@@ -7,7 +7,7 @@
 
 - [x] **MACRO-01**: World Bank API collector — UAE GDP growth, inflation (CPI), FDI inflows, trade balance, population. REST API, country code ARE. Historical data back to 2000+. Monthly/annual frequency.
 - [x] **MACRO-02**: IMF DataMapper API collector — World Economic Outlook historical + forecasts for UAE. Open JSON API, no auth required. Annual frequency with forecasts to 2030.
-- [ ] **MACRO-03**: S&P Global PMI collector — UAE monthly PMI from press release text extraction. No auth, public press releases. Monthly frequency.
+- [x] **MACRO-03**: S&P Global PMI collector — UAE monthly PMI from press release text extraction. No auth, public press releases. Monthly frequency.
 - [x] **MACRO-04**: DFM RE stock collector — monthly OHLCV via Yahoo Finance API. RE sector stocks (Emaar, Emaar Development, Deyaar, Union Properties). No auth required. Monthly frequency.
 
 ## Tier 2: Commodity, Sentiment & Cost of Living (free API keys)

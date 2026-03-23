@@ -3,38 +3,39 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: Data Expansion
 status: executing
-last_updated: "2026-03-23T15:38:00Z"
+last_updated: "2026-03-23T15:48:00Z"
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: Phase 18 (Macro Economic APIs) — Plan 01 complete, Plan 02 next
-Status: 18-01 executed. 3 macro API sources deployed and producing data. 858 new normalized_monthly rows.
-Last activity: 2026-03-23 — Plan 18-01 completed (World Bank + IMF + DFM stocks).
+Phase: Phase 18 (Macro Economic APIs) — COMPLETE (2/2 plans done)
+Status: All 4 macro sources deployed and producing data. 859 normalized_monthly rows. Macro health dashboard has 8 signal groups.
+Last activity: 2026-03-23 — Plan 18-02 completed (PMI collector + macro health enhancement).
 
 ### v1.5 Phase Status
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
-| 18 | Macro Economic APIs | MACRO-01, MACRO-02, MACRO-03, MACRO-04 | 1/2 plans complete |
+| 18 | Macro Economic APIs | MACRO-01, MACRO-02, MACRO-03, MACRO-04 | COMPLETE (2/2) |
 | 19 | Commodity, Sentiment & CoL | COMM-01, COMM-02, SENT-01, SENT-02, COST-01, CBUAE-01 | Not started |
 | 20 | Dormant Mission Activation | DORM-01, DORM-02, DORM-03 | Not started |
 | 21 | Integration & Verification | INTEG-01 through INTEG-04, VERIF-01 through VERIF-03 | Not started |
 
 ## Resume Instructions
 
-1. Plan 18-01 DONE: World Bank (5 metrics), IMF (10 metrics), DFM stocks (8 metrics) all live
-2. Plan 18-02 next: PMI collector + normalizer + macro health signal groups + nftables
-3. Phase 19 follows — commodities, Reddit/news sentiment, Numbeo, CBUAE expanded
-4. 858 new rows in normalized_monthly; total sources producing data now 14 (was 11)
+1. Phase 18 COMPLETE: World Bank (5), IMF (10), DFM stocks (8), PMI (1) = 24 metrics, 859 rows
+2. Phase 19 next: commodities, Reddit/news sentiment, Numbeo, CBUAE expanded
+3. Macro health dashboard has 8 signal groups (Macro Economy GREEN 0.36, RE Stocks RED -1.30)
+4. 15 total sources in normalized_monthly (was 11 before Phase 18)
 5. Yahoo Finance uses query2 endpoint (query1 rate-limited)
 6. IMF forecast separation working: years > 2026 get `uae|imf_weo_forecast_` prefix
+7. PMI direct HTTP worked (AWS WAF did not block); Ninja Scraper fallback ready
 
 ## Project Reference
 
@@ -53,6 +54,8 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 - API keys stored in HSM, never in plaintext config
 - Yahoo Finance: use query2.finance.yahoo.com as primary (query1 rate-limits)
 - IMF forecast cutoff: datetime.now().year (not hardcoded)
+- PMI: direct HTTP with browser User-Agent works (AWS WAF did not block); Ninja Scraper as fallback
+- Macro health: 8 signal groups (Employment, Housing, Spending, Mobility, Sentiment, Population, Macro Economy, RE Stocks)
 
 ## Production Environment
 - Server: Ubuntu 25.04 (VMware), <HOSTNAME> (<HOST_IP>)
@@ -61,7 +64,7 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 - Default model: Claude Haiku 4.5 via proxy
 - Services: lobsec, lobsec-proxy, lobsec-radicale, lobsec-scraper, lobsec-examy-test.timer
 - Telegram: @lobsec_bot connected
-- 14 sources producing normalized data, 1281 rows in normalized_monthly
+- 15 sources producing normalized data, ~1282 rows in normalized_monthly
 - Automated pipeline: weekly/monthly/quarterly collection + monthly analysis on 25th
 
 ## Performance Metrics
@@ -69,6 +72,7 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
 | 18 | 01 | 485s | 2 | 12 |
+| 18 | 02 | 389s | 2 | 7 |
 
 ## Known Issues (carried)
 - Jetson not routed through proxy (needs CF-Access header injection)
@@ -85,6 +89,6 @@ None active.
 ## Session Continuity
 
 Last session: 2026-03-23
-Stopped at: Completed 18-01-PLAN.md
+Stopped at: Completed 18-02-PLAN.md (Phase 18 fully complete)
 Resume file: N/A
-Next: Execute 18-02-PLAN.md (PMI collector + macro health signal groups).
+Next: Phase 19 (Commodity, Sentiment & CoL).
