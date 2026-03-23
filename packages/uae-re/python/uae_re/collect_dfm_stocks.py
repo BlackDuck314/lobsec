@@ -28,13 +28,16 @@ import requests
 # DFM RE sector stocks (Yahoo Finance symbols)
 STOCKS = ["EMAAR.AE", "EMAARDEV.AE", "DEYAAR.AE", "UPP.AE"]
 
-# Yahoo Finance v8 chart API base URL
-YF_BASE_URL = "https://query1.finance.yahoo.com/v8/finance/chart"
+# Yahoo Finance v8 chart API base URLs (query2 more reliable, query1 as fallback)
+YF_BASE_URLS = [
+    "https://query2.finance.yahoo.com/v8/finance/chart",
+    "https://query1.finance.yahoo.com/v8/finance/chart",
+]
 
 # Required User-Agent header (Yahoo Finance blocks requests without it)
 USER_AGENT = (
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 )
 
 
@@ -57,21 +60,43 @@ def collect_dfm_stocks(output_dir: str) -> dict:
     stocks_data = {}
     total_rows = 0
 
-    headers = {"User-Agent": USER_AGENT}
+    headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "application/json",
+    }
 
     for idx, symbol in enumerate(STOCKS):
-        url = f"{YF_BASE_URL}/{symbol}"
         print(f"Fetching {symbol} from Yahoo Finance...", file=sys.stderr)
 
+        # Try each base URL until one succeeds
+        data = None
+        for base_url in YF_BASE_URLS:
+            url = f"{base_url}/{symbol}"
+            try:
+                resp = requests.get(
+                    url,
+                    params={"interval": "1mo", "range": "5y"},
+                    headers=headers,
+                    timeout=30,
+                )
+                if resp.status_code == 429:
+                    print(f"  Rate limited on {base_url}, trying next...", file=sys.stderr)
+                    time.sleep(2)
+                    continue
+                resp.raise_for_status()
+                data = resp.json()
+                break
+            except requests.exceptions.HTTPError:
+                print(f"  HTTP error on {base_url}, trying next...", file=sys.stderr)
+                time.sleep(1)
+                continue
+
+        if data is None:
+            print(f"  WARNING: All endpoints failed for {symbol}", file=sys.stderr)
+            stocks_data[symbol] = {"timestamps": [], "ohlcv": {}}
+            continue
+
         try:
-            resp = requests.get(
-                url,
-                params={"interval": "1mo", "range": "5y"},
-                headers=headers,
-                timeout=30,
-            )
-            resp.raise_for_status()
-            data = resp.json()
 
             chart = data.get("chart", {})
             error = chart.get("error")
