@@ -12,12 +12,12 @@
 
 ## Tier 2: Commodity, Sentiment & Cost of Living (free API keys)
 
-- [ ] **COMM-01**: Brent crude oil price collector — historical daily/weekly prices via free API (EIA, OilPriceAPI, or similar). Store in HSM if API key needed.
-- [ ] **COMM-02**: Gold price collector — XAU/USD historical via GoldAPI or similar free tier. Dubai = gold hub, correlates with capital flows.
-- [ ] **SENT-01**: Reddit sentiment collector — r/dubai + r/UAE JSON endpoint (.json suffix, no auth). VADER sentiment scoring on posts/comments mentioning real estate keywords. Weekly frequency.
+- [ ] **COMM-01**: Brent crude oil price collector — monthly OHLCV via Yahoo Finance API (BZ=F symbol). No auth required. Same pattern as DFM stocks.
+- [ ] **COMM-02**: Gold price collector — monthly OHLCV via Yahoo Finance API (GC=F symbol). No auth required. Dubai = gold hub, correlates with capital flows.
+- [ ] **SENT-01**: Reddit sentiment collector — r/dubai + r/UAE via existing PRAW collector or .json endpoint. VADER sentiment scoring on RE-related posts. Weekly frequency.
 - [ ] **SENT-02**: News API headline sentiment — UAE business news from newsapi.org (free key, 100 req/day). Keyword filtering for RE/economy terms. VADER scoring. Daily frequency.
-- [ ] **COST-01**: Numbeo cost of living collector — Dubai and Abu Dhabi indices via API (free key). Rent index, groceries, restaurant prices. Monthly frequency.
-- [ ] **CBUAE-01**: CBUAE Open Data expanded — interest rates, money supply, banking indicators from centralbank.ae open data portal (CSV/JSON download). Beyond existing PDF scraping.
+- [ ] **COST-01**: Cost of living proxy — use existing World Bank CPI data (Phase 18) + rental data as cost-of-living signals. Numbeo has no free tier ($260/mo). No new collector needed.
+- [ ] **CBUAE-01**: CBUAE expanded monetary data — M1/M2/M3, base rate, EIBOR, banking assets/credit/deposits from QER PDF reports via pdfplumber. Quarterly frequency.
 
 ## Tier 3: Dormant Mission Activation
 
