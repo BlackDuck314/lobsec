@@ -168,9 +168,9 @@ Add API-based data sources with historical backfill to accelerate statistical an
   - [ ] 18-02-PLAN.md — PMI collector + normalizer + macro health signal groups + nftables + end-to-end verification
   Success criteria:
   1. World Bank collector fetches UAE GDP growth, CPI inflation, FDI, trade balance, population via REST API (country=ARE); historical data back to 2010+ normalized into monthly rows
-  2. IMF collector fetches WEO forecasts and IFS indicators for UAE; quarterly/annual data normalized
-  3. PMI collector extracts UAE monthly PMI value from S&P Global press release text; stored as monthly metric
-  4. DFM collector downloads RE sector stock prices (Emaar, DAMAC, Deyaar, Union Properties) from dfm.ae CSV; weekly closing prices normalized
+  2. IMF DataMapper collector fetches WEO historical + forecasts for UAE; annual data normalized with forecast separation
+  3. PMI collector extracts UAE monthly PMI value from S&P Global press release PDF; stored as monthly metric
+  4. DFM stock collector fetches RE sector prices (Emaar, Emaar Development, Deyaar, Union Properties) via Yahoo Finance API; monthly OHLCV normalized
 
 - [ ] Phase 19: Commodity, Sentiment & Cost of Living — Oil, gold, Reddit, News API, Numbeo, CBUAE expanded
   Requirements: COMM-01, COMM-02, SENT-01, SENT-02, COST-01, CBUAE-01

@@ -75,9 +75,9 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 <!-- Current scope. Defined in REQUIREMENTS.md when next milestone starts. -->
 
 - MACRO-01: World Bank API collector (GDP, inflation, FDI, trade, population) — v1.5
-- MACRO-02: IMF Data API collector (WEO forecasts, IFS indicators) — v1.5
+- MACRO-02: IMF DataMapper API collector (WEO historical + forecasts) — v1.5
 - MACRO-03: S&P Global PMI collector (monthly press release extraction) — v1.5
-- MACRO-04: DFM stock market collector (RE sector stocks CSV) — v1.5
+- MACRO-04: DFM RE stock collector (Yahoo Finance API, monthly OHLCV) — v1.5
 - COMM-01: Brent crude oil price collector — v1.5
 - COMM-02: Gold price collector — v1.5
 - SENT-01: Reddit sentiment collector (r/dubai + r/UAE, VADER) — v1.5
