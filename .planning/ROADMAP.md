@@ -162,6 +162,10 @@ Add API-based data sources with historical backfill to accelerate statistical an
 - [ ] Phase 18: Macro Economic APIs — World Bank, IMF, PMI, DFM stock data
   Requirements: MACRO-01, MACRO-02, MACRO-03, MACRO-04
   Goal: 4 new API collectors producing historical macro data (GDP, inflation, PMI, RE stocks). These provide years of backfill, immediately enabling statistical analysis on macro signals.
+  **Plans:** 2 plans
+  Plans:
+  - [ ] 18-01-PLAN.md — World Bank, IMF, DFM stock collectors + normalizers + TS registry + build + deploy + verify
+  - [ ] 18-02-PLAN.md — PMI collector + normalizer + macro health signal groups + nftables + end-to-end verification
   Success criteria:
   1. World Bank collector fetches UAE GDP growth, CPI inflation, FDI, trade balance, population via REST API (country=ARE); historical data back to 2010+ normalized into monthly rows
   2. IMF collector fetches WEO forecasts and IFS indicators for UAE; quarterly/annual data normalized
@@ -225,10 +229,10 @@ Add API-based data sources with historical backfill to accelerate statistical an
 | 15. Dubai Pulse Integration | v1.4 | 0/TBD | Not started | - |
 | 16. Pipeline Automation | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 17. End-to-End Verification | v1.4 | 2/2 | Complete | 2026-03-17 |
-| 18. Macro Economic APIs | v1.5 | 0/TBD | Not started | - |
+| 18. Macro Economic APIs | v1.5 | 0/2 | Planned | - |
 | 19. Commodity, Sentiment & CoL | v1.5 | 0/TBD | Not started | - |
 | 20. Dormant Mission Activation | v1.5 | 0/TBD | Not started | - |
 | 21. Integration & Verification | v1.5 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-23 — v1.5 milestone started*
+*Roadmap updated: 2026-03-23 — Phase 18 planned (2 plans)*
