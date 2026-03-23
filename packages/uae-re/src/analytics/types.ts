@@ -73,9 +73,11 @@ export type PythonScriptName =
   | "collect_worldbank"
   | "collect_imf"
   | "collect_dfm_stocks"
+  | "collect_pmi"
   | "normalize_worldbank"
   | "normalize_imf"
-  | "normalize_dfm_stocks";
+  | "normalize_dfm_stocks"
+  | "normalize_pmi";
 
 /**
  * Configuration for the Python subprocess bridge.

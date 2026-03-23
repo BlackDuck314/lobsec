@@ -20,7 +20,7 @@ import type {
 } from "./types.js";
 
 /**
- * Collector definitions for 37 UAE RE sources.
+ * Collector definitions for 38 UAE RE sources.
  * Each entry maps to a Ninja Scraper YAML mission file (or a DirectPythonCollector source).
  */
 const COLLECTOR_DEFINITIONS: Array<{
@@ -188,6 +188,10 @@ const COLLECTOR_DEFINITIONS: Array<{
     missionName: "dfm-stocks",
     metadata: { source: "dfm-stocks", frequency: "monthly", priority: 3, timeout: 60_000 },
   },
+  {
+    missionName: "spglobal-pmi",
+    metadata: { source: "spglobal-pmi", frequency: "monthly", priority: 2, timeout: 120_000 },
+  },
 ];
 
 /**
@@ -222,6 +226,7 @@ export class CollectorRegistry {
       "worldbank-macro": "collect_worldbank",
       "imf-weo": "collect_imf",
       "dfm-stocks": "collect_dfm_stocks",
+      "spglobal-pmi": "collect_pmi",
     };
 
     for (const def of COLLECTOR_DEFINITIONS) {

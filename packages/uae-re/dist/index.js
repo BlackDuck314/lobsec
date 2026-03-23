@@ -201,7 +201,7 @@ export default {
                                 return textResult(cached.formattedText);
                             const rows = db
                                 .prepare(`SELECT area, score FROM composite_scores
-                 WHERE measurement_date = (SELECT MAX(measurement_date) FROM composite_scores)
+                 WHERE computed_at = (SELECT MAX(computed_at) FROM composite_scores)
                  ORDER BY score DESC LIMIT 5`)
                                 .all();
                             if (rows.length === 0)

@@ -133,4 +133,5 @@ export const SOURCE_MODULE_MAP: Record<string, string> = {
   "worldbank-macro": "normalize_worldbank",
   "imf-weo": "normalize_imf",
   "dfm-stocks": "normalize_dfm_stocks",
+  "spglobal-pmi": "normalize_pmi",
 };
