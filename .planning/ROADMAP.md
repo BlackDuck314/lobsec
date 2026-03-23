@@ -6,7 +6,7 @@
 - v1.1 Tool Reliability — Skills cleanup + GitHub tool (shipped 2026-03-04)
 - v1.2 Examy QA Automation — Phases 1-5 (shipped 2026-03-06)
 - v1.3 UAE Real Estate Intelligence System — Phases 6-12 (shipped 2026-03-16)
-- **v1.4 UAE RE Intelligence Activation** — Phases 13-17 (planned)
+- **v1.4 UAE RE Intelligence Activation** — Phases 13-17 (shipped 2026-03-18)
 
 ## Phases
 
@@ -146,87 +146,17 @@
 </details>
 
 <details>
-<summary>v1.4 UAE RE Intelligence Activation — Phases 13-17 (planned)</summary>
+<summary>v1.4 UAE RE Intelligence Activation — SHIPPED 2026-03-18</summary>
 
-Normalize captured data, backfill history, register Dubai Pulse, automate the full pipeline, and verify the system produces real intelligence answers via Telegram.
-
-- [x] **Phase 13: Normalizer Fixes** - All captured raw data correctly transformed into normalized_monthly rows ✅ 2026-03-17
-- [x] **Phase 14: Historical Backfill** - 3+ years of time-series depth unlocked for statistical analysis ✅ 2026-03-17
-- [ ] **Phase 15: Dubai Pulse Integration** - DLD/Ejari/Permits flowing from official API (requires user registration)
-- [x] **Phase 16: Pipeline Automation** - Full scrape→ingest→normalize→analyze chain runs on schedule without manual intervention ✅ 2026-03-17
-- [x] **Phase 17: End-to-End Verification** - At least 3 intelligence products return real data via Telegram ✅ 2026-03-17
+- [x] Phases 13-14, 16-17: Normalizers fixed, historical backfill, pipeline automated, 3+ tools verified via Telegram
+- [ ] Phase 15: Dubai Pulse Integration — deferred (user registration at dubaidata.ae required)
+- See [archived roadmap](milestones/v1.4-ROADMAP.md) for full details
 
 </details>
 
 ## Phase Details
 
-### Phase 13: Normalizer Fixes
-**Goal**: All captured raw data correctly transformed into normalized_monthly rows
-**Depends on**: Phase 12 (v1.3 infrastructure complete)
-**Requirements**: NORM-06, NORM-07, NORM-08, NORM-09
-**Success Criteria** (what must be TRUE):
-  1. DXB Airport normalizer parses the HTML fact file JSON and writes passenger_count, top_origin_market, quarterly breakdown rows to normalized_monthly for the current scrape cycle
-  2. MOHRE Observatory normalizer parses dashboard JSON and writes workforce_growth_rate, establishment_growth_rate, emiratisation_count rows to normalized_monthly
-  3. DSC normalizer runs pdfplumber on the demographics PDF and writes total_population, expat_count, national_count, population_growth_rate rows to normalized_monthly
-  4. All 8 existing sources (PropertyFinder, ADREC, Bayt, LinkedIn, Indeed, KHDA, CBUAE, DP World) have at least 1 row each in normalized_monthly after a triggered collection run
-**Plans:** 4 plans
-Plans:
-- [x] 01-PLAN.md — Rewrite DXB normalizer for HTML fact file JSON (NORM-06)
-- [x] 02-PLAN.md — Rewrite MOHRE normalizer for observatory dashboard JSON (NORM-07)
-- [x] 03-PLAN.md — Rewrite DSC normalizer for PDF extraction via pdfplumber (NORM-08)
-- [x] 04-PLAN.md — Verify all 8 sources + deploy normalizer fixes to production (NORM-09) ✅ 2026-03-17
-
-### Phase 14: Historical Backfill
-**Goal**: 3+ years of time-series depth available in normalized_monthly to unlock statistical analysis
-**Depends on**: Phase 13 (normalizers must be correct before backfilling)
-**Requirements**: BACK-01, BACK-02, BACK-03, BACK-04, BACK-05
-**Success Criteria** (what must be TRUE):
-  1. DSC normalized_monthly contains population rows for 2022, 2023, and 2024 annual publications (3 rows minimum)
-  2. DXB normalized_monthly contains at least 12 monthly or quarterly passenger count observations spanning 2022-2024
-  3. MOHRE normalized_monthly contains at least 16 monthly workforce observations spanning 2021-2025
-  4. CBUAE normalized_monthly contains at least 4 quarterly remittance/transfer rows covering consecutive quarters
-  5. DP World normalized_monthly contains at least 3 annual throughput rows covering 2022, 2023, 2024
-**Plans:** 2 plans
-Plans:
-- [x] 01-PLAN.md — Backfill DSC + MOHRE + DP World + DXB (standalone Python scripts parsing existing raw data + press releases) ✅ 2026-03-17
-- [x] 02-PLAN.md — Backfill CBUAE (cumulative YTD de-accumulation from Statistical Bulletin PDF) + final verification ✅ 2026-03-17
-
-### Phase 15: Dubai Pulse Integration
-**Goal**: Official DLD/Ejari/Permits data flows from Dubai Pulse API into the collection pipeline
-**Depends on**: Phase 13 (normalizers), user action (DATA-01 registration at dubaidata.ae)
-**Requirements**: DATA-01, DATA-02, DATA-03, DATA-04
-**Success Criteria** (what must be TRUE):
-  1. Dubai Pulse API credentials are registered at dubaidata.ae and stored in HSM (user must complete registration before this criterion can be met)
-  2. DLD sales transaction collector queries the Dubai Pulse API and writes transaction_count, median_price_sqft, total_value rows to normalized_monthly
-  3. Ejari rental contract collector queries the Dubai Pulse API and writes new_contracts, renewed_contracts, avg_annual_rent rows to normalized_monthly
-  4. Building permits collector queries the Dubai Pulse API and writes residential_permits, commercial_permits rows to normalized_monthly
-**Plans**: TBD
-
-### Phase 16: Pipeline Automation
-**Goal**: The full scrape→ingest→normalize→analyze chain executes automatically with no manual intervention
-**Depends on**: Phase 13 (normalizers correct), Phase 14 (backfill complete)
-**Requirements**: AUTO-01, AUTO-02, AUTO-03
-**Success Criteria** (what must be TRUE):
-  1. After a collection run completes (triggered manually or by timer), normalized_monthly rows appear for the collected sources without any manual normalization step
-  2. The analysis pipeline (stationarity, Granger, composites, anomalies) runs automatically on the 25th of the month and its completion is logged to analysis_log
-  3. All three collection timer schedules (weekly Mon 02:00 UTC, monthly 1st 02:00 UTC, quarterly 15th Jan/Apr/Jul/Oct 05:00 UTC) are confirmed active via systemctl list-timers and have a successful last-run entry
-**Plans:** 2 plans
-Plans:
-- [x] 16-01-PLAN.md — Fix 5 failing normalizers (jobs dict format, listings scrapedAt) + deploy to production ✅ 2026-03-17
-- [x] 16-02-PLAN.md — Verify full pipeline: trigger collection, confirm normalization, trigger analysis, confirm timers ✅ 2026-03-17
-
-### Phase 17: End-to-End Verification
-**Goal**: The intelligence system produces real, data-backed answers to Telegram queries
-**Depends on**: Phase 16 (automation wired), Phase 14 (backfill provides sufficient data depth)
-**Requirements**: VERIF-01, VERIF-02, VERIF-03
-**Success Criteria** (what must be TRUE):
-  1. At least 3 of the 13 plugin tools (e.g. uae_area_signal, uae_rental_intel, uae_macro_health) return non-null intelligence data when queried via Telegram — not placeholder or "no data" responses
-  2. uae_macro_health returns a traffic-light breakdown covering at least 2 of the 6 signal groups with green/amber/red status based on real normalized data
-  3. uae_collection_status shows all active sources with a last_successful_run timestamp within the past 7 days
-**Plans:** 2 plans
-Plans:
-- [x] 17-01-PLAN.md — Fix macro health source/metric mapping + fix raw_data tool query ✅ 2026-03-17
-- [x] 17-02-PLAN.md — Verify all 3 VERIF requirements via Telegram (human-verify checkpoint) ✅ 2026-03-17
+*v1.4 phase details archived to [milestones/v1.4-ROADMAP.md](milestones/v1.4-ROADMAP.md)*
 
 ## Progress
 
@@ -252,4 +182,4 @@ Plans:
 | 17. End-to-End Verification | v1.4 | 2/2 | Complete | 2026-03-17 |
 
 ---
-*Roadmap updated: 2026-03-17 after Phase 17 complete -- all 3 VERIF requirements verified via Telegram, v1.4 milestone effectively shipped*
+*Roadmap updated: 2026-03-23 — v1.4 milestone archived*
