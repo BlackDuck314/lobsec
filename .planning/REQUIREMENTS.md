@@ -17,7 +17,7 @@
 - [x] **SENT-01**: Reddit sentiment collector — r/dubai + r/UAE via existing PRAW collector. VADER sentiment scoring on RE-related posts. Weekly frequency. [r/UAE added to SUBREDDITS]
 - [x] **SENT-02**: News API headline sentiment — UAE business news from newsapi.org (free key, 100 req/day). Keyword filtering for RE/economy terms. VADER scoring. Daily frequency. [Registered, awaiting API key]
 - [x] **COST-01**: Cost of living proxy — use existing World Bank CPI data (Phase 18) + rental data as cost-of-living signals. Numbeo has no free tier ($260/mo). No new collector needed. [Satisfied by uae|wb_cpi_inflation_pct]
-- [ ] **CBUAE-01**: CBUAE expanded monetary data — M1/M2/M3, base rate, EIBOR, banking assets/credit/deposits from QER PDF reports via pdfplumber. Quarterly frequency.
+- [x] **CBUAE-01**: CBUAE expanded monetary data — M1/M2/M3, base rate, EIBOR, banking assets/credit/deposits from QER PDF reports via pdfplumber. Quarterly frequency. [7/8 metrics extracted, EIBOR not stated as percentage in prose text, 47 rows, 10 quarters]
 
 ## Tier 3: Dormant Mission Activation
 

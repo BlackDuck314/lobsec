@@ -3,39 +3,39 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: Data Expansion
 status: executing
-last_updated: "2026-03-23T16:43:00Z"
+last_updated: "2026-03-23T17:06:00Z"
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
+  completed_plans: 4
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: Phase 19 (Commodity, Sentiment & CoL) — IN PROGRESS (1/2 plans done)
-Status: Commodities (Brent + Gold) collected and normalized. Reddit r/UAE added. NewsAPI collector registered (deferred: needs API key). COST-01 satisfied by existing CPI.
-Last activity: 2026-03-23 — Plan 19-01 completed (commodities + sentiment collectors).
+Phase: Phase 19 (Commodity, Sentiment & CoL) — COMPLETE (2/2 plans done)
+Status: All Phase 19 sources deployed. Commodities (Brent + Gold), CBUAE expanded (7 metrics from QER PDFs), Reddit r/UAE, NewsAPI registered. COST-01 satisfied by existing CPI.
+Last activity: 2026-03-23 — Plan 19-02 completed (CBUAE expanded QER PDF extraction).
 
 ### v1.5 Phase Status
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
 | 18 | Macro Economic APIs | MACRO-01, MACRO-02, MACRO-03, MACRO-04 | COMPLETE (2/2) |
-| 19 | Commodity, Sentiment & CoL | COMM-01, COMM-02, SENT-01, SENT-02, COST-01, CBUAE-01 | IN PROGRESS (1/2) |
+| 19 | Commodity, Sentiment & CoL | COMM-01, COMM-02, SENT-01, SENT-02, COST-01, CBUAE-01 | COMPLETE (2/2) |
 | 20 | Dormant Mission Activation | DORM-01, DORM-02, DORM-03 | Not started |
 | 21 | Integration & Verification | INTEG-01 through INTEG-04, VERIF-01 through VERIF-03 | Not started |
 
 ## Resume Instructions
 
 1. Phase 18 COMPLETE: World Bank (5), IMF (10), DFM stocks (8), PMI (1) = 24 metrics, 859 rows
-2. Phase 19 Plan 01 COMPLETE: commodities (4 metrics, 208 rows), Reddit r/UAE added, NewsAPI registered
-3. Phase 19 Plan 02 next: CBUAE expanded QER PDF extraction
-4. 16 total sources in normalized_monthly (was 15)
+2. Phase 19 COMPLETE: commodities (4 metrics, 208 rows), CBUAE expanded (7 metrics, 47 rows), Reddit r/UAE added, NewsAPI registered
+3. Phase 20 next: Dormant Mission Activation
+4. 17 total sources in normalized_monthly (~1541 rows)
 5. COST-01 satisfied by existing World Bank CPI -- no new collector needed
 6. NewsAPI collector registered but not tested (needs NEWSAPI_KEY from user)
-7. Commodity data: Brent $103/bbl, Gold $4367/oz (Mar 2026)
+7. CBUAE expanded: 5/5 PDFs, 7/8 metrics (EIBOR not extractable from prose), 10 quarters (Q3 2023 - Q4 2025)
 
 ## Project Reference
 
@@ -58,6 +58,7 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 - Macro health: 8 signal groups (Employment, Housing, Spending, Mobility, Sentiment, Population, Macro Economy, RE Stocks)
 - Commodities: BZ=F (Brent) + GC=F (Gold) collected via Yahoo Finance v8 (same pattern as DFM stocks)
 - COST-01: Numbeo has no free tier ($260/mo); satisfied by existing World Bank CPI data
+- CBUAE expanded: M1/M2/M3 extracted from PDF prose text via iterative number search; banking tables provide 5-quarter backfill; EIBOR not explicitly stated in text (7/8 metrics)
 
 ## Production Environment
 - Server: Ubuntu 25.04 (VMware), <HOSTNAME> (<HOST_IP>)
@@ -66,7 +67,7 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 - Default model: Claude Haiku 4.5 via proxy
 - Services: lobsec, lobsec-proxy, lobsec-radicale, lobsec-scraper, lobsec-examy-test.timer
 - Telegram: @lobsec_bot connected
-- 16 sources producing normalized data, ~1490 rows in normalized_monthly
+- 17 sources producing normalized data, ~1541 rows in normalized_monthly
 - Automated pipeline: weekly/monthly/quarterly collection + monthly analysis on 25th
 
 ## Performance Metrics
@@ -76,6 +77,7 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 | 18 | 01 | 485s | 2 | 12 |
 | 18 | 02 | 389s | 2 | 7 |
 | 19 | 01 | 289s | 2 | 10 |
+| 19 | 02 | 1134s | 2 | 6 |
 
 ## Known Issues (carried)
 - Jetson not routed through proxy (needs CF-Access header injection)
@@ -92,6 +94,6 @@ None active.
 ## Session Continuity
 
 Last session: 2026-03-23
-Stopped at: Completed 19-01-PLAN.md (commodities + sentiment collectors)
+Stopped at: Completed 19-02-PLAN.md (CBUAE expanded QER PDF extraction)
 Resume file: N/A
-Next: Phase 19 Plan 02 (CBUAE expanded QER PDF extraction).
+Next: Phase 20 (Dormant Mission Activation).

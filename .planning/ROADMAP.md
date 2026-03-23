@@ -178,7 +178,7 @@ Add API-based data sources with historical backfill to accelerate statistical an
   **Plans:** 2 plans
   Plans:
   - [x] 19-01-PLAN.md — Commodities collector + Reddit enhancement + NewsAPI collector + TS registration + deploy + verify (208 rows, 4 metrics)
-  - [ ] 19-02-PLAN.md — CBUAE expanded QER PDF extraction + TS registration + deploy + verify
+  - [x] 19-02-PLAN.md — CBUAE expanded QER PDF extraction + TS registration + deploy + verify (47 rows, 7 metrics, 10 quarters)
   Success criteria:
   1. Brent crude and gold price collectors fetch monthly OHLCV via Yahoo Finance API (BZ=F, GC=F); normalized to 4 monthly metrics
   2. Reddit sentiment collector includes r/UAE alongside r/dubai and r/dubairealestate
@@ -234,9 +234,9 @@ Add API-based data sources with historical backfill to accelerate statistical an
 | 16. Pipeline Automation | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 17. End-to-End Verification | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 18. Macro Economic APIs | v1.5 | 2/2 | Complete | 2026-03-23 |
-| 19. Commodity, Sentiment & CoL | v1.5 | 1/2 | In Progress | - |
+| 19. Commodity, Sentiment & CoL | v1.5 | 2/2 | Complete | 2026-03-23 |
 | 20. Dormant Mission Activation | v1.5 | 0/TBD | Not started | - |
 | 21. Integration & Verification | v1.5 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-23 — Phase 19 Plan 01 complete (commodities + sentiment). Plan 02 next (CBUAE expanded).*
+*Roadmap updated: 2026-03-23 — Phase 19 complete (2/2 plans: commodities, sentiment, CBUAE expanded). Phase 20 next (dormant mission activation).*
