@@ -204,6 +204,9 @@ Add API-based data sources with historical backfill to accelerate statistical an
 - [ ] Phase 21: Integration & Verification — Wire everything, verify enhanced intelligence
   Requirements: INTEG-01, INTEG-02, INTEG-03, INTEG-04, VERIF-01, VERIF-02, VERIF-03
   Goal: All new sources integrated into pipeline, macro health product enhanced, 20+ sources live.
+  **Plans:** 1 plan
+  Plans:
+  - [ ] 21-01-PLAN.md — Fix macro health (add Commodities, fix Sentiment), deploy, verify all 7 INTEG/VERIF requirements
   Success criteria:
   1. All new collectors registered in CollectorRegistry with correct frequencies and timeouts
   2. nftables egress updated; API keys in HSM; credential redactor patterns added
@@ -241,7 +244,7 @@ Add API-based data sources with historical backfill to accelerate statistical an
 | 18. Macro Economic APIs | v1.5 | 2/2 | Complete | 2026-03-23 |
 | 19. Commodity, Sentiment & CoL | v1.5 | 2/2 | Complete | 2026-03-23 |
 | 20. Dormant Mission Activation | v1.5 | 2/2 | Complete | 2026-03-25 |
-| 21. Integration & Verification | v1.5 | 0/TBD | Not started | - |
+| 21. Integration & Verification | v1.5 | 0/1 | Planned | - |
 
 ---
-*Roadmap updated: 2026-03-25 — Phase 20 complete (2/2 plans). 20 sources, 1,866 rows. Phase 21 next.*
+*Roadmap updated: 2026-03-25 — Phase 21 planned (1 plan). Final milestone verification phase.*
