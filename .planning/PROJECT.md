@@ -82,7 +82,11 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 
 <!-- Current scope. Defined in REQUIREMENTS.md when next milestone starts. -->
 
-*No active milestone. Start next with `/gsd:new-milestone`.*
+- PULSE-01 through PULSE-08: Dubai Pulse API integration (DLD, Ejari, DEWA, RTA, DTCM, permits) — v1.6
+- QUAL-01 through QUAL-05: Bayut API, Reddit/NewsAPI creds, first Granger analysis, composite index — v1.6
+- BOT-01 through BOT-04: Weekly/monthly digests, sparklines, proactive anomaly alerts — v1.6
+- SEC-01 through SEC-05: mTLS, Jetson proxy, nftables separation, sandbox, LUKS — v1.6
+- VERIF-01 through VERIF-05: 27+ sources, Granger signals, digest, mTLS, alerts — v1.6
 
 ### Out of Scope
 
@@ -152,7 +156,7 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 ## Current State
 
 **Latest shipped:** v1.5 Data Expansion (2026-03-25)
-**Current milestone:** None active
+**Current milestone:** v1.6 Full Activation (started 2026-03-25)
 
 **What's live:**
 - 13 UAE RE plugin tools accessible via Telegram (@lobsec_bot)

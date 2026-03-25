@@ -8,6 +8,7 @@
 - v1.3 UAE Real Estate Intelligence System — Phases 6-12 (shipped 2026-03-16)
 - **v1.4 UAE RE Intelligence Activation** — Phases 13-17 (shipped 2026-03-18)
 - **v1.5 Data Expansion** — Phases 18-21 (shipped 2026-03-25) — [archived](milestones/v1.5-ROADMAP.md)
+- **v1.6 Full Activation** — Phases 22-26 (in progress)
 
 ## Phases
 
@@ -163,6 +164,52 @@
 
 </details>
 
+## v1.6 Full Activation — Phases 22-25
+
+Unlock blocked Dubai government data via Dubai Pulse APIs, run first real Granger causality analysis, make bot intelligence useful with scheduled reports and alerts, complete security hardening.
+
+- [ ] Phase 22: Dubai Pulse API Integration — OAuth2 client + 7 government data collectors via Dubai Pulse
+  Requirements: PULSE-01, PULSE-02, PULSE-03, PULSE-04, PULSE-05, PULSE-06, PULSE-07, PULSE-08
+  Goal: Build shared Dubai Pulse OAuth2 client, implement collectors for DLD transactions, Ejari rentals, DEWA connections, building permits, RTA metro/vehicles, DTCM tourism. DLD data unlocks Granger causality analysis.
+  Success criteria:
+  1. Dubai Pulse OAuth2 client handles token refresh, credentials stored in HSM
+  2. DLD transactions collected and normalized to monthly price/volume per area
+  3. Ejari rental contracts collected and normalized to monthly rent levels
+  4. DEWA, RTA, DTCM, building permits collectors all producing normalized data
+  5. 7 new sources in normalized_monthly (27+ total)
+
+- [ ] Phase 23: Data Quality & First Granger — Bayut API, credentials, first real statistical analysis
+  Requirements: QUAL-01, QUAL-02, QUAL-03, QUAL-04, QUAL-05
+  Goal: Replace broken Bayut scraper with API, provision Reddit/NewsAPI credentials, run first Granger causality with DLD target data. Produce validated leading indicators and composite scores.
+  Success criteria:
+  1. Bayut listings via bayutapi.com (750 free calls/month) replacing broken scraper
+  2. Reddit and NewsAPI credentials in HSM, sentiment data collecting
+  3. Granger causality produces 5+ validated leading indicators (p < 0.05)
+  4. First real composite buy/sell signal scores generated
+
+- [ ] Phase 24: Bot Intelligence UX — Scheduled reports, sparklines, proactive alerts
+  Requirements: BOT-01, BOT-02, BOT-03, BOT-04
+  Goal: Make Telegram bot proactively useful — weekly digest, monthly market report, sparkline formatting, anomaly alerts.
+  Success criteria:
+  1. Weekly digest sent automatically every Monday via Telegram
+  2. Monthly comprehensive report sent on 26th after analysis pipeline
+  3. Responses include Unicode sparklines, comparison tables, freshness badges
+  4. Proactive alert fires when EWMA detects significant metric change
+
+- [ ] Phase 25: Security Hardening — mTLS, Jetson proxy, nftables, sandbox, LUKS
+  Requirements: SEC-01, SEC-02, SEC-03, SEC-04, SEC-05
+  Goal: Complete all deferred security items — enforce mTLS between services, route Jetson through proxy, separate nftables users, activate hardened sandbox, encrypt disk.
+  Success criteria:
+  1. mTLS enforced between gateway, proxy, and plugin services
+  2. Jetson traffic routed through proxy with CF-Access header injection
+  3. nftables per-user egress (lobsec-proxy → HTTPS, lobsec → loopback)
+  4. Hardened sandbox image active (lobsec-sandbox:hardened + seccomp)
+  5. LUKS encryption on /opt/lobsec with auto-unlock
+
+- [ ] Phase 26: Integration & Verification — End-to-end milestone verification
+  Requirements: VERIF-01, VERIF-02, VERIF-03, VERIF-04, VERIF-05
+  Goal: Verify all milestone targets met — 27+ sources, Granger signals, scheduled digest, mTLS, alerts.
+
 ## Phase Details (Archived)
 
 *v1.4 phase details archived to [milestones/v1.4-ROADMAP.md](milestones/v1.4-ROADMAP.md)*
@@ -194,6 +241,11 @@
 | 19. Commodity, Sentiment & CoL | v1.5 | 2/2 | Complete | 2026-03-23 |
 | 20. Dormant Mission Activation | v1.5 | 2/2 | Complete | 2026-03-25 |
 | 21. Integration & Verification | v1.5 | 1/1 | Complete | 2026-03-25 |
+| 22. Dubai Pulse API Integration | v1.6 | 0/TBD | Not started | - |
+| 23. Data Quality & First Granger | v1.6 | 0/TBD | Not started | - |
+| 24. Bot Intelligence UX | v1.6 | 0/TBD | Not started | - |
+| 25. Security Hardening | v1.6 | 0/TBD | Not started | - |
+| 26. Integration & Verification | v1.6 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-25 — v1.5 Data Expansion milestone COMPLETE. All 4 phases delivered.*
+*Roadmap updated: 2026-03-25 — v1.6 Full Activation milestone started. 5 phases planned (22-26).*
