@@ -29,16 +29,19 @@ const COLLECTOR_DEFINITIONS: Array<{
 }> = [
   // Phase 7 Tier A — Core transaction and listing sources
   {
+    // RETIRED Phase 20: Dubai Pulse WAF blocks all headless requests
     missionName: "dld-sales",
-    metadata: { source: "dld-sales", frequency: "weekly", priority: 1, timeout: 120_000 },
+    metadata: { source: "dld-sales", frequency: "weekly", priority: 1, timeout: 120_000, enabled: false },
   },
   {
+    // RETIRED Phase 20: Dubai Pulse WAF blocks all headless requests
     missionName: "ejari-rentals",
-    metadata: { source: "ejari-rentals", frequency: "weekly", priority: 1, timeout: 120_000 },
+    metadata: { source: "ejari-rentals", frequency: "weekly", priority: 1, timeout: 120_000, enabled: false },
   },
   {
+    // RETIRED Phase 20: Dubai Pulse WAF blocks all headless requests
     missionName: "building-permits",
-    metadata: { source: "building-permits", frequency: "monthly", priority: 2, timeout: 120_000 },
+    metadata: { source: "building-permits", frequency: "monthly", priority: 2, timeout: 120_000, enabled: false },
   },
   {
     missionName: "adrec-abu-dhabi",
@@ -53,8 +56,9 @@ const COLLECTOR_DEFINITIONS: Array<{
     metadata: { source: "propertyfinder-listings", frequency: "weekly", priority: 3, timeout: 600_000 },
   },
   {
+    // RETIRED Phase 20: DEWA site blocks headless browsers (timeout)
     missionName: "dewa-connections",
-    metadata: { source: "dewa-connections", frequency: "monthly", priority: 2, timeout: 300_000 },
+    metadata: { source: "dewa-connections", frequency: "monthly", priority: 2, timeout: 300_000, enabled: false },
   },
 
   // Phase 8 Tier B — Government/Institutional Sources
@@ -67,16 +71,18 @@ const COLLECTOR_DEFINITIONS: Array<{
     metadata: { source: "dxb-passengers", frequency: "monthly", priority: 2, timeout: 300_000 },
   },
   {
+    // DORMANT Phase 20: GDRFA site blocks headless browsers, no raw data
     missionName: "gdrfa-visas",
-    metadata: { source: "gdrfa-visas", frequency: "quarterly", priority: 2, timeout: 300_000 },
+    metadata: { source: "gdrfa-visas", frequency: "quarterly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
     missionName: "khda-enrollment",
     metadata: { source: "khda-enrollment", frequency: "quarterly", priority: 2, timeout: 300_000 },
   },
   {
+    // DORMANT Phase 20: Dubai Pulse WAF, null data
     missionName: "rta-vehicles",
-    metadata: { source: "rta-vehicles", frequency: "monthly", priority: 2, timeout: 300_000 },
+    metadata: { source: "rta-vehicles", frequency: "monthly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
     missionName: "cbuae-remittances",
@@ -97,22 +103,26 @@ const COLLECTOR_DEFINITIONS: Array<{
     metadata: { source: "indeed-jobs", frequency: "weekly", priority: 3, timeout: 600_000 },
   },
   {
+    // RETIRED Phase 20: Requires paid account credentials
     missionName: "gulftalent-jobs",
-    metadata: { source: "gulftalent-jobs", frequency: "weekly", priority: 3, timeout: 600_000 },
+    metadata: { source: "gulftalent-jobs", frequency: "weekly", priority: 3, timeout: 600_000, enabled: false },
   },
 
   // Phase 8 Tier B — Salary Surveys (quarterly, medium priority)
   {
+    // DORMANT Phase 20: Paywalled salary survey reports, no public data
     missionName: "cooper-fitch-salary",
-    metadata: { source: "cooper-fitch-salary", frequency: "quarterly", priority: 2, timeout: 300_000 },
+    metadata: { source: "cooper-fitch-salary", frequency: "quarterly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
+    // DORMANT Phase 20: Paywalled salary survey reports, no public data
     missionName: "hays-salary",
-    metadata: { source: "hays-salary", frequency: "quarterly", priority: 2, timeout: 300_000 },
+    metadata: { source: "hays-salary", frequency: "quarterly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
+    // DORMANT Phase 20: Paywalled salary survey reports, no public data
     missionName: "roberthalf-salary",
-    metadata: { source: "roberthalf-salary", frequency: "quarterly", priority: 2, timeout: 300_000 },
+    metadata: { source: "roberthalf-salary", frequency: "quarterly", priority: 2, timeout: 300_000, enabled: false },
   },
 
   // Phase 9 Tier C — Daily sources (DirectPythonCollector — no Ninja Scraper)
@@ -127,30 +137,35 @@ const COLLECTOR_DEFINITIONS: Array<{
 
   // Phase 9 Tier C — Weekly sources
   {
+    // RETIRED Phase 20: Google Maps Popular Times not scrapable at scale (1hr timeout)
     missionName: "google-maps-traffic",
-    metadata: { source: "google-maps-traffic", frequency: "weekly", priority: 3, timeout: 3_600_000 },
+    metadata: { source: "google-maps-traffic", frequency: "weekly", priority: 3, timeout: 3_600_000, enabled: false },
   },
 
   // Phase 9 Tier C — Monthly sources
   {
+    // DORMANT Phase 20: RTA stats page requires complex JS, null data
     missionName: "rta-metro",
-    metadata: { source: "rta-metro", frequency: "monthly", priority: 2, timeout: 300_000 },
+    metadata: { source: "rta-metro", frequency: "monthly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
+    // DORMANT Phase 20: DTCM page needs special JS execution, empty JSON
     missionName: "dtcm-tourism",
-    metadata: { source: "dtcm-tourism", frequency: "monthly", priority: 2, timeout: 300_000 },
+    metadata: { source: "dtcm-tourism", frequency: "monthly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
+    // DORMANT Phase 20: Behind DED portal login, no public data
     missionName: "ded-licenses",
-    metadata: { source: "ded-licenses", frequency: "monthly", priority: 2, timeout: 300_000 },
+    metadata: { source: "ded-licenses", frequency: "monthly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
     missionName: "jebel-ali-port",
     metadata: { source: "jebel-ali-port", frequency: "monthly", priority: 2, timeout: 300_000 },
   },
   {
+    // DORMANT Phase 20: No viable scraping approach for FB business closures
     missionName: "fb-closures",
-    metadata: { source: "fb-closures", frequency: "monthly", priority: 3, timeout: 600_000 },
+    metadata: { source: "fb-closures", frequency: "monthly", priority: 3, timeout: 600_000, enabled: false },
   },
 
   // Phase 9 Tier C — Quarterly sources
@@ -159,20 +174,23 @@ const COLLECTOR_DEFINITIONS: Array<{
     metadata: { source: "cbuae-mortgages", frequency: "quarterly", priority: 2, timeout: 300_000 },
   },
   {
+    // DORMANT Phase 20: No public API or scraping path
     missionName: "customs-imports",
-    metadata: { source: "customs-imports", frequency: "quarterly", priority: 2, timeout: 300_000 },
+    metadata: { source: "customs-imports", frequency: "quarterly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
     missionName: "fcsa-demographics",
     metadata: { source: "fcsa-demographics", frequency: "quarterly", priority: 2, timeout: 300_000 },
   },
   {
+    // DORMANT Phase 20: No Inside Airbnb data available for UAE
     missionName: "insideairbnb",
-    metadata: { source: "insideairbnb", frequency: "quarterly", priority: 2, timeout: 300_000 },
+    metadata: { source: "insideairbnb", frequency: "quarterly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
+    // DORMANT Phase 20: Paywalled commercial RE reports
     missionName: "commercial-office-reports",
-    metadata: { source: "commercial-office-reports", frequency: "quarterly", priority: 2, timeout: 600_000 },
+    metadata: { source: "commercial-office-reports", frequency: "quarterly", priority: 2, timeout: 600_000, enabled: false },
   },
 
   // Phase 18 — Macro Economic APIs (DirectPythonCollector)
@@ -250,6 +268,11 @@ export class CollectorRegistry {
     };
 
     for (const def of COLLECTOR_DEFINITIONS) {
+      // Skip disabled/retired collectors
+      if (def.metadata.enabled === false) {
+        continue;
+      }
+
       let collector: SourceCollector;
       if (def.missionName in DIRECT_PYTHON_SOURCES) {
         const pythonModule = DIRECT_PYTHON_SOURCES[
