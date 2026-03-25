@@ -187,18 +187,19 @@ Add API-based data sources with historical backfill to accelerate statistical an
   5. COST-01 satisfied by existing World Bank CPI data (no new collector needed)
   6. NewsAPI key stored in HSM when available
 
-- [ ] Phase 20: Dormant Mission Activation — Audit and activate existing scraper missions
+- [x] Phase 20: Dormant Mission Activation — Audit and activate existing scraper missions (completed 2026-03-25)
   Requirements: DORM-01, DORM-02, DORM-03
-  Goal: Full audit of all 38 registered missions. Fix Google Trends (pytrends upgrade). Retire 18 permanently blocked/dormant missions. Verify and activate normalizers for 7 sources with existing raw data.
-  **Plans:** 2 plans
+  Goal: Full audit of all 40 registered missions. Fix Google Trends (pytrends upgrade). Retire 18 permanently blocked/dormant missions. Verify and activate normalizers for 7 sources with existing raw data.
+  **Plans:** 2 plans (2/2 complete)
   Plans:
   - [x] 20-01-PLAN.md — Audit report + pytrends fix + retire 18 blocked/dormant missions in registry (2026-03-25)
-  - [ ] 20-02-PLAN.md — Test and activate 7 dormant normalizers + Google Trends end-to-end verification
+  - [x] 20-02-PLAN.md — Test 7 normalizers (5 pass), fix 2 (mortgages/port), Google Trends end-to-end, 3 new sources (2026-03-25)
   Success criteria:
-  1. Audit report: all 38 missions tested, categorized as active/dormant/blocked/retired with evidence
-  2. Normalization handlers verified for 5+ missions currently producing raw data but lacking automated normalization
-  3. Permanently blocked missions marked as inactive in CollectorRegistry (enabled: false); skipped during collection runs
-  4. Google Trends collector fixed via pytrends upgrade
+  1. Audit report: all 40 missions tested, categorized as active/dormant/blocked/retired with evidence ✅
+  2. Normalization handlers verified for 5 missions (cbuae-mortgages, fcsa-demographics, dxb-passengers, mohre-permits, jebel-ali-port) ✅
+  3. 18 blocked missions marked enabled:false in CollectorRegistry; skipped during collection runs ✅
+  4. Google Trends collector fixed via pytrends patch + end-to-end verified (325 normalized records) ✅
+  5. 20 distinct sources in normalized_monthly (was 17), 1,866 rows (was 1,534) ✅
 
 - [ ] Phase 21: Integration & Verification — Wire everything, verify enhanced intelligence
   Requirements: INTEG-01, INTEG-02, INTEG-03, INTEG-04, VERIF-01, VERIF-02, VERIF-03
@@ -239,8 +240,8 @@ Add API-based data sources with historical backfill to accelerate statistical an
 | 17. End-to-End Verification | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 18. Macro Economic APIs | v1.5 | 2/2 | Complete | 2026-03-23 |
 | 19. Commodity, Sentiment & CoL | v1.5 | 2/2 | Complete | 2026-03-23 |
-| 20. Dormant Mission Activation | v1.5 | 1/2 | In Progress | - |
+| 20. Dormant Mission Activation | v1.5 | 2/2 | Complete | 2026-03-25 |
 | 21. Integration & Verification | v1.5 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-25 — Plan 20-01 complete (audit + pytrends + 18 missions disabled). Plan 20-02 next.*
+*Roadmap updated: 2026-03-25 — Phase 20 complete (2/2 plans). 20 sources, 1,866 rows. Phase 21 next.*
