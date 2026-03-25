@@ -172,10 +172,10 @@ Add API-based data sources with historical backfill to accelerate statistical an
   3. PMI collector extracts UAE monthly PMI value from S&P Global press release PDF; stored as monthly metric
   4. DFM stock collector fetches RE sector prices (Emaar, Emaar Development, Deyaar, Union Properties) via Yahoo Finance API; monthly OHLCV normalized
 
-- [ ] Phase 19: Commodity, Sentiment & Cost of Living — Oil, gold, Reddit, News API, CBUAE expanded
+- [x] Phase 19: Commodity, Sentiment & Cost of Living — Oil, gold, Reddit, News API, CBUAE expanded (completed 2026-03-23)
   Requirements: COMM-01, COMM-02, SENT-01, SENT-02, COST-01, CBUAE-01
   Goal: Add commodities (Brent crude, gold via Yahoo Finance), enhance Reddit sentiment with r/UAE, add NewsAPI headline sentiment, extract CBUAE monetary data from QER PDFs. COST-01 satisfied by existing World Bank CPI (Numbeo has no free tier).
-  **Plans:** 2 plans
+  **Plans:** 2 plans (2/2 complete)
   Plans:
   - [x] 19-01-PLAN.md — Commodities collector + Reddit enhancement + NewsAPI collector + TS registration + deploy + verify (208 rows, 4 metrics)
   - [x] 19-02-PLAN.md — CBUAE expanded QER PDF extraction + TS registration + deploy + verify (47 rows, 7 metrics, 10 quarters)
@@ -189,12 +189,16 @@ Add API-based data sources with historical backfill to accelerate statistical an
 
 - [ ] Phase 20: Dormant Mission Activation — Audit and activate existing scraper missions
   Requirements: DORM-01, DORM-02, DORM-03
-  Goal: Maximize value from existing 31 YAML missions. Audit which produce data, add normalization for working ones, retire dead ones.
+  Goal: Full audit of all 38 registered missions. Fix Google Trends (pytrends upgrade). Retire 18 permanently blocked/dormant missions. Verify and activate normalizers for 7 sources with existing raw data.
+  **Plans:** 2 plans
+  Plans:
+  - [ ] 20-01-PLAN.md — Audit report + pytrends fix + retire 18 blocked/dormant missions in registry
+  - [ ] 20-02-PLAN.md — Test and activate 7 dormant normalizers + Google Trends end-to-end verification
   Success criteria:
-  1. Audit report: all 31 missions tested, categorized as working/blocked/dead with evidence
-  2. Normalization handlers added for 5+ missions currently producing raw data but lacking ingest logic
-  3. Permanently blocked missions marked as inactive in CollectorRegistry; removed from collection timers
-  4. Collection status tool updated to reflect accurate source inventory
+  1. Audit report: all 38 missions tested, categorized as active/dormant/blocked/retired with evidence
+  2. Normalization handlers verified for 5+ missions currently producing raw data but lacking automated normalization
+  3. Permanently blocked missions marked as inactive in CollectorRegistry (enabled: false); skipped during collection runs
+  4. Google Trends collector fixed via pytrends upgrade
 
 - [ ] Phase 21: Integration & Verification — Wire everything, verify enhanced intelligence
   Requirements: INTEG-01, INTEG-02, INTEG-03, INTEG-04, VERIF-01, VERIF-02, VERIF-03
@@ -235,8 +239,8 @@ Add API-based data sources with historical backfill to accelerate statistical an
 | 17. End-to-End Verification | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 18. Macro Economic APIs | v1.5 | 2/2 | Complete | 2026-03-23 |
 | 19. Commodity, Sentiment & CoL | v1.5 | 2/2 | Complete | 2026-03-23 |
-| 20. Dormant Mission Activation | v1.5 | 0/TBD | Not started | - |
+| 20. Dormant Mission Activation | v1.5 | 0/2 | Planned | - |
 | 21. Integration & Verification | v1.5 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-23 — Phase 19 complete (2/2 plans: commodities, sentiment, CBUAE expanded). Phase 20 next (dormant mission activation).*
+*Roadmap updated: 2026-03-25 — Phase 20 planned (2 plans: audit+retire, normalize+verify). Phase 19 marked complete.*
