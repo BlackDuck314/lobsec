@@ -316,7 +316,7 @@ export default {
             api.registerTool({
                 name: "uae_macro_health",
                 label: "UAE Macro Health",
-                description: "Returns macro health dashboard with traffic light (green/amber/red) for 6 signal groups.",
+                description: "Returns macro health dashboard with traffic light (green/amber/red) for 9 signal groups: Employment, Housing, Spending, Mobility, Sentiment, Population, Macro Economy, RE Stocks, Commodities.",
                 parameters: Type.Object({}),
                 execute: async (_id, _params) => {
                     try {

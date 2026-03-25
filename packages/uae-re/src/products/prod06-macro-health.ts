@@ -1,7 +1,7 @@
 /**
  * PROD-06: Macro Health Dashboard
  *
- * Computes a traffic light (green/amber/red) health assessment across 8
+ * Computes a traffic light (green/amber/red) health assessment across 9
  * signal groups. Each group is evaluated by averaging z-scores of 2 signals
  * from the normalized_monthly table.
  *
@@ -55,7 +55,7 @@ interface SignalGroupDef {
   signals: Array<{ source: string; metric: string; invertScore?: boolean }>;
 }
 
-/** The 8 macro health signal groups. */
+/** The 9 macro health signal groups. */
 const SIGNAL_GROUPS: SignalGroupDef[] = [
   {
     name: "Employment",
@@ -93,8 +93,8 @@ const SIGNAL_GROUPS: SignalGroupDef[] = [
   {
     name: "Sentiment",
     signals: [
-      { source: "reddit-sentiment", metric: "dubai|reddit_bearish_ratio", invertScore: true },
-      { source: "google-trends", metric: "dubai|trends_expat_interest" },
+      { source: "google-trends", metric: "dubai|trends_expat_lifecycle_avg" },
+      { source: "google-trends", metric: "dubai|trends_distress_avg", invertScore: true },
     ],
   },
   {
@@ -116,6 +116,13 @@ const SIGNAL_GROUPS: SignalGroupDef[] = [
     signals: [
       { source: "dfm-stocks", metric: "uae|dfm_emaar_close" },
       { source: "dfm-stocks", metric: "uae|dfm_emaardev_close" },
+    ],
+  },
+  {
+    name: "Commodities",
+    signals: [
+      { source: "commodities", metric: "uae|brent_crude_close_usd" },
+      { source: "commodities", metric: "uae|gold_xau_close_usd" },
     ],
   },
 ];
