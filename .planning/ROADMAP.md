@@ -7,7 +7,7 @@
 - v1.2 Examy QA Automation — Phases 1-5 (shipped 2026-03-06)
 - v1.3 UAE Real Estate Intelligence System — Phases 6-12 (shipped 2026-03-16)
 - **v1.4 UAE RE Intelligence Activation** — Phases 13-17 (shipped 2026-03-18)
-- **v1.5 Data Expansion** — Phases 18-21 (shipped 2026-03-25)
+- **v1.5 Data Expansion** — Phases 18-21 (shipped 2026-03-25) — [archived](milestones/v1.5-ROADMAP.md)
 
 ## Phases
 
@@ -155,69 +155,18 @@
 
 </details>
 
-## v1.5 Data Expansion — Phases 18-21
+<details>
+<summary>v1.5 Data Expansion — SHIPPED 2026-03-25</summary>
 
-Add API-based data sources with historical backfill to accelerate statistical analysis. Activate dormant scraper missions. Target: 20+ sources producing normalized data.
+- [x] Phases 18-21: 9 new API collectors, 20 sources, 47 metrics with 12+ obs, 9-group macro health
+- See [archived roadmap](milestones/v1.5-ROADMAP.md) for full details
 
-- [x] Phase 18: Macro Economic APIs — World Bank, IMF, PMI, DFM stock data (completed 2026-03-23)
-  Requirements: MACRO-01, MACRO-02, MACRO-03, MACRO-04
-  Goal: 4 new API collectors producing historical macro data (GDP, inflation, PMI, RE stocks). These provide years of backfill, immediately enabling statistical analysis on macro signals.
-  **Plans:** 2 plans (2/2 complete)
-  Plans:
-  - [x] 18-01-PLAN.md — World Bank, IMF, DFM stock collectors + normalizers + TS registry + build + deploy + verify (858 rows)
-  - [x] 18-02-PLAN.md — PMI collector + normalizer + macro health signal groups + nftables + end-to-end verification
-  Success criteria:
-  1. World Bank collector fetches UAE GDP growth, CPI inflation, FDI, trade balance, population via REST API (country=ARE); historical data back to 2010+ normalized into monthly rows
-  2. IMF DataMapper collector fetches WEO historical + forecasts for UAE; annual data normalized with forecast separation
-  3. PMI collector extracts UAE monthly PMI value from S&P Global press release PDF; stored as monthly metric
-  4. DFM stock collector fetches RE sector prices (Emaar, Emaar Development, Deyaar, Union Properties) via Yahoo Finance API; monthly OHLCV normalized
-
-- [x] Phase 19: Commodity, Sentiment & Cost of Living — Oil, gold, Reddit, News API, CBUAE expanded (completed 2026-03-23)
-  Requirements: COMM-01, COMM-02, SENT-01, SENT-02, COST-01, CBUAE-01
-  Goal: Add commodities (Brent crude, gold via Yahoo Finance), enhance Reddit sentiment with r/UAE, add NewsAPI headline sentiment, extract CBUAE monetary data from QER PDFs. COST-01 satisfied by existing World Bank CPI (Numbeo has no free tier).
-  **Plans:** 2 plans (2/2 complete)
-  Plans:
-  - [x] 19-01-PLAN.md — Commodities collector + Reddit enhancement + NewsAPI collector + TS registration + deploy + verify (208 rows, 4 metrics)
-  - [x] 19-02-PLAN.md — CBUAE expanded QER PDF extraction + TS registration + deploy + verify (47 rows, 7 metrics, 10 quarters)
-  Success criteria:
-  1. Brent crude and gold price collectors fetch monthly OHLCV via Yahoo Finance API (BZ=F, GC=F); normalized to 4 monthly metrics
-  2. Reddit sentiment collector includes r/UAE alongside r/dubai and r/dubairealestate
-  3. News API collector fetches UAE business headlines daily, VADER-scores them; stores 4 daily metrics
-  4. CBUAE expanded collector extracts M1/M2/M3, base rate, EIBOR, banking data from QER PDFs; 8 quarterly metrics
-  5. COST-01 satisfied by existing World Bank CPI data (no new collector needed)
-  6. NewsAPI key stored in HSM when available
-
-- [x] Phase 20: Dormant Mission Activation — Audit and activate existing scraper missions (completed 2026-03-25)
-  Requirements: DORM-01, DORM-02, DORM-03
-  Goal: Full audit of all 40 registered missions. Fix Google Trends (pytrends upgrade). Retire 18 permanently blocked/dormant missions. Verify and activate normalizers for 7 sources with existing raw data.
-  **Plans:** 2 plans (2/2 complete)
-  Plans:
-  - [x] 20-01-PLAN.md — Audit report + pytrends fix + retire 18 blocked/dormant missions in registry (2026-03-25)
-  - [x] 20-02-PLAN.md — Test 7 normalizers (5 pass), fix 2 (mortgages/port), Google Trends end-to-end, 3 new sources (2026-03-25)
-  Success criteria:
-  1. Audit report: all 40 missions tested, categorized as active/dormant/blocked/retired with evidence ✅
-  2. Normalization handlers verified for 5 missions (cbuae-mortgages, fcsa-demographics, dxb-passengers, mohre-permits, jebel-ali-port) ✅
-  3. 18 blocked missions marked enabled:false in CollectorRegistry; skipped during collection runs ✅
-  4. Google Trends collector fixed via pytrends patch + end-to-end verified (325 normalized records) ✅
-  5. 20 distinct sources in normalized_monthly (was 17), 1,866 rows (was 1,534) ✅
-
-- [x] Phase 21: Integration & Verification — Wire everything, verify enhanced intelligence (completed 2026-03-25)
-  Requirements: INTEG-01, INTEG-02, INTEG-03, INTEG-04, VERIF-01, VERIF-02, VERIF-03
-  Goal: All new sources integrated into pipeline, macro health product enhanced, 20+ sources live.
-  **Plans:** 1 plan (1/1 complete)
-  Plans:
-  - [x] 21-01-PLAN.md — Fix macro health (add Commodities, fix Sentiment), deploy, verify all 7 INTEG/VERIF requirements ✅ 2026-03-25
-  Success criteria:
-  1. All new collectors registered in CollectorRegistry with correct frequencies and timeouts ✅
-  2. nftables egress updated (port-based TCP 443); API keys in HSM (PARTIAL: reddit/news creds deferred) ✅
-  3. 20 sources producing rows in normalized_monthly (up from 11) ✅
-  4. 47 metrics with 12+ observations (target was 3) ✅
-  5. Macro health product shows 9 signal groups including Commodities and Sentiment with traffic lights ✅
-  6. Collection status tool shows accurate inventory of all active/blocked/dead sources ✅
+</details>
 
 ## Phase Details (Archived)
 
 *v1.4 phase details archived to [milestones/v1.4-ROADMAP.md](milestones/v1.4-ROADMAP.md)*
+*v1.5 phase details archived to [milestones/v1.5-ROADMAP.md](milestones/v1.5-ROADMAP.md)*
 
 ## Progress
 

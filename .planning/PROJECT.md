@@ -68,27 +68,21 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 - ✓ BACK-01 through BACK-05: Historical backfill for DSC, DXB, MOHRE, CBUAE, DP World (2019-2025) — v1.4
 - ✓ AUTO-01 through AUTO-03: Pipeline automation (collection→normalization→analysis on schedule) — v1.4
 - ✓ VERIF-01 through VERIF-03: 3+ tools returning real intelligence via Telegram — v1.4
+- ✓ MACRO-01 through MACRO-04: World Bank, IMF, PMI, DFM stocks — v1.5
+- ✓ COMM-01, COMM-02: Brent crude + gold commodities — v1.5
+- ✓ SENT-01, SENT-02: Reddit r/UAE + NewsAPI collector — v1.5 (credential-blocked, no data yet)
+- ✓ COST-01: CPI proxy via World Bank data — v1.5
+- ✓ CBUAE-01: CBUAE expanded monetary data (7/8 metrics) — v1.5
+- ✓ DORM-01 through DORM-03: Mission audit, 18 retired, pytrends fix — v1.5
+- ✓ INTEG-01 through INTEG-04: Registry, egress, HSM, normalization integration — v1.5
+- ✓ VERIF-01 through VERIF-03: 20 sources, 47 metrics 12+ obs, 9-group macro health — v1.5
 - ○ DATA-01 through DATA-04: Dubai Pulse API integration — deferred (user registration needed)
 
 ### Active
 
 <!-- Current scope. Defined in REQUIREMENTS.md when next milestone starts. -->
 
-- MACRO-01: World Bank API collector (GDP, inflation, FDI, trade, population) — v1.5
-- MACRO-02: IMF DataMapper API collector (WEO historical + forecasts) — v1.5
-- MACRO-03: S&P Global PMI collector (monthly press release extraction) — v1.5
-- MACRO-04: DFM RE stock collector (Yahoo Finance API, monthly OHLCV) — v1.5
-- COMM-01: Brent crude oil price collector — v1.5
-- COMM-02: Gold price collector — v1.5
-- SENT-01: Reddit sentiment collector (r/dubai + r/UAE, VADER) — v1.5
-- SENT-02: News API headline sentiment collector — v1.5
-- COST-01: Numbeo cost of living collector — v1.5
-- CBUAE-01: CBUAE Open Data expanded (interest rates, money supply) — v1.5
-- DORM-01: Audit all 31 deployed missions — v1.5
-- DORM-02: Add normalization for 5+ working but unhandled missions — v1.5
-- DORM-03: Fix or retire permanently blocked missions — v1.5
-- INTEG-01 through INTEG-04: Registry, egress, HSM, normalization integration — v1.5
-- VERIF-01 through VERIF-03: 20+ sources, 12+ obs metrics, enhanced macro health — v1.5
+*No active milestone. Start next with `/gsd:new-milestone`.*
 
 ### Out of Scope
 
@@ -157,21 +151,23 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 
 ## Current State
 
-**Latest shipped:** v1.4 UAE RE Intelligence Activation (2026-03-18)
-**Current milestone:** v1.5 Data Expansion (started 2026-03-23)
+**Latest shipped:** v1.5 Data Expansion (2026-03-25)
+**Current milestone:** None active
 
 **What's live:**
 - 13 UAE RE plugin tools accessible via Telegram (@lobsec_bot)
-- 11 sources producing normalized data (423 rows in normalized_monthly)
+- 20 sources producing normalized data (1,866 rows, 384 metrics)
+- 47 metrics with 12+ observations — statistical analysis running (22 stationarity tests, 4 anomalies)
+- 9-group macro health dashboard (Employment, Housing, Spending, Mobility, Sentiment, Population, Macro Economy, RE Stocks, Commodities)
 - Automated pipeline: weekly/monthly/quarterly collection + monthly analysis on 25th
-- Macro health dashboard: Employment, Mobility, Population groups with real z-scores
-- Historical data: 5 sources backfilled to 2019-2025
+- Historical backfill: DFM stocks 61 obs, commodities 52 obs, IMF 47 obs, World Bank 25 obs
 
 **What's pending:**
 - Dubai Pulse API (DLD/Ejari/Permits) — needs user registration at dubaidata.ae
-- Blocked sources (DEWA, Bayut, RTA, DET/DTCM) — WAF/CAPTCHA
-- Reddit/Google Trends sentiment — credentials/blocking
-- Statistical analysis (Granger, composites) — needs 12+ months of data accumulation
+- Reddit/NewsAPI credentials — collector code exists, awaiting keys
+- Granger causality — needs DLD target data (blocked by Dubai Pulse WAF)
+- Bayut selectors — broken (all nulls), needs fix
+- 18 dormant/retired missions — documented in 20-AUDIT.md
 
 ---
-*Last updated: 2026-03-23 — v1.5 milestone started*
+*Last updated: 2026-03-25 — v1.5 shipped*
