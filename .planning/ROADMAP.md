@@ -192,7 +192,7 @@ Add API-based data sources with historical backfill to accelerate statistical an
   Goal: Full audit of all 38 registered missions. Fix Google Trends (pytrends upgrade). Retire 18 permanently blocked/dormant missions. Verify and activate normalizers for 7 sources with existing raw data.
   **Plans:** 2 plans
   Plans:
-  - [ ] 20-01-PLAN.md — Audit report + pytrends fix + retire 18 blocked/dormant missions in registry
+  - [x] 20-01-PLAN.md — Audit report + pytrends fix + retire 18 blocked/dormant missions in registry (2026-03-25)
   - [ ] 20-02-PLAN.md — Test and activate 7 dormant normalizers + Google Trends end-to-end verification
   Success criteria:
   1. Audit report: all 38 missions tested, categorized as active/dormant/blocked/retired with evidence
@@ -239,8 +239,8 @@ Add API-based data sources with historical backfill to accelerate statistical an
 | 17. End-to-End Verification | v1.4 | 2/2 | Complete | 2026-03-17 |
 | 18. Macro Economic APIs | v1.5 | 2/2 | Complete | 2026-03-23 |
 | 19. Commodity, Sentiment & CoL | v1.5 | 2/2 | Complete | 2026-03-23 |
-| 20. Dormant Mission Activation | v1.5 | 0/2 | Planned | - |
+| 20. Dormant Mission Activation | v1.5 | 1/2 | In Progress | - |
 | 21. Integration & Verification | v1.5 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-25 — Phase 20 planned (2 plans: audit+retire, normalize+verify). Phase 19 marked complete.*
+*Roadmap updated: 2026-03-25 — Plan 20-01 complete (audit + pytrends + 18 missions disabled). Plan 20-02 next.*

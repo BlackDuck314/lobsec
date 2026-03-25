@@ -21,9 +21,9 @@
 
 ## Tier 3: Dormant Mission Activation
 
-- [ ] **DORM-01**: Audit all 31 deployed missions — identify which ones actually produce usable raw data files vs which are blocked/empty.
+- [x] **DORM-01**: Audit all 40 deployed missions — identify which ones actually produce usable raw data files vs which are blocked/empty. [20-AUDIT.md: 17 active, 4 activation-target, 2 credential-blocked, 11 dormant, 6 retired]
 - [ ] **DORM-02**: Add normalization handlers for missions producing data but lacking ingest logic (target: 5+ additional sources from existing 22 unhandled missions).
-- [ ] **DORM-03**: Fix or retire permanently blocked missions — update mission status, remove from collection timers if confirmed dead.
+- [x] **DORM-03**: Fix or retire permanently blocked missions — update mission status, remove from collection timers if confirmed dead. [18 missions disabled via enabled:false in registry, pytrends patched for Google Trends]
 
 ## Integration & Verification
 
