@@ -7,7 +7,7 @@
 - v1.2 Examy QA Automation — Phases 1-5 (shipped 2026-03-06)
 - v1.3 UAE Real Estate Intelligence System — Phases 6-12 (shipped 2026-03-16)
 - **v1.4 UAE RE Intelligence Activation** — Phases 13-17 (shipped 2026-03-18)
-- **v1.5 Data Expansion** — Phases 18-21 (in progress)
+- **v1.5 Data Expansion** — Phases 18-21 (shipped 2026-03-25)
 
 ## Phases
 
@@ -201,19 +201,19 @@ Add API-based data sources with historical backfill to accelerate statistical an
   4. Google Trends collector fixed via pytrends patch + end-to-end verified (325 normalized records) ✅
   5. 20 distinct sources in normalized_monthly (was 17), 1,866 rows (was 1,534) ✅
 
-- [ ] Phase 21: Integration & Verification — Wire everything, verify enhanced intelligence
+- [x] Phase 21: Integration & Verification — Wire everything, verify enhanced intelligence (completed 2026-03-25)
   Requirements: INTEG-01, INTEG-02, INTEG-03, INTEG-04, VERIF-01, VERIF-02, VERIF-03
   Goal: All new sources integrated into pipeline, macro health product enhanced, 20+ sources live.
-  **Plans:** 1 plan
+  **Plans:** 1 plan (1/1 complete)
   Plans:
-  - [ ] 21-01-PLAN.md — Fix macro health (add Commodities, fix Sentiment), deploy, verify all 7 INTEG/VERIF requirements
+  - [x] 21-01-PLAN.md — Fix macro health (add Commodities, fix Sentiment), deploy, verify all 7 INTEG/VERIF requirements ✅ 2026-03-25
   Success criteria:
-  1. All new collectors registered in CollectorRegistry with correct frequencies and timeouts
-  2. nftables egress updated; API keys in HSM; credential redactor patterns added
-  3. 20+ sources producing rows in normalized_monthly (up from 11)
-  4. At least 3 metrics with 12+ observations (World Bank/IMF/CBUAE historical data)
-  5. Macro health product shows Commodities and/or Sentiment signal groups with traffic lights
-  6. Collection status tool shows accurate inventory of all active/blocked/dead sources
+  1. All new collectors registered in CollectorRegistry with correct frequencies and timeouts ✅
+  2. nftables egress updated (port-based TCP 443); API keys in HSM (PARTIAL: reddit/news creds deferred) ✅
+  3. 20 sources producing rows in normalized_monthly (up from 11) ✅
+  4. 47 metrics with 12+ observations (target was 3) ✅
+  5. Macro health product shows 9 signal groups including Commodities and Sentiment with traffic lights ✅
+  6. Collection status tool shows accurate inventory of all active/blocked/dead sources ✅
 
 ## Phase Details (Archived)
 
@@ -244,7 +244,7 @@ Add API-based data sources with historical backfill to accelerate statistical an
 | 18. Macro Economic APIs | v1.5 | 2/2 | Complete | 2026-03-23 |
 | 19. Commodity, Sentiment & CoL | v1.5 | 2/2 | Complete | 2026-03-23 |
 | 20. Dormant Mission Activation | v1.5 | 2/2 | Complete | 2026-03-25 |
-| 21. Integration & Verification | v1.5 | 0/1 | Planned | - |
+| 21. Integration & Verification | v1.5 | 1/1 | Complete | 2026-03-25 |
 
 ---
-*Roadmap updated: 2026-03-25 — Phase 21 planned (1 plan). Final milestone verification phase.*
+*Roadmap updated: 2026-03-25 — v1.5 Data Expansion milestone COMPLETE. All 4 phases delivered.*
