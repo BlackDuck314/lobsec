@@ -189,6 +189,11 @@ Unlock blocked Dubai government data via Dubai Pulse APIs, run first real Grange
 
 - [ ] Phase 24: Bot Intelligence UX — Scheduled reports, sparklines, proactive alerts
   Requirements: BOT-01, BOT-02, BOT-03, BOT-04
+  **Plans:** 3 plans
+  Plans:
+  - [x] 24-01-PLAN.md — Response formatting: sparklines, comparison tables, freshness badges, confidence labels, Unicode arrows (BOT-03) ✅
+  - [x] 24-02-PLAN.md — Weekly digest + monthly report with systemd scheduling (BOT-01, BOT-02) ✅
+  - [x] 24-03-PLAN.md — Proactive anomaly, failure, and distress alerts with deduplication (BOT-04) ✅
   Goal: Make Telegram bot proactively useful — weekly digest, monthly market report, sparkline formatting, anomaly alerts.
   Success criteria:
   1. Weekly digest sent automatically every Monday via Telegram
@@ -196,8 +201,14 @@ Unlock blocked Dubai government data via Dubai Pulse APIs, run first real Grange
   3. Responses include Unicode sparklines, comparison tables, freshness badges
   4. Proactive alert fires when EWMA detects significant metric change
 
-- [ ] Phase 25: Security Hardening — mTLS, Jetson proxy, nftables, sandbox, LUKS
+- [x] Phase 25: Security Hardening — mTLS, Jetson proxy, nftables, sandbox, LUKS (completed 2026-03-31)
   Requirements: SEC-01, SEC-02, SEC-03, SEC-04, SEC-05
+  **Plans:** 4 plans (4/4 complete)
+  Plans:
+  - [x] 25-01-PLAN.md — mTLS: proxy HTTPS with TLS 1.3 (SEC-01) ✅
+  - [x] 25-02-PLAN.md — nftables per-UID egress + Jetson routing verification (SEC-02, SEC-03) ✅
+  - [x] 25-03-PLAN.md — Hardened sandbox activation with seccomp (SEC-04) ✅
+  - [x] 25-04-PLAN.md — LUKS2 encrypted volume for /opt/lobsec with keyfile auto-unlock (SEC-05) ✅
   Goal: Complete all deferred security items — enforce mTLS between services, route Jetson through proxy, separate nftables users, activate hardened sandbox, encrypt disk.
   Success criteria:
   1. mTLS enforced between gateway, proxy, and plugin services
@@ -243,9 +254,9 @@ Unlock blocked Dubai government data via Dubai Pulse APIs, run first real Grange
 | 21. Integration & Verification | v1.5 | 1/1 | Complete | 2026-03-25 |
 | 22. Dubai Pulse API Integration | v1.6 | 0/TBD | Not started | - |
 | 23. Data Quality & First Granger | v1.6 | 0/TBD | Not started | - |
-| 24. Bot Intelligence UX | v1.6 | 0/TBD | Not started | - |
-| 25. Security Hardening | v1.6 | 0/TBD | Not started | - |
+| 24. Bot Intelligence UX | v1.6 | 3/3 | Complete | 2026-03-31 |
+| 25. Security Hardening | v1.6 | 4/4 | Complete | 2026-03-31 |
 | 26. Integration & Verification | v1.6 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-25 — v1.6 Full Activation milestone started. 5 phases planned (22-26).*
+*Roadmap updated: 2026-03-31 — Phase 25 (Security Hardening) complete. Phases 22-23 blocked on credentials.*

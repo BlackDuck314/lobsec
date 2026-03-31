@@ -22,8 +22,6 @@ Environment=NODE_EXTRA_CA_CERTS=/opt/lobsec/config/tls/ca.crt
 # HSM PIN loaded from credential file (boot dir = unencrypted bootstrap)
 EnvironmentFile=/opt/lobsec/boot/pin.env
 
-# Pre-start 0: unlock fscrypt-encrypted directories (runs as root)
-ExecStartPre=+/opt/lobsec/bin/fscrypt-unlock.sh
 # Pre-start 1: generate/renew mTLS certificates
 ExecStartPre=/opt/lobsec/bin/generate-mtls-certs.sh
 # Pre-start 2: symlink tmp log dir to persistent location (runs as root)
@@ -35,7 +33,7 @@ ExecStartPre=/opt/lobsec/bin/hsm-extract-credentials.sh
 # Main process: OpenClaw gateway
 ExecStart=/usr/bin/node /opt/lobsec/openclaw/openclaw.mjs gateway run --bind loopback
 
-# Post-stop: wipe credentials (fscrypt dirs stay unlocked until reboot)
+# Post-stop: wipe credentials
 ExecStopPost=/opt/lobsec/bin/hsm-wipe-credentials.sh
 
 # Restart policy

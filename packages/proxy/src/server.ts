@@ -8,7 +8,11 @@
 //
 // OpenClaw should be configured with baseUrl pointing to this proxy.
 
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { createServer as createHttpsServer } from "node:https";
+import { createServer as createHttpServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { readFileSync } from "node:fs";
+import type { TlsOptions } from "node:tls";
+import type { Server } from "node:http";
 import { CredentialStore } from "./credential-store.js";
 import { routeRequest, type LlmRequest, type LlmAuditEntry } from "./llm-router.js";
 import { checkEgress, buildAllowlist, parseExtraHosts, resolveHost } from "./egress-firewall.js";
@@ -74,16 +78,38 @@ function toLlmRequest(req: IncomingMessage, body: string): LlmRequest {
   };
 }
 
+// ── mTLS Configuration ──────────────────────────────────────────────────────
+const TLS_DIR = process.env["LOBSEC_TLS_DIR"] ?? "/opt/lobsec/config/tls";
+
+function loadTlsOptions(): (TlsOptions & { minVersion: string }) | null {
+  try {
+    return {
+      key: readFileSync(`${TLS_DIR}/proxy.key`),
+      cert: readFileSync(`${TLS_DIR}/proxy.crt`),
+      ca: readFileSync(`${TLS_DIR}/ca.crt`),
+      requestCert: true,
+      rejectUnauthorized: false,  // verify-only: accept without client cert (OpenClaw limitation)
+      minVersion: "TLSv1.3",
+    };
+  } catch (err) {
+    console.error(`[proxy] Failed to load TLS certificates from ${TLS_DIR}: ${(err as Error).message}`);
+    console.error("[proxy] Falling back to plain HTTP (mTLS disabled)");
+    return null;
+  }
+}
+
 // ── Server ──────────────────────────────────────────────────────────────────
 
-export function createProxyServer(config: ProxyServerConfig): ReturnType<typeof createServer> {
+export function createProxyServer(config: ProxyServerConfig): Server {
   const { proxyToken, credentials, onAudit, onError } = config;
 
   // Build allowlist once at startup (includes env-based extra hosts)
   const extraHosts = parseExtraHosts(process.env["LOBSEC_EGRESS_EXTRA_HOSTS"] ?? "");
   const allowlist = buildAllowlist(extraHosts);
 
-  const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
+  const tlsOpts = loadTlsOptions();
+
+  async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
     // Health check endpoint
     if (req.url === "/__lobsec__/health") {
       sendJson(res, 200, { status: "ok", proxy: "lobsec", timestamp: new Date().toISOString() });
@@ -214,7 +240,17 @@ export function createProxyServer(config: ProxyServerConfig): ReturnType<typeof 
         sendJson(res, 502, { error: "backend unavailable" });
       }
     }
-  });
+  }
+
+  const server = tlsOpts
+    ? createHttpsServer(tlsOpts, handleRequest)
+    : createHttpServer(handleRequest);
+
+  if (tlsOpts) {
+    console.error("[proxy] TLS enabled (TLS 1.3, client cert requested but not enforced)");
+  } else {
+    console.error("[proxy] WARNING: Running without TLS (plain HTTP)");
+  }
 
   return server;
 }
