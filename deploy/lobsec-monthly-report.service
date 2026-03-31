@@ -1,0 +1,18 @@
+[Unit]
+Description=UAE RE Monthly Intelligence Report
+After=lobsec.service
+
+[Service]
+Type=oneshot
+User=lobsec
+EnvironmentFile=/opt/lobsec/boot/pin.env
+ExecStart=/opt/lobsec/bin/monthly-report.sh
+TimeoutStartSec=120
+StandardOutput=append:/opt/lobsec/logs/digest.log
+StandardError=append:/opt/lobsec/logs/digest.log
+
+# Security hardening (match existing services)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/lobsec

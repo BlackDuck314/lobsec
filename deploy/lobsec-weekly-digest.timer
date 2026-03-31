@@ -1,0 +1,11 @@
+[Unit]
+Description=UAE RE Weekly Digest (Monday 04:00 UTC / 08:00 GST)
+After=lobsec.service
+
+[Timer]
+OnCalendar=Mon *-*-* 04:00:00
+Persistent=true
+Unit=lobsec-weekly-digest.service
+
+[Install]
+WantedBy=timers.target

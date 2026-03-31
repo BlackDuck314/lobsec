@@ -1,0 +1,11 @@
+[Unit]
+Description=UAE RE Alert Checker (daily 20:00 UTC / 00:00 GST)
+After=lobsec.service
+
+[Timer]
+OnCalendar=*-*-* 20:00:00
+Persistent=true
+Unit=lobsec-alerts.service
+
+[Install]
+WantedBy=timers.target

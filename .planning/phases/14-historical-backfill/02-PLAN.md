@@ -2,8 +2,8 @@
 phase: 14-historical-backfill
 plan: 02
 type: execute
-wave: 1
-depends_on: []
+wave: 2
+depends_on: ["01"]
 files_modified:
   - packages/uae-re/python/uae_re/backfill/backfill_cbuae.py
 autonomous: true

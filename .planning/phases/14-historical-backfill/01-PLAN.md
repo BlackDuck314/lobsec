@@ -183,10 +183,12 @@ DXB JSON:  /opt/lobsec/data/raw/dxb-passengers/2026-03-17.json (2025 only)
       - "establishment growth" -> uae|mohre_establishment_growth_pct
       - etc.
     - Insert each extracted prior-year value with measurement_date=`{prior_year}-01-01`
-    - Charts 0, 2, 4, 6 are unnamed -- DO NOT extract (per Phase 13 decision: "Only extract Emiratisation chart")
+    - Charts 0, 2, 4, 6 are unnamed -- extract as fallback ONLY if total mohre-permits rows after comparative extraction is still < 16
+    - FALLBACK: If comparative extraction yields < 5 rows, also extract Charts 0, 2, 4, 6 as `uae|mohre_chart_0_index`, `uae|mohre_chart_2_index`, `uae|mohre_chart_4_index`, `uae|mohre_chart_6_index` (5 years each = 20 rows). Use regex `labels:\[([^\]]+)\]` and `data:\[([^\]]+)\]` (same pattern as emiratisation chart).
+    - After all inserts, query `SELECT COUNT(*) FROM normalized_monthly WHERE source='mohre-permits'`. If < 16, run the chart fallback.
     - available_date: `2026-03-17T00:00:00Z` (date we scraped the observatory)
     - Source name: `mohre-permits`
-    - Expected: 3-6 new rows (comparative values for 2024)
+    - Expected: 3-6 new comparative rows + up to 20 chart rows if fallback needed (target: 16+ total)
 
     **backfill_dpworld.py** (BACK-05):
     - Open `/opt/lobsec/data/raw/jebel-ali-port/2026-03-16.html`
@@ -272,12 +274,17 @@ DXB JSON:  /opt/lobsec/data/raw/dxb-passengers/2026-03-17.json (2025 only)
          - `dubai|dxb_yoy_growth_pct`
          - `dubai|dxb_flight_movements`
          - `dubai|dxb_q4_passengers`
+         - `dubai|dxb_cargo_tonnes` (NEW metric — 2023: 1800000, 2024: 2200000)
        - available_date: approximate press release date (`{year+1}-01-20T00:00:00Z`)
 
     **YoY growth calculation:**
     - 2022: Cannot calculate (no 2021 data in scope). Omit.
     - 2023: (86,994,365 - 66,069,981) / 66,069,981 * 100 = 31.7%
     - 2024: (92,300,000 - 86,994,365) / 86,994,365 * 100 = 6.1%
+
+    **Cargo tonnage** (from press releases, helps reach 12+ observations):
+    - 2023: 1.8M tonnes → `dubai|dxb_cargo_tonnes` = 1800000
+    - 2024: 2.2M tonnes → `dubai|dxb_cargo_tonnes` = 2200000
 
     **DO NOT fabricate monthly data from annual figures.** Store as annual observations (YYYY-01-01).
 
@@ -286,7 +293,7 @@ DXB JSON:  /opt/lobsec/data/raw/dxb-passengers/2026-03-17.json (2025 only)
     PYTHONPATH=/root/lobsec/packages/uae-re/python /opt/lobsec/analytics-venv/bin/python -m uae_re.backfill.backfill_dxb
     ```
 
-    Expected: 8-12 new rows (3 years x 2-4 metrics each).
+    Expected: 10-14 new rows (3 years x 3-5 metrics each, including cargo).
   </action>
   <verify>
     <automated>

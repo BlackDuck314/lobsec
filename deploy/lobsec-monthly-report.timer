@@ -1,0 +1,11 @@
+[Unit]
+Description=UAE RE Monthly Report (26th 03:00 UTC / 07:00 GST)
+After=lobsec.service
+
+[Timer]
+OnCalendar=*-*-26 03:00:00
+Persistent=true
+Unit=lobsec-monthly-report.service
+
+[Install]
+WantedBy=timers.target

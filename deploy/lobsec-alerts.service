@@ -1,0 +1,18 @@
+[Unit]
+Description=UAE RE Proactive Alert Checker
+After=lobsec.service
+
+[Service]
+Type=oneshot
+User=lobsec
+EnvironmentFile=/opt/lobsec/boot/pin.env
+ExecStart=/opt/lobsec/bin/check-alerts.sh
+TimeoutStartSec=60
+StandardOutput=append:/opt/lobsec/logs/alerts.log
+StandardError=append:/opt/lobsec/logs/alerts.log
+
+# Security hardening (match existing services)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/lobsec
