@@ -236,6 +236,11 @@ Restore all broken capabilities from 2026-04-21 audit, clean system debt, verify
 
 - [ ] Phase 27: Core Infrastructure Repair — Fix Portullama, Jetson, memory search, weekly digest, TLS lifecycle
   Requirements: REPAIR-01, REPAIR-02, REPAIR-03, REPAIR-04, REPAIR-05
+  **Plans:** 3 plans
+  Plans:
+  - [ ] 27-01-PLAN.md — Portullama reconnection + memory search restoration (REPAIR-01, REPAIR-03)
+  - [ ] 27-02-PLAN.md — Jetson CF-Access reconnection (REPAIR-02)
+  - [ ] 27-03-PLAN.md — Weekly digest timer + TLS cert lifecycle fix (REPAIR-04, REPAIR-05)
   Goal: All 3 inference backends accessible, memory search working, weekly digest fires, TLS cert rotation is resilient.
   Success criteria:
   1. Portullama responds to requests through proxy (sovereign routing works)
@@ -302,7 +307,7 @@ Restore all broken capabilities from 2026-04-21 audit, clean system debt, verify
 | 24. Bot Intelligence UX | v1.6 | 3/3 | Complete | 2026-03-31 |
 | 25. Security Hardening | v1.6 | 4/4 | Complete | 2026-03-31 |
 | 26. Integration & Verification | v1.6 | 0/TBD | Blocked | - |
-| 27. Core Infrastructure Repair | v1.7 | 0/TBD | Not started | - |
+| 27. Core Infrastructure Repair | v1.7 | 0/3 | Planned | - |
 | 28. System Housekeeping | v1.7 | 0/TBD | Not started | - |
 | 29. Data Pipeline Restoration | v1.7 | 0/TBD | Not started | - |
 | 30. Integration & Verification | v1.7 | 0/TBD | Not started | - |

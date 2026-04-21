@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.7
 milestone_name: System Health & Reliability
-status: planning
+status: ready
 last_updated: "2026-04-21T12:00:00Z"
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
+  total_plans: 3
   completed_plans: 0
 ---
 
@@ -15,9 +15,9 @@ progress:
 
 ## Current Position
 
-Phase: Phase 27 (Core Infrastructure Repair) — NOT STARTED
-Status: Milestone created from capabilities audit. Ready to plan Phase 27.
-Last activity: 2026-04-21 — Capabilities audit, emergency fixes (Telegram routing, sandbox Python, TLS certs), Feynman installed, v1.7 milestone created.
+Phase: Phase 27 (Core Infrastructure Repair) — PLANNED (3 plans)
+Status: Plans created. Ready to execute.
+Last activity: 2026-04-21 — Phase 27 planned with 3 execution plans.
 
 ### v1.7 Phase Status
 | Phase | Name | Requirements | Status |
