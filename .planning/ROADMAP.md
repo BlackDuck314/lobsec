@@ -8,7 +8,8 @@
 - v1.3 UAE Real Estate Intelligence System — Phases 6-12 (shipped 2026-03-16)
 - **v1.4 UAE RE Intelligence Activation** — Phases 13-17 (shipped 2026-03-18)
 - **v1.5 Data Expansion** — Phases 18-21 (shipped 2026-03-25) — [archived](milestones/v1.5-ROADMAP.md)
-- **v1.6 Full Activation** — Phases 22-26 (in progress)
+- **v1.6 Full Activation** — Phases 22-26 (partial — BOT+SEC done, PULSE/QUAL blocked on credentials)
+- **v1.7 System Health & Reliability** — Phases 27-30 (in progress)
 
 ## Phases
 
@@ -180,6 +181,9 @@ Unlock blocked Dubai government data via Dubai Pulse APIs, run first real Grange
 
 - [ ] Phase 23: Data Quality & First Granger — Bayut API, credentials, first real statistical analysis
   Requirements: QUAL-01, QUAL-02, QUAL-03, QUAL-04, QUAL-05
+  **Plans:** 1 plan (QUAL-02..05 blocked on credentials)
+  Plans:
+  - [ ] 23-01-PLAN.md — Bayut API collector via RapidAPI replacing broken scraper (QUAL-01)
   Goal: Replace broken Bayut scraper with API, provision Reddit/NewsAPI credentials, run first Granger causality with DLD target data. Produce validated leading indicators and composite scores.
   Success criteria:
   1. Bayut listings via bayutapi.com (750 free calls/month) replacing broken scraper
@@ -226,6 +230,47 @@ Unlock blocked Dubai government data via Dubai Pulse APIs, run first real Grange
 *v1.4 phase details archived to [milestones/v1.4-ROADMAP.md](milestones/v1.4-ROADMAP.md)*
 *v1.5 phase details archived to [milestones/v1.5-ROADMAP.md](milestones/v1.5-ROADMAP.md)*
 
+## v1.7 System Health & Reliability — Phases 27-30
+
+Restore all broken capabilities from 2026-04-21 audit, clean system debt, verify end-to-end health. Every subsystem should work or be explicitly documented as deferred.
+
+- [ ] Phase 27: Core Infrastructure Repair — Fix Portullama, Jetson, memory search, weekly digest, TLS lifecycle
+  Requirements: REPAIR-01, REPAIR-02, REPAIR-03, REPAIR-04, REPAIR-05
+  Goal: All 3 inference backends accessible, memory search working, weekly digest fires, TLS cert rotation is resilient.
+  Success criteria:
+  1. Portullama responds to requests through proxy (sovereign routing works)
+  2. Jetson responds to requests through proxy (CF-Access auth restored)
+  3. Memory search returns BGE-M3 embeddings via Portullama
+  4. Weekly digest timer fires and delivers Telegram message
+  5. Gateway restart automatically restarts proxy (PartOf= verified)
+
+- [ ] Phase 28: System Housekeeping — Session trim, disk cleanup, ConfigMonitor, cron audit, stale files
+  Requirements: HOUSE-01, HOUSE-02, HOUSE-03, HOUSE-04, HOUSE-05
+  Goal: System is clean, maintainable, and has headroom. No drift warnings, no bloated sessions, disk under 70%.
+  Success criteria:
+  1. Session file under 500KB (archived old messages)
+  2. Root disk under 70% usage
+  3. ConfigMonitor reports no drift
+  4. All cron jobs either active+working or explicitly disabled with reason
+  5. No orphaned untracked files in deploy/
+
+- [ ] Phase 29: Data Pipeline Restoration — Scrapers, sentiment collectors, collection cycle, Feynman
+  Requirements: PIPE-01, PIPE-02, PIPE-03, PIPE-04
+  Goal: All data pipelines producing data or explicitly documented as blocked. Feynman available as research tool.
+  Success criteria:
+  1. lobsec-scraper service running, enabled missions produce data
+  2. Sentiment collectors either producing data or gracefully disabled
+  3. Full collection cycle (weekly+monthly) lands data in normalized_monthly
+  4. Feynman accessible as a research tool from lobsec bot
+
+- [ ] Phase 30: Integration & Verification — End-to-end system health check
+  Requirements: VERIF-01, VERIF-02, VERIF-03
+  Goal: Every capability verified working. Create living health dashboard.
+  Success criteria:
+  1. Telegram → LLM → tool execution cycle verified (3+ tools)
+  2. All 3 backends respond through proxy
+  3. All timers and cron jobs produce output
+
 ## Progress
 
 | Phase | Milestone | Plans | Status | Completed |
@@ -253,10 +298,14 @@ Unlock blocked Dubai government data via Dubai Pulse APIs, run first real Grange
 | 20. Dormant Mission Activation | v1.5 | 2/2 | Complete | 2026-03-25 |
 | 21. Integration & Verification | v1.5 | 1/1 | Complete | 2026-03-25 |
 | 22. Dubai Pulse API Integration | v1.6 | 0/TBD | Not started | - |
-| 23. Data Quality & First Granger | v1.6 | 0/TBD | Not started | - |
+| 23. Data Quality & First Granger | v1.6 | 0/1 | Planned | - |
 | 24. Bot Intelligence UX | v1.6 | 3/3 | Complete | 2026-03-31 |
 | 25. Security Hardening | v1.6 | 4/4 | Complete | 2026-03-31 |
-| 26. Integration & Verification | v1.6 | 0/TBD | Not started | - |
+| 26. Integration & Verification | v1.6 | 0/TBD | Blocked | - |
+| 27. Core Infrastructure Repair | v1.7 | 0/TBD | Not started | - |
+| 28. System Housekeeping | v1.7 | 0/TBD | Not started | - |
+| 29. Data Pipeline Restoration | v1.7 | 0/TBD | Not started | - |
+| 30. Integration & Verification | v1.7 | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-03-31 — Phase 25 (Security Hardening) complete. Phases 22-23 blocked on credentials.*
+*Roadmap updated: 2026-04-21 — v1.7 System Health started after capabilities audit. v1.6 partially shipped (BOT+SEC done, PULSE/QUAL blocked).*

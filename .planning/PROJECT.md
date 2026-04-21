@@ -78,15 +78,22 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 - ✓ VERIF-01 through VERIF-03: 20 sources, 47 metrics 12+ obs, 9-group macro health — v1.5
 - ○ DATA-01 through DATA-04: Dubai Pulse API integration — deferred (user registration needed)
 
+### Shipped (Partial)
+
+- ✓ BOT-01 through BOT-04: Weekly/monthly digests, sparklines, proactive anomaly alerts — v1.6
+- ✓ SEC-01 through SEC-05: mTLS, Jetson proxy, nftables separation, sandbox, LUKS — v1.6
+- ○ PULSE-01 through PULSE-08: Dubai Pulse API integration — v1.6 (blocked, credentials never obtained)
+- ○ QUAL-01 through QUAL-05: Bayut API, Reddit/NewsAPI creds, Granger analysis — v1.6 (blocked, credentials)
+- ○ VERIF-01 through VERIF-05: Verification — v1.6 (partial, blocked items prevent full verification)
+
 ### Active
 
 <!-- Current scope. Defined in REQUIREMENTS.md when next milestone starts. -->
 
-- PULSE-01 through PULSE-08: Dubai Pulse API integration (DLD, Ejari, DEWA, RTA, DTCM, permits) — v1.6
-- QUAL-01 through QUAL-05: Bayut API, Reddit/NewsAPI creds, first Granger analysis, composite index — v1.6
-- BOT-01 through BOT-04: Weekly/monthly digests, sparklines, proactive anomaly alerts — v1.6
-- SEC-01 through SEC-05: mTLS, Jetson proxy, nftables separation, sandbox, LUKS — v1.6
-- VERIF-01 through VERIF-05: 27+ sources, Granger signals, digest, mTLS, alerts — v1.6
+- REPAIR-01 through REPAIR-05: Core infrastructure repair (Portullama, Jetson, memory search, weekly digest, TLS) — v1.7
+- HOUSE-01 through HOUSE-05: System housekeeping (session trim, disk cleanup, ConfigMonitor, cron jobs) — v1.7
+- PIPE-01 through PIPE-04: Data pipeline restoration (broken scrapers, sandbox tools, Feynman) — v1.7
+- VERIF-01 through VERIF-03: End-to-end verification of all capabilities — v1.7
 
 ### Out of Scope
 
@@ -113,11 +120,15 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 
 ### Known Issues
 
-- Jetson not routed through proxy (needs CF-Access header injection)
-- nftables egress not fully enforced (needs separate lobsec-proxy user)
-- mTLS certs generated but not enforced between services
-- Hardened sandbox image built but not activated in OpenClaw config
+- Portullama returns "Unauthorized" — remote server (<SOVEREIGN_GPU_HOST>:11435) added auth requirement
+- Jetson returns CF-Access 403 — CF tunnel auth may have changed or expired
+- Memory search disabled — BGE-M3 embeddings route to Portullama which is down
+- Weekly digest timer fails — TELEGRAM_BOT_TOKEN not in environment
+- Session file 2.7MB (1140+ messages) — causes slow startup
+- Root disk 81% full — needs cleanup
+- ConfigMonitor shows drift warning — sandbox config changed but not tracked
 - message_sending hook never fires (OpenClaw limitation)
+- mTLS is server-TLS only (OpenClaw doesn't present client certs) — SEC-01 partial
 - Examy login stuck at "Loading..." (app-level issue)
 
 ## Constraints
@@ -155,23 +166,26 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 
 ## Current State
 
-**Latest shipped:** v1.5 Data Expansion (2026-03-25)
-**Current milestone:** v1.6 Full Activation (started 2026-03-25)
+**Latest shipped:** v1.6 Full Activation — partial (2026-03-31, BOT + SEC phases done, PULSE/QUAL blocked)
+**Current milestone:** v1.7 System Health & Reliability (started 2026-04-21)
 
 **What's live:**
 - 13 UAE RE plugin tools accessible via Telegram (@lobsec_bot)
-- 20 sources producing normalized data (1,866 rows, 384 metrics)
-- 47 metrics with 12+ observations — statistical analysis running (22 stationarity tests, 4 anomalies)
-- 9-group macro health dashboard (Employment, Housing, Spending, Mobility, Sentiment, Population, Macro Economy, RE Stocks, Commodities)
+- Telegram bot connected and responding (fixed 2026-04-21: stale session routing, sandbox Python, TLS cert mismatch)
+- Claude Haiku 4.5 via proxy (working), mTLS active, LUKS encrypted, nftables per-UID egress
 - Automated pipeline: weekly/monthly/quarterly collection + monthly analysis on 25th
-- Historical backfill: DFM stocks 61 obs, commodities 52 obs, IMF 47 obs, World Bank 25 obs
+- Feynman research agent installed (v0.2.40, Claude Sonnet 4.5 via GitHub Copilot)
 
-**What's pending:**
-- Dubai Pulse API (DLD/Ejari/Permits) — needs user registration at dubaidata.ae
-- Reddit/NewsAPI credentials — collector code exists, awaiting keys
-- Granger causality — needs DLD target data (blocked by Dubai Pulse WAF)
-- Bayut selectors — broken (all nulls), needs fix
-- 18 dormant/retired missions — documented in 20-AUDIT.md
+**What's broken (from 2026-04-21 capabilities audit):**
+- Portullama sovereign backend returns "Unauthorized" (remote server added auth)
+- Jetson inference returns CF-Access 403 Forbidden
+- Memory search disabled (depends on Portullama for BGE-M3 embeddings)
+- Weekly digest timer missing TELEGRAM_BOT_TOKEN env var
+- Session file bloated (2.7MB, 1140+ messages)
+- Root disk 81% full
+- ConfigMonitor drift warning unresolved
+- Several scrapers failing (PropertyFinder, reddit-sentiment, news-sentiment)
+- 5 cron jobs: 2 disabled, 3 running (Research Scout weekly, Email Monitor daily, PT Legal daily)
 
 ---
-*Last updated: 2026-03-25 — v1.5 shipped*
+*Last updated: 2026-04-21 — v1.7 started after capabilities audit*

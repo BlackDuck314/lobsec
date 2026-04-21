@@ -1,49 +1,36 @@
-# v1.6 Requirements — Full Activation
+# v1.7 Requirements — System Health & Reliability
 
-**Milestone:** v1.6 Full Activation
-**Goal:** Unlock blocked Dubai government data via Dubai Pulse APIs, run first real Granger causality analysis, make bot intelligence actually useful with scheduled reports and alerts, complete security hardening.
+**Milestone:** v1.7 System Health & Reliability
+**Goal:** Restore all broken capabilities found in the 2026-04-21 audit, clean up system debt, and verify end-to-end health. Bot should respond, all backends should route, all timers should fire, and the system should be maintainable.
 
-## Dubai Pulse API Integration
+## Core Infrastructure Repair
 
-- [ ] **PULSE-01**: Dubai Pulse OAuth2 client — register, store API key/secret in HSM, implement token refresh (30-min expiry). Shared client used by all Dubai Pulse collectors.
-- [ ] **PULSE-02**: DLD transactions collector — fetch sales transactions via `dld_transactions` API. Normalize to monthly price/volume per area. This is the Granger causality TARGET.
-- [ ] **PULSE-03**: Ejari rental contracts collector — fetch via `dld_rent_contracts` API. Normalize to monthly rent levels per area. Enables rental intelligence product.
-- [ ] **PULSE-04**: DEWA new connections collector — fetch via `dewa_electricity_new_connection` API. Normalize to monthly new connections (leading indicator for occupancy).
-- [ ] **PULSE-05**: Building permits collector — fetch via `dm_building_permits` API. Normalize to monthly residential/commercial permits (supply pipeline indicator).
-- [ ] **PULSE-06**: RTA metro ridership collector — fetch via `rta_metro_ridership` API. Normalize to monthly ridership (mobility signal).
-- [ ] **PULSE-07**: RTA vehicle registrations collector — fetch via `rta_car_registration` API. Normalize to monthly registrations (spending signal).
-- [ ] **PULSE-08**: DTCM tourism collector — fetch via `dtcm_visitors_count_by_nationality` API. Normalize to monthly visitor counts (demand signal).
+- [ ] **REPAIR-01**: Portullama reconnection — diagnose auth requirement on <SOVEREIGN_GPU_HOST>:11435, update proxy to send correct credentials. Verify sovereign routing works end-to-end via Telegram.
+- [ ] **REPAIR-02**: Jetson reconnection — diagnose CF-Access 403 on <JETSON_HOSTNAME>, update CF tunnel credentials if needed. Verify small-model routing (gemma3:1b, llama3.2:3b, qwen2.5-coder:3b).
+- [ ] **REPAIR-03**: Memory search restoration — once Portullama is back, verify BGE-M3 embeddings work via proxy. Test semantic search through Telegram.
+- [ ] **REPAIR-04**: Weekly digest timer fix — add TELEGRAM_BOT_TOKEN to lobsec-weekly-digest.service environment (from HSM or .env). Verify Monday 04:00 UTC delivery.
+- [ ] **REPAIR-05**: TLS cert lifecycle — verify PartOf=lobsec.service works (proxy auto-restarts with gateway). Test a gateway restart doesn't break proxy connectivity.
 
-## Data Quality & Analysis
+## System Housekeeping
 
-- [ ] **QUAL-01**: Bayut listings via API — replace broken scraper selectors with bayutapi.com (750 free calls/month). Normalize listing counts, prices, DOM per area.
-- [ ] **QUAL-02**: Reddit credentials — register Reddit app, store REDDIT_CLIENT_ID/SECRET in HSM, verify r/dubai + r/UAE sentiment collection.
-- [ ] **QUAL-03**: NewsAPI credentials — register at newsapi.org, store NEWSAPI_KEY in HSM, verify headline sentiment collection.
-- [ ] **QUAL-04**: First Granger analysis — with DLD transaction data as target, run Granger causality against all 47+ metrics with 12+ observations. Produce validated leading indicators.
-- [ ] **QUAL-05**: Composite index — generate first real composite buy/sell signal scores using Granger-validated weights.
+- [ ] **HOUSE-01**: Session trimming — archive or truncate the 2.7MB/1140-message session file. Implement a session rotation policy (e.g., archive sessions older than 30 days).
+- [ ] **HOUSE-02**: Disk cleanup — identify and clean large files on root disk (currently 81%). Target <70% usage. Remove stale Docker images, old logs, compile caches.
+- [ ] **HOUSE-03**: ConfigMonitor drift — investigate and resolve the drift warning. Update baseline config if the drift is intentional (sandbox changes from today's fix).
+- [ ] **HOUSE-04**: Cron job audit — review 5 OpenClaw cron jobs: re-enable or remove the 2 disabled ones (PT Legal All Sources, PT Legal Weekly Status). Verify the 3 active ones produce results.
+- [ ] **HOUSE-05**: Stale file cleanup — remove orphaned files from git status (server.js, .bg-shell/, check-alerts.sh, etc.). Clean untracked deploy scripts.
 
-## Bot Intelligence UX
+## Data Pipeline Restoration
 
-- [ ] **BOT-01**: Scheduled weekly digest — automated Telegram message every Monday with market summary, anomalies, key metrics. Uses existing analysis pipeline output.
-- [ ] **BOT-02**: Scheduled monthly report — comprehensive market intelligence on the 26th (after analysis pipeline runs on 25th). Includes Granger signals, composite scores, trend analysis.
-- [ ] **BOT-03**: Response formatting — Unicode sparklines for trends, comparison tables, data freshness badges, confidence indicators.
-- [ ] **BOT-04**: Proactive anomaly alerts — Telegram notification when EWMA detects significant metric changes, collection failures, or distress signals above threshold.
-
-## Security Hardening
-
-- [ ] **SEC-01**: mTLS enforcement — activate generated P-256/ECDSA certificates between gateway, proxy, and plugin services. Mutual authentication on all internal connections.
-- [ ] **SEC-02**: Jetson proxy routing — add CF-Access header injection to proxy for Jetson requests. Route all Jetson traffic through proxy with audit logging.
-- [ ] **SEC-03**: nftables user separation — create lobsec-proxy system user, configure per-user egress rules. Proxy gets HTTPS egress, gateway gets loopback-only.
-- [ ] **SEC-04**: Hardened sandbox activation — switch from openclaw-sandbox:bookworm-slim to lobsec-sandbox:hardened image with seccomp whitelist profile.
-- [ ] **SEC-05**: LUKS full-disk encryption — encrypt /opt/lobsec with dm-crypt/LUKS. Auto-unlock via TPM or keyfile during boot.
+- [ ] **PIPE-01**: Scraper health check — verify lobsec-scraper service is running, test all enabled missions. Fix PropertyFinder if possible (broken selectors).
+- [ ] **PIPE-02**: Sentiment collectors — reddit-sentiment and news-sentiment collectors failing (credential-blocked). Either provision credentials or disable gracefully with documentation.
+- [ ] **PIPE-03**: Collection pipeline verification — run a full collection cycle (weekly + monthly missions), verify data lands in SQLite normalized_monthly table with correct timestamps.
+- [ ] **PIPE-04**: Feynman integration — configure Feynman as an available tool for the lobsec bot. Verify research capabilities work via Telegram (deep research, literature review).
 
 ## Integration & Verification
 
-- [ ] **VERIF-01**: 27+ sources producing normalized data (up from 20, adding 7 Dubai Pulse + Bayut API).
-- [ ] **VERIF-02**: Granger causality produces at least 5 validated leading indicators with p < 0.05.
-- [ ] **VERIF-03**: Scheduled digest delivered via Telegram at least once (Monday or 26th).
-- [ ] **VERIF-04**: All internal service connections use mTLS.
-- [ ] **VERIF-05**: Proactive anomaly alert fires on a real or simulated metric change.
+- [ ] **VERIF-01**: Core bot verification — Telegram message → LLM response → tool execution cycle works end-to-end. Test 3+ tools (weather, email, uae_macro_health).
+- [ ] **VERIF-02**: All backends accessible — Anthropic (primary), Portullama (sovereign), Jetson (edge) all respond through proxy. Memory search returns results.
+- [ ] **VERIF-03**: All timers fire — weekly digest, monthly report, alerts timer, collection timers all produce output. Cron jobs deliver results via Telegram.
 
 ---
-*Created: 2026-03-25*
+*Created: 2026-04-21 — Based on capabilities audit findings*
