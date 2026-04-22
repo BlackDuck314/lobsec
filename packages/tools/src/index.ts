@@ -53,3 +53,10 @@ export {
   type TestResult,
   type PersonaResult,
 } from "./examy.js";
+
+export {
+  runFeynman,
+  isValidWorkflow,
+  type FeynmanWorkflow,
+  type FeynmanResult,
+} from "./feynman.js";

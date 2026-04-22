@@ -52,8 +52,9 @@ const COLLECTOR_DEFINITIONS: Array<{
     metadata: { source: "bayut-listings", frequency: "weekly", priority: 3, timeout: 600_000 },
   },
   {
+    // DISABLED v1.7: Scraper timeout — PropertyFinder WAF blocks headless (Phase 20)
     missionName: "propertyfinder-listings",
-    metadata: { source: "propertyfinder-listings", frequency: "weekly", priority: 3, timeout: 600_000 },
+    metadata: { source: "propertyfinder-listings", frequency: "weekly", priority: 3, timeout: 600_000, enabled: false },
   },
   {
     // RETIRED Phase 20: DEWA site blocks headless browsers (timeout)
@@ -131,8 +132,9 @@ const COLLECTOR_DEFINITIONS: Array<{
     metadata: { source: "google-trends", frequency: "daily", priority: 1, timeout: 120_000 },
   },
   {
+    // DISABLED v1.7: Reddit API credentials never provisioned
     missionName: "reddit-sentiment",
-    metadata: { source: "reddit-sentiment", frequency: "daily", priority: 1, timeout: 60_000 },
+    metadata: { source: "reddit-sentiment", frequency: "daily", priority: 1, timeout: 60_000, enabled: false },
   },
 
   // Phase 9 Tier C — Weekly sources
@@ -159,8 +161,9 @@ const COLLECTOR_DEFINITIONS: Array<{
     metadata: { source: "ded-licenses", frequency: "monthly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
+    // DISABLED v1.7: DP World RSS feed returns 0 rows consistently
     missionName: "jebel-ali-port",
-    metadata: { source: "jebel-ali-port", frequency: "monthly", priority: 2, timeout: 300_000 },
+    metadata: { source: "jebel-ali-port", frequency: "monthly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
     // DORMANT Phase 20: No viable scraping approach for FB business closures
@@ -179,8 +182,9 @@ const COLLECTOR_DEFINITIONS: Array<{
     metadata: { source: "customs-imports", frequency: "quarterly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
+    // DISABLED v1.7: DSC/FCSA site returns 0 rows (PDF endpoint changed)
     missionName: "fcsa-demographics",
-    metadata: { source: "fcsa-demographics", frequency: "quarterly", priority: 2, timeout: 300_000 },
+    metadata: { source: "fcsa-demographics", frequency: "quarterly", priority: 2, timeout: 300_000, enabled: false },
   },
   {
     // DORMANT Phase 20: No Inside Airbnb data available for UAE
@@ -217,8 +221,9 @@ const COLLECTOR_DEFINITIONS: Array<{
     metadata: { source: "commodities", frequency: "monthly", priority: 2, timeout: 60_000 },
   },
   {
+    // DISABLED v1.7: NewsAPI key never provisioned
     missionName: "news-sentiment",
-    metadata: { source: "news-sentiment", frequency: "daily", priority: 1, timeout: 60_000 },
+    metadata: { source: "news-sentiment", frequency: "daily", priority: 1, timeout: 60_000, enabled: false },
   },
 
   // Phase 19 — CBUAE Expanded (QER PDF extraction)

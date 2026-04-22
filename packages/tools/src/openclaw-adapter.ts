@@ -16,6 +16,7 @@ import {
 } from "./calendar.js";
 import { githubAction } from "./github.js";
 import { runExamyTest } from "./examy.js";
+import { runFeynman, isValidWorkflow, type FeynmanWorkflow } from "./feynman.js";
 
 import type { WeatherConfig } from "./weather.js";
 import type { EmailConfig } from "./email.js";
@@ -357,6 +358,92 @@ export default {
       },
     });
 
-    log.info("[lobsec-tools] registered 9 tools: weather, email_send, email_read, calendar_list, calendar_add, contacts_list, contacts_add, github, examy_test");
+    // Feynman Research
+    api.registerTool({
+      name: "feynman_research",
+      label: "Feynman Research",
+      description:
+        "Run deep research workflows using Feynman AI agent. " +
+        "Workflows: deepresearch (thorough investigation, 5-10min), " +
+        "lit (literature review, 5-10min), summarize (URL/PDF summary, 1-2min), " +
+        "audit (paper vs code audit, 3-5min), compare (source comparison, 3-5min), " +
+        "draft (paper writeup, 3-5min), review (peer review, 2-3min), " +
+        "replicate (replication plan, 3-5min). " +
+        "Runs synchronously — waits for Feynman to finish and returns the research content directly.",
+      parameters: Type.Object({
+        workflow: Type.String({
+          description:
+            "One of: deepresearch, lit, summarize, audit, compare, draft, review, replicate",
+        }),
+        topic: Type.String({
+          description:
+            "Research topic, URL (for summarize), or paper ID (for audit)",
+        }),
+        model: Type.Optional(
+          Type.String({
+            description:
+              "Optional model override (e.g. anthropic/claude-sonnet-4-6). Default: claude-haiku-4-5-20251001",
+          }),
+        ),
+      }),
+      execute: async (_id, params) => {
+        const workflow = params.workflow as string;
+        if (!isValidWorkflow(workflow)) {
+          return textResult(
+            `Invalid workflow "${workflow}". Valid: deepresearch, lit, summarize, audit, compare, draft, review, replicate`,
+          );
+        }
+
+        const timestamp = new Date()
+          .toISOString()
+          .replace(/:/g, "-")
+          .replace(/\..+/, "");
+        const resultPath = `/opt/lobsec/data/feynman-outputs/result-${workflow}-${timestamp}.json`;
+
+        // Ensure result dir exists
+        const { mkdir: mkdirAsync } = await import("node:fs/promises");
+        await mkdirAsync("/opt/lobsec/data/feynman-outputs", {
+          recursive: true,
+        });
+
+        try {
+          // Run synchronously — wait for Feynman to complete
+          await runFeynman(
+            workflow as FeynmanWorkflow,
+            params.topic as string,
+            resultPath,
+            params.model as string | undefined,
+          );
+
+          // Read result and return content inline
+          const { readFile } = await import("node:fs/promises");
+          const raw = await readFile(resultPath, "utf-8");
+          const result = JSON.parse(raw) as Record<string, unknown>;
+
+          if (result.status === "complete" && result.mainOutput) {
+            return textResult(result.mainOutput as string);
+          }
+          if (result.status === "complete" && result.stdout) {
+            // Some workflows output to stdout instead of file
+            return textResult(result.stdout as string);
+          }
+          if (result.status === "error") {
+            return textResult(
+              `Feynman ${workflow} failed: ${(result.error as string) || "unknown error"}\n` +
+                (result.stderr ? `\nDetails: ${(result.stderr as string).slice(0, 2000)}` : ""),
+            );
+          }
+          return textResult(
+            `Feynman ${workflow} completed but produced no output.\nResult saved to: ${resultPath}`,
+          );
+        } catch (err) {
+          return textResult(
+            `Feynman ${workflow} error: ${(err as Error).message}`,
+          );
+        }
+      },
+    });
+
+    log.info("[lobsec-tools] registered 10 tools: weather, email_send, email_read, calendar_list, calendar_add, contacts_list, contacts_add, github, examy_test, feynman_research");
   },
 };

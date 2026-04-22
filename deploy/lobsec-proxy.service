@@ -2,6 +2,7 @@
 Description=lobsec-proxy — LLM API Proxy with credential injection
 Documentation=https://github.com/BlackDuck314/lobsec
 After=lobsec.service
+PartOf=lobsec.service
 
 [Service]
 Type=simple
@@ -18,6 +19,7 @@ Environment=LOBSEC_PROXY_HOST=127.0.0.1
 # Load credentials from proxy-specific env file (has cloud API keys)
 # Gateway .env does NOT contain cloud API keys — only the proxy has them
 EnvironmentFile=/opt/lobsec/.openclaw/.env.proxy
+EnvironmentFile=/opt/lobsec/proxy/.env
 
 # Main process
 ExecStart=/usr/bin/node /opt/lobsec/proxy/start.js
