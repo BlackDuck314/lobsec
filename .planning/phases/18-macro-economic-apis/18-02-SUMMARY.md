@@ -123,7 +123,7 @@ None -- plan executed exactly as written.
 **2. [Observation] nftables already sufficient**
 - **Found during:** Task 1, Part D
 - **Expected:** Need to add IP-based rules for 4 API domains
-- **Actual:** Existing `tcp dport 443 accept` allows all HTTPS egress from uid 995
+- **Actual:** Existing `tcp dport 443 accept` allows all HTTPS egress from uid <GATEWAY_UID>
 - **Impact:** No nftables changes needed -- all macro API domains already reachable
 
 **3. [Observation] RE Stocks showing RED signal**

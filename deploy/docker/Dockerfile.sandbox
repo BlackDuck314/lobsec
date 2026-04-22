@@ -15,7 +15,8 @@ RUN apt-get purge -y --auto-remove \
     rm -rf /tmp/* /var/tmp/* /root/.bash_history
 
 # Set default user to non-root
-USER 995:986
+# DEPLOY: Replace with actual lobsec UID:GID (id -u lobsec):(id -g lobsec)
+USER 1000:1000
 
 # Read-only root filesystem
 LABEL lobsec.hardened="true"

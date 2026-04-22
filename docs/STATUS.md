@@ -1,7 +1,7 @@
 # lobsec -- Project Status & Decision Log
 
 > ADR decisions, open questions, project state.
-> Updated 2026-03-17.
+> Updated 2026-04-22.
 >
 > **Start here instead:** [`docs/DESIGN.md`](DESIGN.md) is the master design document.
 
@@ -114,7 +114,7 @@ lobsec does NOT fork OpenClaw. It wraps it via:
 - Per-channel defaults: WhatsApp → sovereign, WebChat → public (configurable)
 - Automatic PII detection as advisory/audit layer (L9), not routing decision
 
-**Status:** DECIDED in this session. Needs to be reflected in L8 design update.
+**Status:** DEPLOYED. Implemented in lobsec-plugin sovereign router.
 
 ---
 
@@ -127,17 +127,17 @@ lobsec does NOT fork OpenClaw. It wraps it via:
 
 **Infrastructure:**
 - Jetson Orin (local LAN): gemma3:1b, llama3.2:3b, qwen2.5-coder:3b
-- Remote GPU (privately hosted, via WireGuard): qwen2.5:32b
-- Cloud APIs (Anthropic, OpenAI): best quality, expensive, rate-limited
+- Remote GPU (privately hosted): qwen3.5:27b
+- Cloud APIs (Anthropic): Claude Haiku 4.5 (default), Claude Sonnet 4 (available)
 
 **Routing logic (in lobsec LLM proxy):**
 - Sovereign session → local only (Jetson + remote GPU, NEVER cloud)
 - Public session → cloud-first with local fallback on rate limit/error
-- Budget/rate limit exceeded → automatic fallback to local
+- Auto session (default) → cloud primary, sovereign available via `/sovereign` command
 
 **OpenClaw integration:** `before_model_resolve` plugin hook + `baseUrl` per-provider config + OpenClaw native failover.
 
-**Status:** DECIDED in this session. Needs formal design in L8 update.
+**Status:** DEPLOYED. Three routing modes (auto/sovereign/public) confirmed working in production.
 
 ---
 
@@ -167,10 +167,11 @@ lobsec does NOT fork OpenClaw. It wraps it via:
    - PII tokenization for AMBER data (future)
    - Budget tracking and rate limit detection
 
-**Status:** DEPLOYED. All components running in production:
-- **lobsec-plugin**: 9 security hooks active (tool gate, credential redaction, sovereign routing, config drift, audit)
-- **lobsec-proxy**: HTTPS on loopback, credential injection for Anthropic + Ollama, egress firewall
-- **lobsec-tools**: Plugin tools (weather, email, calendar, contacts, github)
+**Status:** DEPLOYED (v0.7). All components running in production:
+- **lobsec-plugin**: 9 security hooks active (tool gate, credential redaction, sovereign routing, config drift, audit, cron guard)
+- **lobsec-proxy**: HTTPS on loopback, credential injection for Anthropic + Ollama, per-UID egress firewall
+- **lobsec-tools**: 10 plugin tools (weather, email send/read/fetch, calendar, contacts, github, feynman research, examy QA)
+- **lobsec-uae-re**: 13 intelligence tools, 34 data sources, automated collection pipelines
 - **lobsec-cli**: Replaced by systemd service units + HSM extraction scripts (no standalone CLI needed)
 
 ---
@@ -223,15 +224,12 @@ lobsec does NOT fork OpenClaw. It wraps it via:
 
 **Rationale:** No byte readable by unauthorized party, whether threat is physical disk theft (LUKS), running attacker with filesystem access (fscrypt), network sniffer (mTLS), or compromised container (HSM).
 
-**Status:** DEPLOYED (fscrypt + HSM + mTLS). LUKS deferred.
-- fscrypt: 4 directories encrypted (AES-256-XTS, policy_version 2)
-- HSM: SoftHSM2 with data objects + RSA-2048 signing key
-- mTLS: TLS 1.3 on gateway (wss://) and proxy (https://), self-signed P-256/ECDSA
-- LUKS assessment (2026-02-25): Root partition (`/dev/sda3`) is unencrypted LVM → ext4.
-  LUKS cannot be retrofitted in-place on a running root partition (requires reinstall or
-  offline `cryptsetup reencrypt`). fscrypt already protects all sensitive lobsec data
-  (`.openclaw/`, `hsm/`, credentials). LUKS would only add protection against physical
-  disk theft — low priority for VPS/cloud. **Decision: defer LUKS to next OS reinstall.**
+**Status:** DEPLOYED (LUKS2 + fscrypt + HSM + TLS 1.3).
+- LUKS2: 15G encrypted volume at service home (AES-256-XTS)
+- fscrypt: 4 directories encrypted (AES-256-XTS, policy_version 2) inside LUKS volume
+- HSM: SoftHSM2 with 13 data objects + 2 keys (RSA-2048 signing + fscrypt master)
+- TLS 1.3: Gateway and proxy on loopback, self-signed P-256/ECDSA with 30-day auto-renewal
+- mTLS: Server-side TLS only. Client certificate authentication not enforced (OpenClaw limitation).
 
 ---
 
@@ -287,12 +285,25 @@ Internal mTLS always uses HSM-backed self-signed CA (not configurable). Supports
 
 ## Implementation Phases
 
-| Phase | Layers | What | Prereqs |
-|-------|--------|------|---------|
+| Phase | Layers | What | Status |
+|-------|--------|------|--------|
 | **1** | L1 + L4 + L9 | Perimeter + hardened config + audit logging | **DEPLOYED** |
 | **2** | L2 + L3 + L5 | Proxy + webhook auth + egress firewall | **DEPLOYED** |
 | **3** | L6 + L7 | Sandbox hardening + credential broker | **DEPLOYED** |
 | **4** | L8 | Privacy/sovereignty engine | **DEPLOYED** |
+
+## Milestones
+
+| Version | Name | Status |
+|---------|------|--------|
+| v1.0 | Initial deployment | **Complete** (2026-02-27) |
+| v1.1 | Tool reliability | **Complete** — Skills cleanup, GitHub tool, web search |
+| v1.2 | Automated QA | **Complete** — Playwright + Examy testing |
+| v1.3 | UAE real estate data | **Complete** — 34 sources, 13 tools, SQLite |
+| v1.4 | Data expansion | **Complete** — Normalizers, backfill, pipeline automation |
+| v1.5 | Macro economics | **Complete** — World Bank, IMF, PMI, commodities |
+| v1.6 | Full activation | **Complete** — LUKS, digests, alerts, nftables separation |
+| v1.7 | System health | **Complete** (2026-04-22) — Infrastructure repair, housekeeping, data pipelines |
 
 ---
 
@@ -318,11 +329,11 @@ Internal mTLS always uses HSM-backed self-signed CA (not configurable). Supports
 
 ## Hardware Inventory
 
-| Device | Location | Models | Role |
-|--------|----------|--------|------|
-| Jetson Orin | Local LAN | gemma3:1b, llama3.2:3b, qwen2.5-coder:3b | Fast local inference, sovereign |
-| Remote GPU | Privately hosted (WireGuard) | qwen2.5:32b | Heavy sovereign inference |
-| Main host | Local | N/A (runs OpenClaw + lobsec) | Gateway, proxy, config |
+| Device | Location | Models | Role | Status |
+|--------|----------|--------|------|--------|
+| Jetson Orin | Local LAN (CF-tunneled) | gemma3:1b, llama3.2:3b, qwen2.5-coder:3b | Fast local inference, sovereign | **Down** (tunnel offline) |
+| Remote GPU | Privately hosted | qwen3.5:27b | Heavy sovereign inference | **Online** |
+| Main host | Local | N/A (runs OpenClaw + lobsec) | Gateway, proxy, config, data pipelines | **Online** |
 
 ---
 

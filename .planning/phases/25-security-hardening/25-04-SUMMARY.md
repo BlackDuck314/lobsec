@@ -23,7 +23,7 @@ requirements_met:
 ## Post-Migration Cleanup
 
 - fscrypt-unlock.sh removed from lobsec.service ExecStartPre (fscrypt not set up on new ext4)
-- `/etc/tmpfiles.d/lobsec.conf` created to ensure `/tmp/openclaw-995` exists at boot (fixes NAMESPACE error in mount namespacing)
+- `/etc/tmpfiles.d/lobsec.conf` created to ensure `/tmp/openclaw-<LOBSEC_UID>` exists at boot (fixes NAMESPACE error in mount namespacing)
 
 ## Verification
 

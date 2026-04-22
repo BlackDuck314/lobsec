@@ -110,9 +110,9 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 - Sovereign model: Qwen 3.5 27B via Portullama (restored 2026-04-22)
 - Services: lobsec, lobsec-proxy, lobsec-radicale, lobsec-scraper
 - Timers: weekly-digest (Mon 04:00 UTC), monthly-report (26th 03:00 UTC), alerts (daily 20:00 UTC)
-- Telegram: @lobsec_bot connected and responding
+- Telegram: @<BOT_HANDLE> connected and responding
 - LUKS2 encrypted volume at /opt/lobsec (15G, 5.5G used)
-- nftables per-UID egress active (lobsec=995, lobsec-proxy=993)
+- nftables per-UID egress active (lobsec=<GATEWAY_UID>, lobsec-proxy=<PROXY_UID>)
 - Feynman v0.2.40 at /opt/lobsec/.local/bin/feynman (default model: claude-haiku-4-5-20251001)
 - Root disk: 68% (down from 83%)
 

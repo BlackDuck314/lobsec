@@ -46,7 +46,7 @@ Additionally, Phase 20 dormant missions correctly set `enabled: false` for 18 bl
 
 ### INTEG-02: nftables Egress (DONE)
 
-The egress firewall at `table inet lobsec_egress` uses port-based filtering for the `lobsec` user (uid 995):
+The egress firewall at `table inet lobsec_egress` uses port-based filtering for the `lobsec` user (uid <GATEWAY_UID>):
 - TCP 443 (HTTPS) -- covers ALL API endpoints
 - TCP 587 (SMTP), TCP 993 (IMAP), UDP 53 (DNS), UDP 123 (NTP)
 - TCP 11435 to <SOVEREIGN_GPU_HOST> (Ollama)

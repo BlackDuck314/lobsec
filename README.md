@@ -6,7 +6,7 @@
 
 **Your agent can't leak what it never had.**
 
-[![Tests](https://img.shields.io/badge/tests-767%20passing-green)]()
+[![Tests](https://img.shields.io/badge/tests-762%20passing-green)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -28,7 +28,7 @@ lobsec fixes this by making sure it doesn't.
 
 lobsec is a security wrapper for [OpenClaw](https://github.com/openclaw/openclaw), the 224K-star open-source AI assistant framework. It connects to Telegram, WhatsApp, Discord, Slack, Signal, and more.
 
-lobsec does not fork OpenClaw. Does not modify its source code. Does not add AI capabilities. It wraps OpenClaw through its own plugin system, configuration surface, and proxy interface -- five packages that make it safe to deploy on a real server with real API keys.
+lobsec does not fork OpenClaw. Does not modify its source code. Does not add AI capabilities. It wraps OpenClaw through its own plugin system, configuration surface, and proxy interface -- six packages that make it safe to deploy on a real server with real API keys.
 
 **The core idea:** OpenClaw thinks it has your API keys. It doesn't. It has a proxy token that points to `127.0.0.1`. The real keys live in an HSM, injected per-request into an isolated proxy, and wiped on shutdown. A full memory dump of the gateway reveals nothing useful.
 
@@ -126,7 +126,7 @@ Each layer assumes the layers outside it have been compromised. 12 attack classe
 
 Forking a 224K-star project with active development means maintaining a diverging codebase forever. Cherry-picking security patches. Merge conflicts. Eventually falling so far behind that fixes no longer apply.
 
-Wrapping means upstream updates land automatically. No merge conflicts. Clear responsibility: OpenClaw handles messaging and AI, lobsec handles security. Four packages with defined interfaces, not a patched copy of a large upstream project.
+Wrapping means upstream updates land automatically. No merge conflicts. Clear responsibility: OpenClaw handles messaging and AI, lobsec handles security. Six packages with defined interfaces, not a patched copy of a large upstream project.
 
 The tradeoff is real: lobsec cannot fix vulnerabilities inside OpenClaw's core. It can only contain their blast radius. This is documented in [ADR-1](docs/STATUS.md).
 
@@ -134,36 +134,37 @@ The tradeoff is real: lobsec cannot fix vulnerabilities inside OpenClaw's core. 
 
 ## Production Status
 
-Verified against a live deployment. Updated 2026-03-17.
+Verified against a live deployment. Updated 2026-04-22.
 
 ### Working
 
 | Feature | Notes |
 |---------|-------|
-| LLM proxy + credential injection | Multiple inference backends routed through proxy. Real keys never touch the gateway. |
-| HSM-signed audit logging | Signed batches, SHA-256 hash chain, RSA-PKCS signatures. |
-| Plugin hooks (7 of 9) | Tool gating, routing, redaction, audit -- all confirmed firing. |
-| Credential redaction | API key patterns scrubbed from stored messages. |
-| Sovereign routing | Configurable per channel. Cloud or local-first. |
-| fscrypt encryption | 4 directories AES-256-XTS encrypted. |
-| nftables egress | Default-deny with per-destination allowlist. |
-| Internal TLS | P-256/ECDSA self-signed certs with auto-renewal. |
-| Plugin tools | Weather, email, calendar, contacts, GitHub, and custom tools. |
-| Web search | Native OpenClaw web search, API key in HSM. |
+| LLM proxy + credential injection | Anthropic and Ollama backends routed through TLS proxy. Real keys never touch the gateway. |
+| HSM-signed audit logging | Signed batches, SHA-256 hash chain, RSA-PKCS signatures. Batch-signed every 5 min. |
+| Plugin hooks (9 of 9) | Tool gating, routing, credential redaction, config drift, audit -- all confirmed firing. |
+| Credential redaction | 9+ API key patterns scrubbed from stored messages and LLM output. |
+| Sovereign routing | Auto/sovereign/public modes. Local inference default for privacy-sensitive work. |
+| fscrypt + LUKS encryption | LUKS2 encrypted volume (AES-256-XTS). fscrypt on 4 directories. HSM tokens fully encrypted. |
+| nftables egress | Per-UID default-deny. Gateway and proxy have separate allowlists. |
+| Internal TLS 1.3 | P-256/ECDSA self-signed certs with 30-day auto-renewal. |
+| Plugin tools (10) | Weather, email (send/read/fetch), calendar, contacts, GitHub, Feynman research, Examy QA. |
+| Web search | Perplexity Sonar via native OpenClaw tool. API key in HSM. |
+| Cron scheduling | Native OpenClaw cron with security guard (minimum 1-hour interval enforcement). |
+| UAE real estate intelligence | 13 analytical tools, 34 data sources, automated collection pipelines. |
+| Automated QA | Playwright + headless Chromium. LLM-driven student personas test external web apps. |
+| Config drift detection | ConfigMonitor validates config hash every 60s, alerts on tampering. |
 
 ### Honest Gaps
 
 These are real limitations, not roadmap marketing.
 
-- **One inference backend not proxied.** Needs custom header injection in the proxy.
-- **Gateway and proxy share a UID.** Can't enforce network isolation at kernel level.
-- **Docker sandbox built but inactive.** Hardened image exists, not yet the default.
-- **mTLS certs exist but not enforced.** Auto-renew works, mutual auth doesn't.
-- **No automated backups or monitoring.** Classes exist, services don't.
-- **SoftHSM2, not hardware HSM.** Protected by fscrypt, not tamper-resistant silicon.
+- **mTLS certs exist but not enforced.** Server TLS works; mutual client auth doesn't.
+- **SoftHSM2, not hardware HSM.** Protected by fscrypt + LUKS, not tamper-resistant silicon.
 - **No automatic PII classification.** Routing is user-declared, not NER-based.
 - **No formal security audit.** Self-assessed. Not reviewed by a third party.
 - **Prompt injection is defense-in-depth.** No perfect solution exists.
+- **Memory search disabled.** Embedding model (BGE-M3) broken on remote server. Needs upstream fix.
 
 ---
 
@@ -175,7 +176,8 @@ packages/
   cli/       Lifecycle: init, start, stop, status, health
   plugin/    OpenClaw hooks: tool gating, redaction, routing, audit
   proxy/     LLM proxy: routing, credential injection, egress filtering
-  tools/     Plugin tools: weather, email, calendar, contacts, github
+  tools/     Plugin tools: weather, email, calendar, contacts, github, feynman research
+  uae-re/    UAE real estate: 13 intelligence tools, 34 data sources, statistical analysis
 ```
 
 ---
@@ -197,7 +199,7 @@ cp deploy/lobsec.conf .env    # edit with your credentials
 docker compose -f deploy/docker-compose.yml up -d
 ```
 
-**Requires:** Ubuntu 24.04+, Node.js 22, pnpm 10+, Docker 27+, SoftHSM2.
+**Requires:** Ubuntu 24.04+, Node.js 22, pnpm 10+, Docker 27+, SoftHSM2, Playwright (for QA tools).
 
 ---
 

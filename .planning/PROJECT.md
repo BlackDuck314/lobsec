@@ -170,7 +170,7 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 **Current milestone:** v1.7 System Health & Reliability (started 2026-04-21)
 
 **What's live:**
-- 13 UAE RE plugin tools accessible via Telegram (@lobsec_bot)
+- 13 UAE RE plugin tools accessible via Telegram (@<BOT_HANDLE>)
 - Telegram bot connected and responding (fixed 2026-04-21: stale session routing, sandbox Python, TLS cert mismatch)
 - Claude Haiku 4.5 via proxy (working), mTLS active, LUKS encrypted, nftables per-UID egress
 - Automated pipeline: weekly/monthly/quarterly collection + monthly analysis on 25th

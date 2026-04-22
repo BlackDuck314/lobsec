@@ -234,13 +234,19 @@ test_redactor() {
 test_egress_firewall() {
     local claim="Egress firewall blocks unauthorized ports"
 
-    # Verify nftables rule exists for uid 995
+    # Verify nftables rule exists for the lobsec service user
+    local lobsec_uid
+    lobsec_uid=$(id -u lobsec 2>/dev/null || echo "")
+    if [ -z "$lobsec_uid" ]; then
+        fail "$claim" "lobsec user not found"
+        return
+    fi
     local nft_bin
     nft_bin=$(command -v nft 2>/dev/null || echo /usr/sbin/nft)
     local nft_out
     nft_out=$("$nft_bin" list ruleset 2>/dev/null || true)
-    if ! echo "$nft_out" | grep -q 'skuid.*995'; then
-        fail "$claim" "no nftables rule for uid 995 (lobsec)"
+    if ! echo "$nft_out" | grep -q "skuid.*$lobsec_uid"; then
+        fail "$claim" "no nftables rule for uid $lobsec_uid (lobsec)"
         return
     fi
 

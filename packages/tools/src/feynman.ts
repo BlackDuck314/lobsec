@@ -169,28 +169,53 @@ export async function runFeynman(
   let stderr = "";
 
   // Feynman workflows complete their work then drop into an interactive REPL.
-  // We detect completion by watching for idle periods (no stdout for 15s after
-  // initial output has started) and kill the process gracefully.
-  let lastOutputAt = Date.now();
-  let hasOutput = false;
-  const IDLE_KILL_MS = 15_000;
+  // Feynman replaces its stdout with IPC sockets, so we can't rely on
+  // child.stdout alone. We monitor BOTH stdout AND output file modifications.
+  const spawnedAt = Date.now();
+  let lastActivityAt = Date.now();
+  let hasActivity = false;
+  const IDLE_KILL_MS = 30_000;      // 30s of no activity = done
+  const GRACE_PERIOD_MS = 60_000;   // Wait at least 60s before idle-killing
 
   child.stdout.on("data", (chunk: Buffer) => {
     stdout += chunk.toString();
-    lastOutputAt = Date.now();
-    hasOutput = true;
+    lastActivityAt = Date.now();
+    hasActivity = true;
   });
   child.stderr.on("data", (chunk: Buffer) => {
     stderr += chunk.toString();
+    lastActivityAt = Date.now();
+    hasActivity = true;
   });
 
-  // Idle detection: if Feynman stops producing output for 15s, it's done
-  const idleCheck = setInterval(() => {
-    if (hasOutput && Date.now() - lastOutputAt > IDLE_KILL_MS) {
+  // Idle detection: monitor stdout AND output files for changes
+  const idleCheck = setInterval(async () => {
+    const elapsed = Date.now() - spawnedAt;
+    if (elapsed < GRACE_PERIOD_MS) return; // Grace period
+
+    // Check if output files have been modified recently
+    try {
+      const entries = await readdir(OUTPUT_DIR).catch(() => [] as string[]);
+      for (const entry of entries) {
+        if (!entry.endsWith(".md")) continue;
+        const s = await stat(join(OUTPUT_DIR, entry)).catch(() => null);
+        if (s && s.mtimeMs > lastActivityAt) {
+          lastActivityAt = s.mtimeMs;
+          hasActivity = true;
+        }
+      }
+    } catch { /* ignore */ }
+
+    if (hasActivity && Date.now() - lastActivityAt > IDLE_KILL_MS) {
       child.kill("SIGTERM");
       clearInterval(idleCheck);
     }
-  }, 3_000);
+    // Fallback: if no activity at all after 2x grace period, kill anyway
+    if (!hasActivity && elapsed > GRACE_PERIOD_MS * 2) {
+      child.kill("SIGTERM");
+      clearInterval(idleCheck);
+    }
+  }, 5_000);
 
   // Hard timeout as safety net
   const hardTimeout = setTimeout(() => {
@@ -210,8 +235,8 @@ export async function runFeynman(
   clearInterval(idleCheck);
   clearTimeout(hardTimeout);
 
-  // Treat SIGTERM kill (from idle detection) as success if we got output
-  const wasIdleKilled = exitCode === null && hasOutput;
+  // Treat SIGTERM kill (from idle detection) as success if we got activity
+  const wasIdleKilled = exitCode === null && hasActivity;
 
   // Find new output files
   const newFiles = await findNewOutputs(beforeSnapshot);

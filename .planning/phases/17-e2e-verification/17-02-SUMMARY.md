@@ -65,7 +65,7 @@ All 5 pre-flight checks passed without any issues:
 **Checkpoint type:** human-verify
 **Checkpoint result:** APPROVED by user
 
-Three Telegram queries tested via @lobsec_bot:
+Three Telegram queries tested via @<BOT_HANDLE>:
 
 | Test | Query | Requirement | Result |
 |------|-------|-------------|--------|

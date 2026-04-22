@@ -25,7 +25,7 @@ EnvironmentFile=/opt/lobsec/boot/pin.env
 # Pre-start 1: generate/renew mTLS certificates
 ExecStartPre=/opt/lobsec/bin/generate-mtls-certs.sh
 # Pre-start 2: symlink tmp log dir to persistent location (runs as root)
-# NOTE: Replace 'openclaw-<uid>' with your lobsec user's UID (e.g., openclaw-995)
+# NOTE: Replace 'openclaw-<uid>' with your lobsec user's UID
 ExecStartPre=+/bin/bash -c 'OCUID=$(id -u lobsec); mkdir -p /opt/lobsec/logs/gateway && chown lobsec:lobsec /opt/lobsec/logs/gateway; if [ -d /tmp/openclaw-$OCUID ] && [ ! -L /tmp/openclaw-$OCUID ]; then cp -a /tmp/openclaw-$OCUID/* /opt/lobsec/logs/gateway/ 2>/dev/null || true; rm -rf /tmp/openclaw-$OCUID; fi; [ -L /tmp/openclaw-$OCUID ] || ln -sfn /opt/lobsec/logs/gateway /tmp/openclaw-$OCUID'
 # Pre-start 3: extract credentials from HSM
 ExecStartPre=/opt/lobsec/bin/hsm-extract-credentials.sh
@@ -59,7 +59,8 @@ LockPersonality=true
 # Allow writes to lobsec directories and tmp log dir
 ReadWritePaths=/opt/lobsec/.openclaw /opt/lobsec/logs /opt/lobsec/run /opt/lobsec/hsm /opt/lobsec/boot /opt/lobsec/config
 # NOTE: Adjust path to match your lobsec user's UID (OpenClaw uses /tmp/openclaw-<uid>)
-ReadWritePaths=/tmp/openclaw-995
+# DEPLOY: Replace <LOBSEC_UID> with the actual lobsec user UID (id -u lobsec)
+ReadWritePaths=/tmp/openclaw-<LOBSEC_UID>
 
 # Capability restrictions
 CapabilityBoundingSet=

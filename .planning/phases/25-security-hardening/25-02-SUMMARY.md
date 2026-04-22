@@ -12,15 +12,15 @@ requirements_met:
 
 ## What Was Done
 
-1. Substituted real UIDs in `deploy/lobsec-egress.conf` (gateway=995, proxy=993, sovereign GPU=<SOVEREIGN_GPU_HOST>)
+1. Substituted real UIDs in `deploy/lobsec-egress.conf` (gateway=<GATEWAY_UID>, proxy=<PROXY_UID>, sovereign GPU=<SOVEREIGN_GPU_HOST>)
 2. Loaded `lobsec_egress` table with 3 chains: `output`, `gateway_egress`, `proxy_egress`
 3. Copied to `/etc/nftables.d/lobsec-egress.conf` for persistence
 4. Added `include "/etc/nftables.d/*.conf"` to `/etc/nftables.conf`
 
 ## Egress Rules
 
-- **Gateway (uid 995)**: ports 443 (HTTPS), 587 (SMTP), 993 (IMAP) + DNS + loopback
-- **Proxy (uid 993)**: ports 443 (HTTPS), 11435 (Ollama), 123 (NTP) + DNS + loopback + sovereign GPU host
+- **Gateway (uid <GATEWAY_UID>)**: ports 443 (HTTPS), 587 (SMTP), 993 (IMAP) + DNS + loopback
+- **Proxy (uid <PROXY_UID>)**: ports 443 (HTTPS), 11435 (Ollama), 123 (NTP) + DNS + loopback + sovereign GPU host
 - **Other users** (root, SSH, apt): not filtered (accept rule for non-lobsec UIDs)
 
 ## Jetson Routing (SEC-02)
