@@ -308,9 +308,9 @@ Restore all broken capabilities from 2026-04-21 audit, clean system debt, verify
 | 25. Security Hardening | v1.6 | 4/4 | Complete | 2026-03-31 |
 | 26. Integration & Verification | v1.6 | 0/TBD | Blocked | - |
 | 27. Core Infrastructure Repair | v1.7 | 2/3 | Executing | - |
-| 28. System Housekeeping | v1.7 | 0/TBD | Not started | - |
-| 29. Data Pipeline Restoration | v1.7 | 0/TBD | Not started | - |
-| 30. Integration & Verification | v1.7 | 0/TBD | Not started | - |
+| 28. System Housekeeping | v1.7 | 5/5 | Complete | 2026-04-22 |
+| 29. Data Pipeline Restoration | v1.7 | 4/4 | Complete | 2026-04-22 |
+| 30. Integration & Verification | v1.7 | 3/3 | Complete | 2026-04-22 |
 
 ---
-*Roadmap updated: 2026-04-21 — v1.7 System Health started after capabilities audit. v1.6 partially shipped (BOT+SEC done, PULSE/QUAL blocked).*
+*Roadmap updated: 2026-04-22 — v1.7 System Health & Reliability complete (Phases 27-30). Jetson deferred (device down), BGE-M3 deferred (remote server issue).*
