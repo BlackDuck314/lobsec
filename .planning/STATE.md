@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.7
 milestone_name: System Health & Reliability
-status: complete
-last_updated: "2026-04-22T08:00:00Z"
+status: archived
+last_updated: "2026-04-22T12:00:00Z"
 progress:
   total_phases: 4
   completed_phases: 4

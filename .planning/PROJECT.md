@@ -86,14 +86,19 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 - ○ QUAL-01 through QUAL-05: Bayut API, Reddit/NewsAPI creds, Granger analysis — v1.6 (blocked, credentials)
 - ○ VERIF-01 through VERIF-05: Verification — v1.6 (partial, blocked items prevent full verification)
 
+### Shipped (v1.7)
+
+- ✓ REPAIR-01, REPAIR-04, REPAIR-05: Portullama restored, weekly digest fixed, TLS lifecycle verified — v1.7
+- ○ REPAIR-02, REPAIR-03: Jetson + memory search — v1.7 (deferred, external blockers)
+- ✓ HOUSE-01 through HOUSE-05: Session trim, disk cleanup, ConfigMonitor, cron audit, deploy files — v1.7
+- ✓ PIPE-01 through PIPE-04: Scraper health, collectors cleaned, pipeline verified, Feynman deployed — v1.7
+- ✓ VERIF-01 through VERIF-03: Core bot, backends, timers all verified — v1.7
+
 ### Active
 
 <!-- Current scope. Defined in REQUIREMENTS.md when next milestone starts. -->
 
-- REPAIR-01 through REPAIR-05: Core infrastructure repair (Portullama, Jetson, memory search, weekly digest, TLS) — v1.7
-- HOUSE-01 through HOUSE-05: System housekeeping (session trim, disk cleanup, ConfigMonitor, cron jobs) — v1.7
-- PIPE-01 through PIPE-04: Data pipeline restoration (broken scrapers, sandbox tools, Feynman) — v1.7
-- VERIF-01 through VERIF-03: End-to-end verification of all capabilities — v1.7
+(No active milestone — v1.8 not yet planned)
 
 ### Out of Scope
 
@@ -120,13 +125,8 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 
 ### Known Issues
 
-- Portullama returns "Unauthorized" — remote server (<SOVEREIGN_GPU_HOST>:11435) added auth requirement
-- Jetson returns CF-Access 403 — CF tunnel auth may have changed or expired
-- Memory search disabled — BGE-M3 embeddings route to Portullama which is down
-- Weekly digest timer fails — TELEGRAM_BOT_TOKEN not in environment
-- Session file 2.7MB (1140+ messages) — causes slow startup
-- Root disk 81% full — needs cleanup
-- ConfigMonitor shows drift warning — sandbox config changed but not tracked
+- Jetson returns CF-Access 403 — cloudflared tunnel down on remote device (user must restart)
+- Memory search disabled — BGE-M3 crashes on Portullama (remote server needs model reinstall)
 - message_sending hook never fires (OpenClaw limitation)
 - mTLS is server-TLS only (OpenClaw doesn't present client certs) — SEC-01 partial
 - Examy login stuck at "Loading..." (app-level issue)
@@ -166,26 +166,31 @@ No credential or sensitive data ever reaches an LLM provider — all secrets are
 
 ## Current State
 
-**Latest shipped:** v1.6 Full Activation — partial (2026-03-31, BOT + SEC phases done, PULSE/QUAL blocked)
-**Current milestone:** v1.7 System Health & Reliability (started 2026-04-21)
+**Latest shipped:** v1.7 System Health & Reliability (2026-04-22)
+**Next milestone:** v1.8 (not yet planned)
 
 **What's live:**
-- 13 UAE RE plugin tools accessible via Telegram (@<BOT_HANDLE>)
-- Telegram bot connected and responding (fixed 2026-04-21: stale session routing, sandbox Python, TLS cert mismatch)
-- Claude Haiku 4.5 via proxy (working), mTLS active, LUKS encrypted, nftables per-UID egress
+- 13 UAE RE plugin tools + 10 general tools accessible via Telegram
+- Telegram bot connected and responding with cron scheduling enabled
+- Claude Haiku 4.5 via proxy (default), Portullama qwen3.5:27b (sovereign)
+- mTLS active, LUKS2 encrypted, nftables per-UID egress
 - Automated pipeline: weekly/monthly/quarterly collection + monthly analysis on 25th
-- Feynman research agent installed (v0.2.40, Claude Sonnet 4.5 via GitHub Copilot)
+- Feynman research agent (v0.2.40, 8 workflows)
+- Weekly digest (Mon 04:00 UTC), monthly report (26th), anomaly alerts (daily 20:00 UTC)
+- Session: 210KB (down from 2.7MB), disk: 68% (down from 83%)
 
-**What's broken (from 2026-04-21 capabilities audit):**
-- Portullama sovereign backend returns "Unauthorized" (remote server added auth)
-- Jetson inference returns CF-Access 403 Forbidden
-- Memory search disabled (depends on Portullama for BGE-M3 embeddings)
-- Weekly digest timer missing TELEGRAM_BOT_TOKEN env var
-- Session file bloated (2.7MB, 1140+ messages)
-- Root disk 81% full
-- ConfigMonitor drift warning unresolved
-- Several scrapers failing (PropertyFinder, reddit-sentiment, news-sentiment)
-- 5 cron jobs: 2 disabled, 3 running (Research Scout weekly, Email Monitor daily, PT Legal daily)
+**Deferred (external blockers):**
+- Jetson cloudflared tunnel down (user must restart on remote device)
+- BGE-M3 memory search (embedding model crashes on Portullama, remote server issue)
+
+**v1.7 Highlights:**
+- Portullama sovereign routing restored (qwen3.5:27b)
+- All timer services fixed (EnvironmentFile sourcing)
+- Session bloat: 2.7MB → 210KB (92% reduction)
+- Disk: 83% → 68% (~6GB freed)
+- 5 broken data collectors disabled, scraper healthy
+- Feynman research deployed as 10th plugin tool
+- Cron scheduling enabled with security guard (1-hour minimum)
 
 ---
-*Last updated: 2026-04-21 — v1.7 started after capabilities audit*
+*Last updated: 2026-04-22 — v1.7 shipped, archived*

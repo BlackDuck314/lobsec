@@ -9,7 +9,7 @@
 - **v1.4 UAE RE Intelligence Activation** — Phases 13-17 (shipped 2026-03-18)
 - **v1.5 Data Expansion** — Phases 18-21 (shipped 2026-03-25) — [archived](milestones/v1.5-ROADMAP.md)
 - **v1.6 Full Activation** — Phases 22-26 (partial — BOT+SEC done, PULSE/QUAL blocked on credentials)
-- **v1.7 System Health & Reliability** — Phases 27-30 (in progress)
+- **v1.7 System Health & Reliability** — Phases 27-30 (shipped 2026-04-22) — [archived](milestones/v1.7-ROADMAP.md)
 
 ## Phases
 
@@ -230,51 +230,14 @@ Unlock blocked Dubai government data via Dubai Pulse APIs, run first real Grange
 *v1.4 phase details archived to [milestones/v1.4-ROADMAP.md](milestones/v1.4-ROADMAP.md)*
 *v1.5 phase details archived to [milestones/v1.5-ROADMAP.md](milestones/v1.5-ROADMAP.md)*
 
-## v1.7 System Health & Reliability — Phases 27-30
+<details>
+<summary>v1.7 System Health & Reliability — SHIPPED 2026-04-22</summary>
 
-Restore all broken capabilities from 2026-04-21 audit, clean system debt, verify end-to-end health. Every subsystem should work or be explicitly documented as deferred.
+- [x] Phases 27-30: Portullama restored, timers fixed, session/disk cleaned, pipelines verified
+- Deferred: Jetson (device down), BGE-M3 memory search (remote server issue)
+- See [archived roadmap](milestones/v1.7-ROADMAP.md) for full details
 
-- [ ] Phase 27: Core Infrastructure Repair — Fix Portullama, Jetson, memory search, weekly digest, TLS lifecycle
-  Requirements: REPAIR-01, REPAIR-02, REPAIR-03, REPAIR-04, REPAIR-05
-  **Plans:** 3 plans
-  Plans:
-  - [ ] 27-01-PLAN.md — Portullama reconnection + memory search restoration (REPAIR-01, REPAIR-03)
-  - [ ] 27-02-PLAN.md — Jetson CF-Access reconnection (REPAIR-02)
-  - [ ] 27-03-PLAN.md — Weekly digest timer + TLS cert lifecycle fix (REPAIR-04, REPAIR-05)
-  Goal: All 3 inference backends accessible, memory search working, weekly digest fires, TLS cert rotation is resilient.
-  Success criteria:
-  1. Portullama responds to requests through proxy (sovereign routing works)
-  2. Jetson responds to requests through proxy (CF-Access auth restored)
-  3. Memory search returns BGE-M3 embeddings via Portullama
-  4. Weekly digest timer fires and delivers Telegram message
-  5. Gateway restart automatically restarts proxy (PartOf= verified)
-
-- [ ] Phase 28: System Housekeeping — Session trim, disk cleanup, ConfigMonitor, cron audit, stale files
-  Requirements: HOUSE-01, HOUSE-02, HOUSE-03, HOUSE-04, HOUSE-05
-  Goal: System is clean, maintainable, and has headroom. No drift warnings, no bloated sessions, disk under 70%.
-  Success criteria:
-  1. Session file under 500KB (archived old messages)
-  2. Root disk under 70% usage
-  3. ConfigMonitor reports no drift
-  4. All cron jobs either active+working or explicitly disabled with reason
-  5. No orphaned untracked files in deploy/
-
-- [ ] Phase 29: Data Pipeline Restoration — Scrapers, sentiment collectors, collection cycle, Feynman
-  Requirements: PIPE-01, PIPE-02, PIPE-03, PIPE-04
-  Goal: All data pipelines producing data or explicitly documented as blocked. Feynman available as research tool.
-  Success criteria:
-  1. lobsec-scraper service running, enabled missions produce data
-  2. Sentiment collectors either producing data or gracefully disabled
-  3. Full collection cycle (weekly+monthly) lands data in normalized_monthly
-  4. Feynman accessible as a research tool from lobsec bot
-
-- [ ] Phase 30: Integration & Verification — End-to-end system health check
-  Requirements: VERIF-01, VERIF-02, VERIF-03
-  Goal: Every capability verified working. Create living health dashboard.
-  Success criteria:
-  1. Telegram → LLM → tool execution cycle verified (3+ tools)
-  2. All 3 backends respond through proxy
-  3. All timers and cron jobs produce output
+</details>
 
 ## Progress
 
@@ -307,10 +270,10 @@ Restore all broken capabilities from 2026-04-21 audit, clean system debt, verify
 | 24. Bot Intelligence UX | v1.6 | 3/3 | Complete | 2026-03-31 |
 | 25. Security Hardening | v1.6 | 4/4 | Complete | 2026-03-31 |
 | 26. Integration & Verification | v1.6 | 0/TBD | Blocked | - |
-| 27. Core Infrastructure Repair | v1.7 | 2/3 | Executing | - |
+| 27. Core Infrastructure Repair | v1.7 | 2/3 | Partial | 2026-04-22 |
 | 28. System Housekeeping | v1.7 | 5/5 | Complete | 2026-04-22 |
 | 29. Data Pipeline Restoration | v1.7 | 4/4 | Complete | 2026-04-22 |
 | 30. Integration & Verification | v1.7 | 3/3 | Complete | 2026-04-22 |
 
 ---
-*Roadmap updated: 2026-04-22 — v1.7 System Health & Reliability complete (Phases 27-30). Jetson deferred (device down), BGE-M3 deferred (remote server issue).*
+*Roadmap updated: 2026-04-22 — v1.7 archived. Next milestone: v1.8 (not yet planned).*
